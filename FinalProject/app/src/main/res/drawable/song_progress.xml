@@ -1,0 +1,14 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <bitmap
+            android:src="@drawable/progress_bg"
+            android:scaleType="fitXY"/>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <bitmap
+                android:src="@drawable/progress_fg"
+                android:scaleType="fitXY" />
+        </clip>
+    </item>
+</layer-list>
