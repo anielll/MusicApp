@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 class SongViewAdapter(
-    private val songObjects: List<SongData>,
+    private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
     private val longClickListener: (Int) -> Boolean)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -22,7 +22,7 @@ class SongViewAdapter(
                 SongViewHolder(view)
             }
             VIEW_TYPE_ADD_SONG -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_song_item, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_item, parent, false)
                 AddSongViewHolder(view)
             }
             else -> throw IllegalArgumentException("Invalid view type")
@@ -38,7 +38,7 @@ class SongViewAdapter(
             VIEW_TYPE_ADD_SONG -> {
                 val addSongViewHolder = holder as AddSongViewHolder
                 addSongViewHolder.bind()
-                addSongViewHolder.itemView.findViewById<ImageButton>(R.id.addSongButton).setOnClickListener {
+                addSongViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
                     addSong()
                 }
             }

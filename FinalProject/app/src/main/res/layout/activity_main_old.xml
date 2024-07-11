@@ -9,30 +9,45 @@
     android:background="@color/black">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/mainTopGuideline"
+        android:id="@+id/bottomGuideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.90" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topGuideline"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.12" />
-
-    <include layout="@layout/home_page_top_widget"
+    <include layout="@layout/bottom_widget"
+        android:id="@+id/bottomBar"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toBottomOf="@id/bottomGuideline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+    <include layout="@layout/top_widget"
+        android:id="@+id/topBar"
         android:layout_height="0dp"
         android:layout_width="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/mainTopGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/topGuideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlistView"
+        android:id="@+id/songView"
         app:layoutManager="LinearLayoutManager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="@id/mainTopGuideline"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/topGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/bottomGuideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/playlist_item"
+        tools:listitem="@layout/song_item"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="Playlist Name"
         android:textColor="@color/white"
-        android:textSize="30dp"
+        android:textSize="30sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/playListIcon"
