@@ -21,13 +21,12 @@ class PlaylistActivity : AppCompatActivity(),
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var playPauseButton: ImageButton
     private lateinit var recyclerView: RecyclerView
-    private lateinit var masterSongList: MutableList<SongData>
     private lateinit var filteredSongList : MutableList<SongData>
     private var currentPlaylist: PlaylistData? = null
     private var lastSong:Int? = null
 
     override fun onSongUpdated(newSong: SongData, libraryIndex: Int) {
-        masterSongList[libraryIndex] = newSong
+        println(libraryIndex)
         val playlistIndex = currentPlaylist!!.songList.indexOf(libraryIndex)
         filteredSongList[playlistIndex] = newSong
         recyclerView.adapter?.notifyItemChanged(playlistIndex)
@@ -50,15 +49,7 @@ class PlaylistActivity : AppCompatActivity(),
         }else{
             intent.getSerializableExtra("selected_playlist") as PlaylistData
         }
-        val songFolder = File(filesDir, "songs")
-        val songFileNames = songFolder.list()?: arrayOf()
-        masterSongList= mutableListOf()
-        songFileNames.forEach {
-            masterSongList.add(SongData(this, it.toInt()))
-        }
-        filteredSongList = masterSongList.filterIndexed { index, _ ->
-            index in currentPlaylist!!.songList
-        }.toMutableList()
+        filteredSongList =  currentPlaylist!!.songList.map{SongData(this,it)}.toMutableList()
         setCurrentSong(0)
         initSongView()
         initBottomBar()
@@ -76,6 +67,7 @@ class PlaylistActivity : AppCompatActivity(),
     }
     private fun onClickSongOptions(playlistIndex: Int) {
         val libraryIndex :Int = currentPlaylist!!.songList[playlistIndex]
+        println(libraryIndex)
         val songOptionsFragment = SongOptionsDialogFragment.newInstance(libraryIndex)
         songOptionsFragment.show(supportFragmentManager, "SongOptions")
     }
@@ -105,8 +97,11 @@ class PlaylistActivity : AppCompatActivity(),
             mediaPlayer.reset()
         }
         try {
-            val libraryIndex :Int = currentPlaylist!!.songList[playlistIndex]
-            val path: String = masterSongList[libraryIndex].getMp3FilePath(this)
+            val libraryIndex:Int = currentPlaylist!!.songList[playlistIndex]
+            val rootDir = File(filesDir, "songs/$libraryIndex")
+            val songFiles = rootDir.list() ?: arrayOf()
+            val mp3File = songFiles.firstOrNull { it.endsWith(".mp3") }
+            val path = File(rootDir, mp3File!!).absolutePath
             mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(path)
             mediaPlayer.prepare()

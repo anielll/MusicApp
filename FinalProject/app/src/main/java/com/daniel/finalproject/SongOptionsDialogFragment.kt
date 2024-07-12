@@ -24,7 +24,7 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex= arguments?.getInt("library_indexf") ?: -1
+        libraryIndex= arguments?.getInt("library_index") ?: -1
     }
 
     override fun onCreateView(
