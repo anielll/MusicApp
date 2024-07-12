@@ -1,6 +1,7 @@
 package com.daniel.finalproject
 
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
@@ -11,27 +12,29 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
-class OldMainActivity : AppCompatActivity(), EditSongDialogFragment.OnSongUpdatedListener {
+class PlaylistActivity : AppCompatActivity(),
+    EditSongDialogFragment.OnSongUpdatedListener
+{
 
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var playPauseButton: ImageButton
     private lateinit var recyclerView: RecyclerView
-    private lateinit var songObjects: MutableList<SongData>
+    private lateinit var masterSongList: MutableList<SongData>
+    private lateinit var filteredSongList : MutableList<SongData>
+    private var currentPlaylist: PlaylistData? = null
     private var lastSong:Int? = null
 
-    override fun onSongUpdated(newSong: SongData, songIndex: Int) {
-        songObjects[songIndex] = newSong
-        recyclerView.adapter?.notifyItemChanged(songIndex)
+    override fun onSongUpdated(newSong: SongData, libraryIndex: Int) {
+        masterSongList[libraryIndex] = newSong
+        val playlistIndex = currentPlaylist!!.songList.indexOf(libraryIndex)
+        filteredSongList[playlistIndex] = newSong
+        recyclerView.adapter?.notifyItemChanged(playlistIndex)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        //init
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.playlist_activity)
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -41,9 +44,28 @@ class OldMainActivity : AppCompatActivity(), EditSongDialogFragment.OnSongUpdate
         val insetsController = WindowInsetsControllerCompat(window, window.decorView)
         insetsController.isAppearanceLightStatusBars = false
         insetsController.isAppearanceLightNavigationBars = false
-        initSongData()
+        // else is deprecated in favor of if in SDK 33
+        currentPlaylist= if(Build.VERSION.SDK_INT >= 33){
+            intent.getSerializableExtra("selected_playlist", PlaylistData::class.java)
+        }else{
+            intent.getSerializableExtra("selected_playlist") as PlaylistData
+        }
+        val songFolder = File(filesDir, "songs")
+        val songFileNames = songFolder.list()?: arrayOf()
+        masterSongList= mutableListOf()
+        songFileNames.forEach {
+            masterSongList.add(SongData(this, it.toInt()))
+        }
+        filteredSongList = masterSongList.filterIndexed { index, _ ->
+            index in currentPlaylist!!.songList
+        }.toMutableList()
+        setCurrentSong(0)
         initSongView()
         initBottomBar()
+        val backButton: ImageButton = findViewById(R.id.backButton)
+        backButton.setOnClickListener {
+            finish()
+        }
     }
 
     override fun onDestroy() {
@@ -52,13 +74,13 @@ class OldMainActivity : AppCompatActivity(), EditSongDialogFragment.OnSongUpdate
             mediaPlayer.release()
         }
     }
-
-    private fun onClickSongOptions(songIndex: Int) {
-        val songOptionsFragment = SongOptionsDialogFragment.newInstance(songIndex)
+    private fun onClickSongOptions(playlistIndex: Int) {
+        val libraryIndex :Int = currentPlaylist!!.songList[playlistIndex]
+        val songOptionsFragment = SongOptionsDialogFragment.newInstance(libraryIndex)
         songOptionsFragment.show(supportFragmentManager, "SongOptions")
     }
-    private fun onClickPlaySong(songIndex: Int){
-        if(songIndex==lastSong){
+    private fun onClickPlaySong(playlistIndex: Int){
+        if(playlistIndex==lastSong){
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.pause()
                 playPauseButton.setImageResource(R.drawable.play_button)
@@ -68,55 +90,13 @@ class OldMainActivity : AppCompatActivity(), EditSongDialogFragment.OnSongUpdate
             }
             return
         }
-        setCurrentSong(songIndex)
+        setCurrentSong(playlistIndex)
         mediaPlayer.start()
         playPauseButton.setImageResource(R.drawable.pause_button)
-        lastSong = songIndex
-        Log.i("test",songObjects[songIndex].artist)
-    }
-    private fun initSongData(){
-        val songFiles = assets.list("default_songs") ?: arrayOf()
-
-        songFiles.forEachIndexed{index, songName ->
-            try {
-                val destDir = File(filesDir, "songs/$index")
-                if (!destDir.exists()) {
-                    destDir.mkdirs()
-                    copymp3FromAssets("default_songs/$songName", "songs/$index/$songName")
-                }
-            }catch (e : Exception){
-                Log.e("MainActivity","Failed to initialize songs ${e.message}")
-            }
-        }
+        lastSong = playlistIndex
     }
 
-
-    private fun copymp3FromAssets(assetFileName: String, outputFileName: String) {
-        var inputStream: InputStream? = null
-        var outputStream: OutputStream? = null
-        try {
-            inputStream = assets.open(assetFileName)
-            outputStream = FileOutputStream(File(filesDir, outputFileName))
-            val buffer = ByteArray(1024)
-
-            while (true) {
-                val temp = inputStream.read(buffer)
-                if(temp== -1){
-                    break
-                }
-                outputStream.write(buffer, 0, temp)
-            }
-
-            outputStream.flush()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            inputStream?.close()
-            outputStream?.close()
-        }
-    }
-
-    private fun setCurrentSong(songIndex: Int= 0 ) {
+    private fun setCurrentSong(playlistIndex: Int= 0 ) {
         // preconditions valid index, data structure is correct, any and all exceptions are ignored
         if(::mediaPlayer.isInitialized) {
             if (mediaPlayer.isPlaying) {
@@ -125,7 +105,8 @@ class OldMainActivity : AppCompatActivity(), EditSongDialogFragment.OnSongUpdate
             mediaPlayer.reset()
         }
         try {
-            val path: String = songObjects[songIndex].getMp3FilePath(this,songIndex)
+            val libraryIndex :Int = currentPlaylist!!.songList[playlistIndex]
+            val path: String = masterSongList[libraryIndex].getMp3FilePath(this)
             mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(path)
             mediaPlayer.prepare()
@@ -134,27 +115,19 @@ class OldMainActivity : AppCompatActivity(), EditSongDialogFragment.OnSongUpdate
         }
     }
     private fun initSongView(){
-        val songFolder = File(filesDir, "songs")
-        val songFileNames = songFolder.list()?: arrayOf()
-        songObjects = mutableListOf()
-        songFileNames.forEach {
-            songObjects.add(SongData(this, it.toInt()))
-        }
         recyclerView = findViewById(R.id.songView)
-
-        val songViewAdapter = SongViewAdapter(songObjects,
-            clickListener = { songIndex ->
-                onClickPlaySong(songIndex)
+        val songViewAdapter = SongViewAdapter(filteredSongList,
+            clickListener = { playlistIndex ->
+                onClickPlaySong(playlistIndex)
             },
-            longClickListener = { songIndex ->
-                onClickSongOptions(songIndex)
+            longClickListener = { playlistIndex ->
+                onClickSongOptions(playlistIndex)
                 true
             }
         )
         recyclerView.adapter = songViewAdapter
     }
     private fun initBottomBar(){
-        setCurrentSong(0)
         playPauseButton = findViewById(R.id.MasterPlayPauseButton)
         playPauseButton.setOnClickListener {
             if (mediaPlayer.isPlaying) {

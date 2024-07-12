@@ -10,13 +10,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SongOptionsDialogFragment : BottomSheetDialogFragment() {
 
-    private var songIndex: Int = -1
+    private var libraryIndex: Int = -1
 
     companion object {
-        fun newInstance(songIndex: Int): SongOptionsDialogFragment {
+        fun newInstance(libraryIndex:Int): SongOptionsDialogFragment {
             val fragment = SongOptionsDialogFragment()
             val args = Bundle()
-            args.putInt("song_index", songIndex)
+            args.putInt("library_index", libraryIndex)
             fragment.arguments = args
             return fragment
         }
@@ -24,7 +24,7 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        songIndex = arguments?.getInt("song_index") ?: -1
+        libraryIndex= arguments?.getInt("library_indexf") ?: -1
     }
 
     override fun onCreateView(
@@ -34,24 +34,24 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
         val view = inflater.inflate(R.layout.song_options, container, false)
 
         view.findViewById<Button>(R.id.editSongButton).setOnClickListener {
-            editSong(songIndex)
+            editSong()
             dismiss()
         }
 
         view.findViewById<Button>(R.id.deleteSongButton).setOnClickListener {
-            deleteSong(songIndex)
+            deleteSong()
             dismiss()
         }
 
         return view
     }
 
-    private fun editSong(recyclerViewIndex: Int) {
-        val editSongDialogFragment = EditSongDialogFragment.newInstance(recyclerViewIndex)
+    private fun editSong() {
+        val editSongDialogFragment = EditSongDialogFragment.newInstance(libraryIndex)
         editSongDialogFragment.show(parentFragmentManager, "EditSongDialogFragment")
     }
 
-    private fun deleteSong(songIndex: Int) {
-        Log.i("SongOptions", "Delete song clicked for index: $songIndex")
+    private fun deleteSong() {
+        Log.i("SongOptions", "Delete song clicked for index: $libraryIndex")
     }
 }

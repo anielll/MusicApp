@@ -1,17 +1,16 @@
 package com.daniel.finalproject
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
+import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 import java.io.File
 
-val debug = true // Set to false to disable default (playlist and song) configuration for debug purposes
 class MainActivity : AppCompatActivity(){
     private lateinit var playlistObjects : MutableList<PlaylistData>
     private lateinit var recyclerView : RecyclerView
@@ -28,9 +27,7 @@ class MainActivity : AppCompatActivity(){
         val insetsController = WindowInsetsControllerCompat(window, window.decorView)
         insetsController.isAppearanceLightStatusBars = false
         insetsController.isAppearanceLightNavigationBars = false
-        if(debug) {
-            initPlaylistData()
-        }
+        initializeDefaults(this)
         initPlaylistView()
     }
     private fun initPlaylistView(){
@@ -40,39 +37,22 @@ class MainActivity : AppCompatActivity(){
                 readPlaylistDataFromFile(this,it.substringBeforeLast('.').toInt())
             }.toMutableList()
                 recyclerView = findViewById(R.id.playlistView)
-            val playlistViewAdapter = PlaylistViewAdapter(playlistObjects)
+            val playlistViewAdapter = PlaylistViewAdapter(
+                playlistObjects,
+                clickListener = { songIndex ->
+                    onClickOpenPlaylist(songIndex)
+                },)
             recyclerView.adapter = playlistViewAdapter
     }
-
-
-
-
-
-
-
-    private fun initPlaylistData(){
-        val playListFiles = assets.list("default_playlists") ?: arrayOf()
-        playListFiles.forEachIndexed{index, playlistName ->
-            try {
-                val destDir = File(filesDir, "playlists")
-                if (!destDir.exists()) {
-                    destDir.mkdirs()
-                }
-                copyPlaylistFromAssets("default_playlists/$playlistName", "playlists/$index.json")
-            }catch (e : Exception){
-                Log.e("MainActivity","Failed to initialize default playlist ${e.message}")
-            }
-        }
-
+    private fun onClickOpenPlaylist(playlistIndex: Int){
+    val selectedPlaylist = if(playlistIndex==0){
+        null
+    }else{
+        playlistObjects[playlistIndex - 1]
     }
-    private fun copyPlaylistFromAssets(assetFilePath: String, outputFilePath: String    ){
-        val inputStream = assets.open(assetFilePath)
-        val fileContents = inputStream.bufferedReader().readText()
-        val playlist = PlaylistData(assetFilePath,fileContents)
-        val json = Gson().toJson(playlist)
-        val outputFile = File(filesDir, outputFilePath)
-        outputFile.writeText(json)
+        val intent = Intent(this, PlaylistActivity::class.java)
+
+        intent.putExtra("selected_playlist", selectedPlaylist)
+        startActivity(intent)
     }
-
-
 }

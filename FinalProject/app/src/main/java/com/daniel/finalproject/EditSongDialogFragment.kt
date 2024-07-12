@@ -10,10 +10,10 @@ import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
 
 class EditSongDialogFragment : DialogFragment() {
 
-    private var songIndex: Int? = null
+    private var libraryIndex: Int? = null
 
     interface OnSongUpdatedListener {
-        fun onSongUpdated(newSong:SongData,songIndex: Int)
+        fun onSongUpdated(newSong:SongData,libraryIndex: Int)
 
     }
     companion object {
@@ -21,7 +21,7 @@ class EditSongDialogFragment : DialogFragment() {
         fun newInstance(index: Int): EditSongDialogFragment {
             val fragment = EditSongDialogFragment()
             val args = Bundle()
-            args.putInt("song_index", index)
+            args.putInt("library_index", index)
             fragment.arguments = args
             return fragment
         }
@@ -29,7 +29,7 @@ class EditSongDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        songIndex = arguments?.getInt("song_index")
+        libraryIndex = arguments?.getInt("library_index")
     }
 
     override fun onCreateView(
@@ -43,7 +43,7 @@ class EditSongDialogFragment : DialogFragment() {
         val saveButton = view.findViewById<Button>(R.id.edit_song_save_button)
         val cancelButton = view.findViewById<Button>(R.id.edit_song_cancel_button)
 
-        val songData = readSongDataFromFile(requireContext(),songIndex)
+        val songData = readSongDataFromFile(requireContext(),libraryIndex)
         titleEditText.setText(songData?.title)
         artistEditText.setText(songData?.artist)
         cancelButton.setOnClickListener {
@@ -52,9 +52,9 @@ class EditSongDialogFragment : DialogFragment() {
         saveButton.setOnClickListener {
             val title = titleEditText.text.toString()
             val artist = artistEditText.text.toString()
-            val updatedSong = SongData(requireContext(), title, artist, songIndex!!)
+            val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!)
             val listener = requireActivity() as OnSongUpdatedListener
-            listener.onSongUpdated(updatedSong, songIndex!!)
+            listener.onSongUpdated(updatedSong, libraryIndex!!)
             dismiss()
         }
 

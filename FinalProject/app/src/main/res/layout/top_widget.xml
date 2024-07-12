@@ -5,23 +5,27 @@
     android:layout_height="100dp"
     android:background="@color/black">
 
-    <ImageView
-        android:id="@+id/menuButton"
+    <ImageButton
+        android:id="@+id/backButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
         android:layout_marginVertical="30dp"
-        android:src="@drawable/menu_button"
+        android:src="@drawable/back_button"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        />
     <ImageView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintDimensionRatio="1:1"
         android:src="@drawable/blank"
         android:id="@+id/playListIcon"
-        app:layout_constraintStart_toEndOf="@id/menuButton"
+        app:layout_constraintStart_toEndOf="@id/backButton"
         android:layout_marginVertical="15dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="10dp"
         />
     <TextView
         android:id="@+id/playListName"

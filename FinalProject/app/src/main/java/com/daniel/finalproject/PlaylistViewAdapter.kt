@@ -8,7 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class PlaylistViewAdapter (
-    private val playlistObjects: MutableList<PlaylistData>
+    private val playlistObjects: MutableList<PlaylistData>,
+    private val clickListener: (Int) -> Unit
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private val VIEW_TYPE_LIBRARY = 1
     private val VIEW_TYPE_PLAYLIST = 2
@@ -35,11 +36,11 @@ class PlaylistViewAdapter (
         when (holder.itemViewType) {
             VIEW_TYPE_LIBRARY -> {
                 val libraryViewHolder = holder as LibraryViewHolder
-                libraryViewHolder.bind()
+                libraryViewHolder.bind(clickListener)
             }
             VIEW_TYPE_PLAYLIST -> {
                 val playlistViewHolder = holder as PlaylistViewHolder
-                playlistViewHolder.bind(playlistObjects[position-1])
+                playlistViewHolder.bind(playlistObjects[position-1],clickListener)
             }
             VIEW_TYPE_ADD_PLAYLIST -> {
                 val addplaylistViewHolder = holder as AddPlaylistViewHolder
@@ -66,8 +67,9 @@ class PlaylistViewAdapter (
 
     class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val playlistNameNameTextView: TextView = itemView.findViewById(R.id.playListName)
-        fun bind(playlistObject: PlaylistData) {
+        fun bind(playlistObject: PlaylistData,clickListener: (Int) -> Unit) {
             playlistNameNameTextView.text = playlistObject.playlistName
+            itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
         }
     }
     class AddPlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -75,7 +77,8 @@ class PlaylistViewAdapter (
         }
     }
     class LibraryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind() {
+        fun bind(clickListener: (Int) -> Unit) {
+            itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
         }
     }
     private fun addPlaylist() {
