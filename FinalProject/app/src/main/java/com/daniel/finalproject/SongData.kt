@@ -27,9 +27,9 @@ class SongData
             this.artist = songData.artist
             this.songIndex = songData.songIndex
         } else {
-            val metaData = parseMetaData(getMp3FilePath(context))
+            val metaData = parseMetaData(getMp3FilePath(context,libraryIndex))
             if(metaData[0]==""){
-                val filePath = getMp3FilePath(context)
+                val filePath = getMp3FilePath(context,libraryIndex)
                 this.title = filePath.substringAfterLast('/')
             }else{
                 this.title = metaData[0]
@@ -39,14 +39,13 @@ class SongData
             saveSongDataToFile(context,this)
         }
     }
-    fun getMp3FilePath(context: Context):String{
-        val rootDir = File(context.filesDir, "songs/$songIndex")
+companion object {
+    fun getMp3FilePath(context: Context,libraryIndex: Int):String{
+        val rootDir = File(context.filesDir, "songs/$libraryIndex")
         val songFiles = rootDir.list() ?: arrayOf()
         val mp3File = songFiles.firstOrNull { it.endsWith(".mp3") }
         return File(rootDir, mp3File!!).absolutePath
     }
-
-companion object {
     private fun parseMetaData(mp3FilePath: String): Array<String> {
         val retriever = MediaMetadataRetriever()
         try {

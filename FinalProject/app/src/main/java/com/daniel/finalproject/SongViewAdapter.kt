@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 class SongViewAdapter(
+    private val currentPlaylist: PlaylistData,
     private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
     private val longClickListener: (Int) -> Boolean)
@@ -29,11 +30,11 @@ class SongViewAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, recyclerPosition: Int) {
         when (holder.itemViewType) {
             VIEW_TYPE_SONG -> {
                 val songViewHolder = holder as SongViewHolder
-                songViewHolder.bind(songObjects[position], clickListener, longClickListener)
+                songViewHolder.bind(songObjects[recyclerPosition], clickListener, longClickListener)
             }
             VIEW_TYPE_ADD_SONG -> {
                 val addSongViewHolder = holder as AddSongViewHolder
@@ -48,8 +49,8 @@ class SongViewAdapter(
     override fun getItemCount(): Int {
         return songObjects.size + 1
     }
-    override fun getItemViewType(position: Int): Int {
-        return if (position < songObjects.size) {
+    override fun getItemViewType(recyclerPosition: Int): Int {
+        return if (recyclerPosition < songObjects.size) {
             VIEW_TYPE_SONG
         } else {
             VIEW_TYPE_ADD_SONG

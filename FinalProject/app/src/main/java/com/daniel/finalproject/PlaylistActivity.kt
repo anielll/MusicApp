@@ -3,7 +3,6 @@ package com.daniel.finalproject
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +10,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
 import java.io.IOException
-
+import com.daniel.finalproject.SongData.Companion.getMp3FilePath
 class PlaylistActivity : AppCompatActivity(),
     EditSongDialogFragment.OnSongUpdatedListener
 {
@@ -26,7 +24,6 @@ class PlaylistActivity : AppCompatActivity(),
     private var lastSong:Int? = null
 
     override fun onSongUpdated(newSong: SongData, libraryIndex: Int) {
-        println(libraryIndex)
         val playlistIndex = currentPlaylist!!.songList.indexOf(libraryIndex)
         filteredSongList[playlistIndex] = newSong
         recyclerView.adapter?.notifyItemChanged(playlistIndex)
@@ -67,7 +64,6 @@ class PlaylistActivity : AppCompatActivity(),
     }
     private fun onClickSongOptions(playlistIndex: Int) {
         val libraryIndex :Int = currentPlaylist!!.songList[playlistIndex]
-        println(libraryIndex)
         val songOptionsFragment = SongOptionsDialogFragment.newInstance(libraryIndex)
         songOptionsFragment.show(supportFragmentManager, "SongOptions")
     }
@@ -98,10 +94,7 @@ class PlaylistActivity : AppCompatActivity(),
         }
         try {
             val libraryIndex:Int = currentPlaylist!!.songList[playlistIndex]
-            val rootDir = File(filesDir, "songs/$libraryIndex")
-            val songFiles = rootDir.list() ?: arrayOf()
-            val mp3File = songFiles.firstOrNull { it.endsWith(".mp3") }
-            val path = File(rootDir, mp3File!!).absolutePath
+            val path = getMp3FilePath(this, libraryIndex)
             mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(path)
             mediaPlayer.prepare()
@@ -111,7 +104,9 @@ class PlaylistActivity : AppCompatActivity(),
     }
     private fun initSongView(){
         recyclerView = findViewById(R.id.songView)
-        val songViewAdapter = SongViewAdapter(filteredSongList,
+        val songViewAdapter = SongViewAdapter(
+            currentPlaylist!!,
+            filteredSongList,
             clickListener = { playlistIndex ->
                 onClickPlaySong(playlistIndex)
             },
