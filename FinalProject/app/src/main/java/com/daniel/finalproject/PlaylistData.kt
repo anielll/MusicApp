@@ -1,38 +1,51 @@
 package com.daniel.finalproject
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import java.io.File
 import java.io.FileReader
+import java.io.FileWriter
 import java.io.IOException
 import java.io.Serializable
 
 class PlaylistData : Serializable {
+    val playlistName : String
+    val songList: MutableList<Int>
+    val playlistIndex: Int
+    constructor(context: Context,playlistName:String, songList: MutableList<Int>,playlistIndex: Int){
+        this.playlistName=playlistName
+        this.songList=songList
+        this.playlistIndex = playlistIndex
+        writePlaylistDataToFile(context,this)
+    }
     companion object{
         fun readPlaylistDataFromFile(context: Context, songIndex: Int): PlaylistData? {
             val file = File(context.filesDir, "playlists/$songIndex.json")
             try {
-                val reader = FileReader(file)
-                val playlistData = Gson().fromJson(reader, PlaylistData::class.java)
-                reader.close()
+                val playlistData = FileReader(file).use { reader ->
+                    Gson().fromJson(reader, PlaylistData::class.java)
+                }
                 return playlistData
             } catch (e: IOException) {
                 return null
             }
         }
-    }
-    val playlistName : String
-    val songList: MutableList<Int>
-    constructor(filePath: String, fileContent: String){
-        this.playlistName = filePath.substringAfterLast('/')
-        val data = fileContent.trim().split(Regex("\\n+"))
-        songList = data.mapNotNull {
+        fun writePlaylistDataToFile(context: Context,playlist:PlaylistData){
+            val playlistDir= File(context.filesDir, "playlists")
+            val playlistJson = Gson().toJson(playlist)
+            val outputFile = File(context.filesDir, "playlists/${playlist.playlistIndex}.json" )
             try {
-                it.trim().toInt()
-            } catch (e: Exception) {
-                null
+                if (!playlistDir.exists()) {
+                    playlistDir.mkdirs()
+                }
+                FileWriter(outputFile).use { writer ->
+                    writer.write(playlistJson)
+                }
+            } catch (e: IOException) {
+                Log.e("MusicApp", "Error writing file: ${e.message}")
             }
-        }.toMutableList()
+        }
     }
 
 

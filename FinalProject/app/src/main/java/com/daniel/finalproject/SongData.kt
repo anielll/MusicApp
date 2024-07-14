@@ -64,15 +64,15 @@ companion object {
         }
     }
 
-    fun readSongDataFromFile(context: Context, songIndex: Int?): SongData? {
+    fun readSongDataFromFile(context: Context, songIndex: Int): SongData? {
         val gson = Gson()
         val songDir = File(context.filesDir, "songs/$songIndex")
         val file = File(songDir, "properties.json")
 
         try {
-            val reader = FileReader(file)
-            val songData = gson.fromJson(reader, SongData::class.java)
-            reader.close()
+            val songData = FileReader(file).use { reader ->
+                gson.fromJson(reader, SongData::class.java)
+            }
             return songData
         } catch (e: IOException) {
             Log.e("EditSong", "Error reading file: ${e.message}")
@@ -94,7 +94,6 @@ companion object {
             val file = File(songDir, "properties.json")
             FileWriter(file).use {
                 it.write(songJson)
-                Log.i("EditSong", "Saved song data to file: $file")
             }
         } catch (e: IOException) {
             Log.e("EditSong", "Error writing file: ${e.message}")

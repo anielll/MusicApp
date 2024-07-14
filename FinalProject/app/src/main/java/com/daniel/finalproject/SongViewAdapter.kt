@@ -7,7 +7,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 class SongViewAdapter(
-    private val currentPlaylist: PlaylistData,
     private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
     private val longClickListener: (Int) -> Boolean)

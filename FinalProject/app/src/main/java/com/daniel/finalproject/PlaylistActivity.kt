@@ -12,6 +12,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.io.IOException
 import com.daniel.finalproject.SongData.Companion.getMp3FilePath
+import java.io.File
+
 class PlaylistActivity : AppCompatActivity(),
     EditSongDialogFragment.OnSongUpdatedListener
 {
@@ -22,9 +24,8 @@ class PlaylistActivity : AppCompatActivity(),
     private lateinit var filteredSongList : MutableList<SongData>
     private var currentPlaylist: PlaylistData? = null
     private var lastSong:Int? = null
-
-    override fun onSongUpdated(newSong: SongData, libraryIndex: Int) {
-        val playlistIndex = currentPlaylist!!.songList.indexOf(libraryIndex)
+    override fun onSongUpdated(newSong: SongData) {
+        val playlistIndex = currentPlaylist!!.songList.indexOf(newSong.songIndex)
         filteredSongList[playlistIndex] = newSong
         recyclerView.adapter?.notifyItemChanged(playlistIndex)
     }
@@ -46,7 +47,20 @@ class PlaylistActivity : AppCompatActivity(),
         }else{
             intent.getSerializableExtra("selected_playlist") as PlaylistData
         }
-        filteredSongList =  currentPlaylist!!.songList.map{SongData(this,it)}.toMutableList()
+        var wasFiltered = false
+        val filteredIndexList = currentPlaylist!!.songList
+            .filter {
+                val exists = File(filesDir, "songs/$it").exists()
+                if(!exists) wasFiltered = true
+                exists
+            }.toMutableList()
+        filteredSongList =  filteredIndexList
+            .map{SongData(this,it) }
+            .toMutableList()
+        if(wasFiltered){
+            println("Error404")
+            currentPlaylist = PlaylistData(this,currentPlaylist!!.playlistName,filteredIndexList,currentPlaylist!!.playlistIndex)
+        }
         setCurrentSong(0)
         initSongView()
         initBottomBar()
@@ -105,7 +119,6 @@ class PlaylistActivity : AppCompatActivity(),
     private fun initSongView(){
         recyclerView = findViewById(R.id.songView)
         val songViewAdapter = SongViewAdapter(
-            currentPlaylist!!,
             filteredSongList,
             clickListener = { playlistIndex ->
                 onClickPlaySong(playlistIndex)

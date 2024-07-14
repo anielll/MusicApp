@@ -13,7 +13,7 @@ class EditSongDialogFragment : DialogFragment() {
     private var libraryIndex: Int? = null
 
     interface OnSongUpdatedListener {
-        fun onSongUpdated(newSong:SongData,libraryIndex: Int)
+        fun onSongUpdated(newSong:SongData)
 
     }
     companion object {
@@ -43,7 +43,7 @@ class EditSongDialogFragment : DialogFragment() {
         val saveButton = view.findViewById<Button>(R.id.edit_song_save_button)
         val cancelButton = view.findViewById<Button>(R.id.edit_song_cancel_button)
 
-        val songData = readSongDataFromFile(requireContext(),libraryIndex)
+        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)
         titleEditText.setText(songData?.title)
         artistEditText.setText(songData?.artist)
         cancelButton.setOnClickListener {
@@ -54,7 +54,7 @@ class EditSongDialogFragment : DialogFragment() {
             val artist = artistEditText.text.toString()
             val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!)
             val listener = requireActivity() as OnSongUpdatedListener
-            listener.onSongUpdated(updatedSong, libraryIndex!!)
+            listener.onSongUpdated(updatedSong)
             dismiss()
         }
 
