@@ -1,6 +1,5 @@
 package com.daniel.finalproject
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +9,15 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 import java.io.File
-class MainActivity : AppCompatActivity()
+import  com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
+class MainActivity : AppCompatActivity(),
+        OnPlaylistUpdatedListener
 {
     private lateinit var playlistObjects : MutableList<PlaylistData>
     private lateinit var recyclerView : RecyclerView
+    override fun onPlaylistUpdated(newPlaylist: PlaylistData) {
+        playlistObjects[newPlaylist.playlistIndex] = newPlaylist
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         //init
         super.onCreate(savedInstanceState)
@@ -50,9 +54,15 @@ class MainActivity : AppCompatActivity()
     }else{
         playlistObjects[playlistIndex - 1]
     }
-        val intent = Intent(this, PlaylistActivity::class.java)
-
-        intent.putExtra("selected_playlist", selectedPlaylist)
-        startActivity(intent)
+        val fragment = PlaylistViewFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable("selected_playlist", selectedPlaylist)
+            }
+        }
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.fade_in,R.anim.fade_out,R.anim.fade_in,R.anim.fade_out  )
+            .replace(R.id.playlist_view_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

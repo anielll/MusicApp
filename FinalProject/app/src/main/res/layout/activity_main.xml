@@ -34,5 +34,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/playlist_item"
         />
-
+    <FrameLayout
+        android:id="@+id/playlist_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
