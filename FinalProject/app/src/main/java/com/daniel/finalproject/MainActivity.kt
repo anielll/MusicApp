@@ -18,6 +18,9 @@ class MainActivity : AppCompatActivity(),
     private lateinit var playlistObjects : MutableList<PlaylistData>
     private lateinit var recyclerView : RecyclerView
     override fun onPlaylistUpdated(newPlaylist: PlaylistData) {
+        if(newPlaylist.playlistIndex==-1){
+            return
+        }
         playlistObjects[newPlaylist.playlistIndex] = newPlaylist
     }
 
@@ -45,7 +48,12 @@ class MainActivity : AppCompatActivity(),
             val playlistFolder = File(filesDir, "playlists")
             val  playlistFileNames = playlistFolder.list()?: arrayOf()
             playlistObjects = playlistFileNames.mapNotNull {
-                readPlaylistDataFromFile(this,it.substringBeforeLast('.').toInt())
+                val index = it.substringBeforeLast('.').toInt()
+                if(index>=0){ // filter out library
+                    readPlaylistDataFromFile(this,index)
+                }else{
+                    null
+                }
             }.toMutableList()
                 recyclerView = findViewById(R.id.playlistView)
             val playlistViewAdapter = PlaylistViewAdapter(
@@ -57,7 +65,7 @@ class MainActivity : AppCompatActivity(),
     }
     private fun onClickOpenPlaylist(playlistIndex: Int){
     val selectedPlaylist = if(playlistIndex==0){
-        null
+        readPlaylistDataFromFile(this, -1)
     }else{
         playlistObjects[playlistIndex - 1]
     }

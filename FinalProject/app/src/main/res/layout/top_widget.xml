@@ -28,7 +28,7 @@
         android:layout_marginLeft="10dp"
         />
     <TextView
-        android:id="@+id/playListName"
+        android:id="@+id/playlistName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Playlist Name"
@@ -37,6 +37,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/playListIcon"
+        app:layout_constraintEnd_toStartOf="@id/side_buttons"
         android:gravity="center"
         android:layout_marginLeft="10dp"
         />
@@ -46,6 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="vertical"
         android:layout_margin="10dp"
+        android:id="@+id/side_buttons"
         >
         <ImageView
             android:id="@+id/repeatPlaylist"

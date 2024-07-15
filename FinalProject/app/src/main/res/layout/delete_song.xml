@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Are you sure you want to delete this song?"
+        android:text="Are you sure you want to permanently delete this song from your library all playlists?"
         android:textColor="@color/white"
         android:textSize="24dp"
         android:gravity="center"

@@ -8,13 +8,19 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
-val debug_files = false // Set to false to disable default (playlist and song) configuration for debug purposes
+val debug_files = true // Set to false to disable default (playlist and song) configuration for debug purposes
 
 fun initializeDefaults(context: Context){
     if(debug_files) {
         initSongData(context)
         initPlaylistData(context)
     }
+    initLibrary(context)
+}
+private fun initLibrary(context: Context){
+    val songsFolder = File(context.filesDir, "songs")
+    val allSongs = songsFolder.list().map{it.toInt()}.toMutableList()
+    PlaylistData(context,"My Library",allSongs,-1)
 }
 private fun initPlaylistData(context: Context){
     val playListFiles = context.assets.list("default_playlists") ?: arrayOf()
