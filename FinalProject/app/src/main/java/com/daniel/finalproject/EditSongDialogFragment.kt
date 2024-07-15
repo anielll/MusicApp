@@ -1,4 +1,5 @@
 package com.daniel.finalproject
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,15 +8,11 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
-
+import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
 class EditSongDialogFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
-
-    interface OnSongUpdatedListener {
-        fun onSongUpdated(newSong:SongData)
-
-    }
+    private var listener: OnSongUpdatedListener? = null
     companion object {
 
         fun newInstance(index: Int): EditSongDialogFragment {
@@ -53,8 +50,7 @@ class EditSongDialogFragment : DialogFragment() {
             val title = titleEditText.text.toString()
             val artist = artistEditText.text.toString()
             val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!)
-            val listener = requireActivity() as OnSongUpdatedListener
-            listener.onSongUpdated(updatedSong)
+            listener!!.onSongUpdated(updatedSong)
             dismiss()
         }
 
@@ -67,6 +63,14 @@ class EditSongDialogFragment : DialogFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+            listener = context as OnSongUpdatedListener
+        }
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 
 }

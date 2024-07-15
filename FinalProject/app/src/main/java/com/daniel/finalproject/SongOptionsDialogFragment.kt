@@ -49,9 +49,12 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
     private fun editSong() {
         val editSongDialogFragment = EditSongDialogFragment.newInstance(libraryIndex)
         editSongDialogFragment.show(parentFragmentManager, "EditSongDialogFragment")
+        dismiss()
     }
 
     private fun deleteSong() {
-        Log.i("SongOptions", "Delete song clicked for index: $libraryIndex")
+        val deleteSongDialogFragment = DeleteSongDialogFragment.newInstance(libraryIndex)
+        deleteSongDialogFragment.show(parentFragmentManager, "DeleteSongDialogFragment")
+        dismiss()
     }
 }

@@ -9,15 +9,18 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.daniel.finalproject.EditSongDialogFragment.OnSongUpdatedListener
 import com.daniel.finalproject.SongData.Companion.getMp3FilePath
 import java.io.File
 import java.io.IOException
 
-class PlaylistViewFragment : Fragment(),
-    EditSongDialogFragment.OnSongUpdatedListener
+class PlaylistViewFragment : Fragment()
 {
-
+    interface OnSongUpdatedListener {
+        fun onSongUpdated(newSong:SongData?, index: Int?= null)
+    }
+    interface OnPlaylistUpdatedListener {
+        fun onPlaylistUpdated(newPlaylist: PlaylistData)
+    }
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var playPauseButton: ImageButton
     private lateinit var recyclerView: RecyclerView
@@ -26,13 +29,19 @@ class PlaylistViewFragment : Fragment(),
     private var lastSong:Int? = null
 
 
-    interface OnPlaylistUpdatedListener {
-        fun onPlaylistUpdated(newPlaylist: PlaylistData)
-    }
-    override fun onSongUpdated(newSong: SongData) {
-        val playlistIndex = currentPlaylist!!.songList.indexOf(newSong.songIndex)
-        filteredSongList[playlistIndex] = newSong
-        recyclerView.adapter?.notifyItemChanged(playlistIndex)
+    fun updateSong(newSong: SongData?, libraryIndex: Int?) {
+        if(newSong==null){ // deletion
+            val playlistIndex = currentPlaylist!!.songList.indexOf(libraryIndex)
+            filteredSongList.removeAt(playlistIndex)
+            recyclerView.adapter?.notifyItemRemoved(playlistIndex)
+            return
+        }
+        if(libraryIndex==null){ // replacement
+            val playlistIndex = currentPlaylist!!.songList.indexOf(newSong.songIndex)
+            filteredSongList[playlistIndex] = newSong
+            recyclerView.adapter?.notifyItemChanged(playlistIndex)
+            return
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +99,7 @@ class PlaylistViewFragment : Fragment(),
     }
 
     private fun setPlaylistData(){
-                var wasFiltered = false
+        var wasFiltered = false
         val filteredIndexList = currentPlaylist!!.songList
             .filter {
                 val exists = File(requireContext().filesDir, "songs/$it").exists()
@@ -102,7 +111,7 @@ class PlaylistViewFragment : Fragment(),
             .toMutableList()
         if(wasFiltered){
             currentPlaylist = PlaylistData(requireContext(),currentPlaylist!!.playlistName,filteredIndexList,currentPlaylist!!.playlistIndex)
-            println("Error404")
+            println("PlaylistUpdated")
             val listener = requireActivity() as OnPlaylistUpdatedListener
             listener.onPlaylistUpdated(currentPlaylist!!)
         }

@@ -10,13 +10,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 import java.io.File
 import  com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
 class MainActivity : AppCompatActivity(),
-        OnPlaylistUpdatedListener
+        OnPlaylistUpdatedListener,
+        OnSongUpdatedListener
 {
     private lateinit var playlistObjects : MutableList<PlaylistData>
     private lateinit var recyclerView : RecyclerView
     override fun onPlaylistUpdated(newPlaylist: PlaylistData) {
         playlistObjects[newPlaylist.playlistIndex] = newPlaylist
+    }
+
+    override fun onSongUpdated(newSong: SongData?, index: Int?) {
+        val fragment = supportFragmentManager.findFragmentById(R.id.playlist_view_container) as? PlaylistViewFragment
+        fragment?.updateSong(newSong, index)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         //init
