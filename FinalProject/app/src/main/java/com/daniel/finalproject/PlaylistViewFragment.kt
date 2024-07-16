@@ -58,8 +58,16 @@ class PlaylistViewFragment : Fragment()
         if(libraryIndex==null){ // replacement
             val playlistIndex = currentPlaylist.songList.indexOf(newSong.songIndex)
             filteredSongList[playlistIndex] = newSong
+            currentPlaylist.songList[playlistIndex] = newSong.songIndex
             recyclerView.adapter?.notifyItemChanged(playlistIndex)
             return
+        }else{ // add
+            currentPlaylist.songList.add(libraryIndex)
+            filteredSongList.add(newSong)
+            recyclerView.adapter?.notifyItemInserted(filteredSongList.size-1)
+            val listener = requireActivity() as OnPlaylistUpdatedListener
+            listener.onPlaylistUpdated(currentPlaylist)
+
         }
     }
 
@@ -166,7 +174,8 @@ class PlaylistViewFragment : Fragment()
             longClickListener = { playlistIndex ->
                 onClickSongOptions(playlistIndex)
                 true
-            }
+            },
+            parentFragmentManager
         )
         recyclerView.adapter = songViewAdapter
     }

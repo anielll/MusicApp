@@ -65,18 +65,18 @@ class PlaylistViewAdapter (
         return VIEW_TYPE_ADD_PLAYLIST
     }
 
-    class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val playlistNameNameTextView: TextView = itemView.findViewById(R.id.playListName)
         fun bind(playlistObject: PlaylistData,clickListener: (Int) -> Unit) {
             playlistNameNameTextView.text = playlistObject.playlistName
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
         }
     }
-    class AddPlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class AddPlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind() {
         }
     }
-    class LibraryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class LibraryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(clickListener: (Int) -> Unit) {
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
         }

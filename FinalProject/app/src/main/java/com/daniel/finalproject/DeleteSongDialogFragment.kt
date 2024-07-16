@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
@@ -43,8 +42,8 @@ class DeleteSongDialogFragment : DialogFragment() {
         val cancelButton = view.findViewById<Button>(R.id.delete_song_cancel_button)
 
         val songData = readSongDataFromFile(requireContext(),libraryIndex!!)
-        titleEditText.setText(songData?.title)
-        artistEditText.setText(songData?.artist)
+        titleEditText.text = songData?.title
+        artistEditText.text = songData?.artist
         cancelButton.setOnClickListener {
             dismiss()
         }

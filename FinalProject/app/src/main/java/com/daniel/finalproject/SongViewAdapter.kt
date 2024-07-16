@@ -3,13 +3,16 @@ package com.daniel.finalproject
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 class SongViewAdapter(
     private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
-    private val longClickListener: (Int) -> Boolean)
+    private val longClickListener: (Int) -> Boolean,
+    private val fragmentManager : FragmentManager)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val VIEW_TYPE_SONG = 1
     private val VIEW_TYPE_ADD_SONG = 2
@@ -56,7 +59,7 @@ class SongViewAdapter(
         }
     }
 
-    class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val songNameTextView: TextView = itemView.findViewById(R.id.songName)
         private val artistNameTextView: TextView = itemView.findViewById(R.id.artistName)
         fun bind(songObject: SongData, clickListener: (Int) -> Unit, longClickListener: (Int) -> Boolean) {
@@ -66,11 +69,17 @@ class SongViewAdapter(
             itemView.setOnLongClickListener { longClickListener(bindingAdapterPosition) }
         }
     }
-    class AddSongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class AddSongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val addSongButton: ImageButton = itemView.findViewById(R.id.addButton)
         fun bind() {
+            addSongButton.setOnClickListener{
+                addSong()
+            }
         }
     }
     private fun addSong() {
+        val addSongDialogFragment = AddSongDialogFragment()
+        addSongDialogFragment.show(fragmentManager, "AddSongDialogFragment")
     }
 
 }

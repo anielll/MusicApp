@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="#222222"
-        android:padding="15dp">
+        android:padding="16dp">
         <EditText
             android:id="@+id/edit_song_title"
             android:layout_width="match_parent"

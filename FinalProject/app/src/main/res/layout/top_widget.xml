@@ -38,7 +38,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/playListIcon"
         app:layout_constraintEnd_toStartOf="@id/side_buttons"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:layout_marginLeft="10dp"
         />
     <LinearLayout
