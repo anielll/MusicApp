@@ -49,21 +49,25 @@
         android:layout_margin="10dp"
         android:id="@+id/side_buttons"
         >
-        <ImageView
-            android:id="@+id/repeatPlaylist"
+        <ImageButton
+            android:id="@+id/loop_playlist_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:src="@drawable/repeat"
+            android:src="@drawable/loop_off"
             app:layout_constraintDimensionRatio="1:1"
-            android:layout_marginBottom="5dp"/>
-        <ImageView
-            android:id="@+id/shufflePlaylist"
+            android:layout_marginBottom="5dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"/>
+        <ImageButton
+            android:id="@+id/shuffle_playlist_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:src="@drawable/shuffle"
+            android:src="@drawable/shuffle_off"
             app:layout_constraintDimensionRatio="1:1"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

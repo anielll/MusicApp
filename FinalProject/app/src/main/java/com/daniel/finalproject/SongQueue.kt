@@ -7,10 +7,14 @@ import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
 import java.io.File
 
 class SongQueue{
-    private lateinit var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
-    private lateinit var currentPlaylist: PlaylistData
-    private lateinit var  listener: OnPlaylistUpdatedListener
-    private lateinit var parentActivity: Context
+    private var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
+    private var currentPlaylist: PlaylistData
+    private var  listener: OnPlaylistUpdatedListener
+    private var parentActivity: Context
+    private var songOrder: MutableList<Int>
+    var currentSong: Int
+    var looped: Boolean = false
+    var shuffled: Boolean = false
     constructor(activity: Activity,playlist: PlaylistData){
         this.currentPlaylist = playlist
         this.listener = activity as OnPlaylistUpdatedListener
@@ -30,6 +34,8 @@ class SongQueue{
             println("PlaylistUpdated")
             listener.onPlaylistUpdated(currentPlaylist)
         }
+        songOrder = (0 until size()).toMutableList()
+        currentSong = 0
     }
     fun libraryIndexOf(playlistIndex: Int) :Int{
         return currentPlaylist.songList[playlistIndex]
@@ -61,5 +67,44 @@ class SongQueue{
         currentPlaylist.songList.add(libraryIndex) // update second
         writePlaylistDataToFile(parentActivity,currentPlaylist)
         listener.onPlaylistUpdated(currentPlaylist)
+    }
+    fun next(): Int?{
+        if(currentSong == size()-1) {
+            if (looped) {
+                currentSong = 0
+                return songOrder[currentSong]
+            } else {
+                return null
+            }
+        }
+        currentSong++
+        return  songOrder[currentSong]
+    }
+    fun prev(): Int?{
+        if(currentSong == 0) {
+            if (looped) {
+                currentSong = size()-1
+                return songOrder[currentSong]
+            } else {
+                return null
+            }
+        }
+        currentSong--
+        return  songOrder[currentSong]
+    }
+    fun toggleLoop(){
+        looped = !looped
+    }
+    fun toggleShuffle(){
+        if(shuffled){
+            currentSong = songOrder[currentSong]
+            songOrder = (0 until size()).toMutableList()
+            shuffled = false
+        }else{
+            songOrder = (0 until size()).shuffled().toMutableList()
+            songOrder.remove(currentSong)
+            songOrder.add(0,currentSong)
+            shuffled = true
+        }
     }
 }
