@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.daniel.finalproject.PlaylistViewFragment.Companion.deleteFolder
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
 import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
+import java.io.File
 
 class DeleteSongDialogFragment : DialogFragment() {
 
@@ -49,6 +51,7 @@ class DeleteSongDialogFragment : DialogFragment() {
         }
         confirmButton.setOnClickListener {
             listener!!.onSongUpdated(null, libraryIndex)
+            deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
             dismiss()
         }
 

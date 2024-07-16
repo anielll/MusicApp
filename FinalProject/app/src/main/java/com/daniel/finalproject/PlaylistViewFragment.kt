@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.SongData.Companion.getMp3FilePath
 import java.io.File
 import java.io.IOException
-import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
 class PlaylistViewFragment : Fragment()
 {
     interface OnSongUpdatedListener {
@@ -38,36 +37,23 @@ class PlaylistViewFragment : Fragment()
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var playPauseButton: ImageButton
     private lateinit var recyclerView: RecyclerView
-    private lateinit var filteredSongList : MutableList<SongData>
-    private lateinit var currentPlaylist: PlaylistData
+    private lateinit var songQueue: SongQueue
     private var lastSong:Int? = null
 
 
     fun updateSong(newSong: SongData?, libraryIndex: Int?) {
         if(newSong==null){ // deletion
-            val playlistIndex = currentPlaylist.songList.indexOf(libraryIndex)
-            filteredSongList.removeAt(playlistIndex)
-            currentPlaylist.songList.remove(libraryIndex)
+            val playlistIndex: Int = songQueue.playlistIndexOf(libraryIndex!!) // get before deleting
+            songQueue.delete(libraryIndex)
             recyclerView.adapter?.notifyItemRemoved(playlistIndex)
-            writePlaylistDataToFile(requireContext(),currentPlaylist)
-            deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
-            val listener = requireActivity() as OnPlaylistUpdatedListener
-            listener.onPlaylistUpdated(currentPlaylist)
             return
         }
         if(libraryIndex==null){ // replacement
-            val playlistIndex = currentPlaylist.songList.indexOf(newSong.songIndex)
-            filteredSongList[playlistIndex] = newSong
-            currentPlaylist.songList[playlistIndex] = newSong.songIndex
-            recyclerView.adapter?.notifyItemChanged(playlistIndex)
-            return
+            songQueue.update(newSong)
+            recyclerView.adapter?.notifyItemChanged(songQueue.playlistIndexOf(newSong.songIndex))
         }else{ // add
-            currentPlaylist.songList.add(libraryIndex)
-            filteredSongList.add(newSong)
-            recyclerView.adapter?.notifyItemInserted(filteredSongList.size-1)
-            val listener = requireActivity() as OnPlaylistUpdatedListener
-            listener.onPlaylistUpdated(currentPlaylist)
-
+            songQueue.add(libraryIndex,newSong)
+            recyclerView.adapter?.notifyItemInserted(songQueue.size()-1)
         }
     }
 
@@ -75,18 +61,18 @@ class PlaylistViewFragment : Fragment()
         super.onCreate(savedInstanceState)
 //        // else is deprecated in favor of if in SDK 33
         @Suppress("DEPRECATION")
-        currentPlaylist= if(Build.VERSION.SDK_INT >= 33){
+        val playlistArg = if(Build.VERSION.SDK_INT >= 33){
             arguments?.getSerializable("selected_playlist", PlaylistData::class.java)!!
         }else{
             arguments?.getSerializable("selected_playlist") as PlaylistData
         }
+        this.songQueue = SongQueue(requireActivity(),playlistArg)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.playlist_view_fragment, container, false)
-        setPlaylistData()
         setCurrentSong(0)
         initSongView(view)
         initBottomBar(view)
@@ -95,7 +81,7 @@ class PlaylistViewFragment : Fragment()
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         val playlistName: TextView = view.findViewById(R.id.playlistName)
-        playlistName.text = currentPlaylist.playlistName
+        playlistName.text = songQueue.playlistName()
 
         return view
     }
@@ -107,8 +93,7 @@ class PlaylistViewFragment : Fragment()
         }
     }
     private fun onClickSongOptions(playlistIndex: Int) {
-        val libraryIndex :Int = currentPlaylist.songList[playlistIndex]
-        val songOptionsFragment = SongOptionsDialogFragment.newInstance(libraryIndex)
+        val songOptionsFragment = SongOptionsDialogFragment.newInstance(songQueue.libraryIndexOf(playlistIndex))
         songOptionsFragment.show(parentFragmentManager, "SongOptions")
     }
     private fun onClickPlaySong(playlistIndex: Int){
@@ -128,24 +113,6 @@ class PlaylistViewFragment : Fragment()
         lastSong = playlistIndex
     }
 
-    private fun setPlaylistData(){
-        var wasFiltered = false
-        val filteredIndexList = currentPlaylist.songList
-            .filter {
-                val exists = File(requireContext().filesDir, "songs/$it").exists()
-                if(!exists) wasFiltered = true
-                exists
-            }.toMutableList()
-        filteredSongList =  filteredIndexList
-            .map{SongData(requireContext(),it) }
-            .toMutableList()
-        if(wasFiltered){
-            currentPlaylist = PlaylistData(requireContext(),currentPlaylist.playlistName,filteredIndexList,currentPlaylist.playlistIndex)
-            println("PlaylistUpdated")
-            val listener = requireActivity() as OnPlaylistUpdatedListener
-            listener.onPlaylistUpdated(currentPlaylist)
-        }
-    }
     private fun setCurrentSong(playlistIndex: Int= 0 ) {
         // preconditions valid index, data structure is correct, any and all exceptions are ignored
         if(::mediaPlayer.isInitialized) {
@@ -155,8 +122,7 @@ class PlaylistViewFragment : Fragment()
             mediaPlayer.reset()
         }
         try {
-            val libraryIndex:Int = currentPlaylist.songList[playlistIndex]
-            val path = getMp3FilePath(requireContext(), libraryIndex)
+            val path = getMp3FilePath(requireContext(), songQueue.libraryIndexOf(playlistIndex))
             mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(path)
             mediaPlayer.prepare()
@@ -167,7 +133,7 @@ class PlaylistViewFragment : Fragment()
     private fun initSongView(view: View){
         recyclerView = view.findViewById(R.id.songView)
         val songViewAdapter = SongViewAdapter(
-            filteredSongList,
+            songQueue.getSongObjects(),
             clickListener = { playlistIndex ->
                 onClickPlaySong(playlistIndex)
             },
