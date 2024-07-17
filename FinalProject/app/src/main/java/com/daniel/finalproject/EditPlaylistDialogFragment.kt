@@ -7,14 +7,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
-import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
+import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 class EditPlaylistDialogFragment : DialogFragment() {
-
     private var playlistIndex: Int? = null
-//    private var listener: OnSongUpdatedListener? = null
+    private var listener: OnPlaylistUpdatedListener? = null
     companion object {
-
         fun newInstance(index: Int): EditPlaylistDialogFragment {
             val fragment = EditPlaylistDialogFragment()
             val args = Bundle()
@@ -33,24 +31,20 @@ class EditPlaylistDialogFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.edit_song, container, false)
+        val view = inflater.inflate(R.layout.edit_playlist, container, false)
 
-        val titleEditText = view.findViewById<EditText>(R.id.edit_song_title)
-        val artistEditText = view.findViewById<EditText>(R.id.edit_song_artist)
-        val saveButton = view.findViewById<Button>(R.id.edit_song_save_button)
-        val cancelButton = view.findViewById<Button>(R.id.edit_song_cancel_button)
-
-        val songData = readSongDataFromFile(requireContext(),playlistIndex!!)
-        titleEditText.setText(songData?.title)
-        artistEditText.setText(songData?.artist)
+        val playlistNameEditText= view.findViewById<EditText>(R.id.edit_playlist_name)
+        val saveButton = view.findViewById<Button>(R.id.edit_playlist_save_button)
+        val cancelButton = view.findViewById<Button>(R.id.edit_playlist_cancel_button)
+        val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)!!
+        playlistNameEditText.setText(playlistData.playlistName)
         cancelButton.setOnClickListener {
             dismiss()
         }
         saveButton.setOnClickListener {
-            val title = titleEditText.text.toString()
-            val artist = artistEditText.text.toString()
-            val updatedSong = SongData(requireContext(), title, artist, playlistIndex!!)
-//            listener!!.onSongUpdated(updatedSong)
+            val playlistName = playlistNameEditText.text.toString()
+            val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.playlistIndex)
+            listener!!.onPlaylistUpdated(updatedPlaylist)
             dismiss()
         }
 
@@ -66,11 +60,11 @@ class EditPlaylistDialogFragment : DialogFragment() {
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)
-//        listener = context as OnSongUpdatedListener
+        listener = context as OnPlaylistUpdatedListener
     }
     override fun onDetach() {
         super.onDetach()
-//        listener = null
+        listener = null
     }
 
 }

@@ -12,9 +12,11 @@ val debug_files =
     true // Set to false to disable default (playlist and song) configuration for debug purposes
 
 fun initializeDefaults(context: Context) {
+    MasterList.initialize(context)
     if (debug_files) {
         PlaylistViewFragment.deleteFolder(File(context.filesDir,"songs"))
         PlaylistViewFragment.deleteFolder(File(context.filesDir,"playlists"))
+        PlaylistViewFragment.deleteFolder(File(context.filesDir,"metadata"))
         initSongData(context)
         initPlaylistData(context)
     }
@@ -23,7 +25,7 @@ fun initializeDefaults(context: Context) {
 
 private fun initLibrary(context: Context) {
     val songsFolder = File(context.filesDir, "songs")
-    val allSongs = songsFolder.list().map { it.toInt() }.toMutableList()
+    val allSongs = songsFolder.list()!!.map { it.toInt() }.toMutableList()
     PlaylistData(context, "My Library", allSongs, -1)
 }
 
@@ -32,11 +34,12 @@ private fun initPlaylistData(context: Context) {
     playListFiles.forEachIndexed { index, playlistName ->
         try {
             copyPlaylistFromAssets(context, "default_playlists/$playlistName", index)
+            MasterList.add(index)
         } catch (e: Exception) {
             Log.e("MainActivity", "Failed to initialize default playlist ${e.message}")
         }
     }
-
+    MasterList.save(context)
 }
 
 

@@ -3,13 +3,11 @@ package com.daniel.finalproject
 import android.app.Activity
 import android.content.Context
 import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
-import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
 import java.io.File
 
 class SongQueue{
     private var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
     private var currentPlaylist: PlaylistData
-    private var  listener: OnPlaylistUpdatedListener
     private var parentActivity: Context
     private var songOrder: MutableList<Int>
     var currentSong: Int
@@ -17,7 +15,6 @@ class SongQueue{
     var shuffled: Boolean = false
     constructor(activity: Activity,playlist: PlaylistData){
         this.currentPlaylist = playlist
-        this.listener = activity as OnPlaylistUpdatedListener
         this.parentActivity = activity
         var wasFiltered = false
         println(currentPlaylist.songList.toIntArray().contentToString())
@@ -33,7 +30,6 @@ class SongQueue{
         if(wasFiltered){ // reflect any null references in file storage
             currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.playlistIndex)
             println("PlaylistUpdated")
-            listener.onPlaylistUpdated(currentPlaylist)
         }
         songOrder = (0 until size()).toMutableList()
         currentSong = 0
@@ -57,7 +53,6 @@ class SongQueue{
         songObjects.removeAt(playlistIndexOf(libraryIndex)) // update first
         currentPlaylist.songList.remove(libraryIndex) // update second
         writePlaylistDataToFile(parentActivity,currentPlaylist)
-        listener.onPlaylistUpdated(currentPlaylist)
     }
     fun update(newSong: SongData){
         songObjects[playlistIndexOf(newSong.songIndex)] = newSong
@@ -67,7 +62,6 @@ class SongQueue{
         songObjects.add(newSong) // update first
         currentPlaylist.songList.add(libraryIndex) // update second
         writePlaylistDataToFile(parentActivity,currentPlaylist)
-        listener.onPlaylistUpdated(currentPlaylist)
     }
     fun next(): Int?{
         if(currentSong == size()-1) {

@@ -9,7 +9,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.io.Serializable
 
-class PlaylistData : Serializable {
+class PlaylistData{
     val playlistName : String
     val songList: MutableList<Int>
     val playlistIndex: Int
@@ -34,11 +34,11 @@ class PlaylistData : Serializable {
         fun writePlaylistDataToFile(context: Context,playlist:PlaylistData){
             val playlistDir= File(context.filesDir, "playlists")
             val playlistJson = Gson().toJson(playlist)
-            val outputFile = File(context.filesDir, "playlists/${playlist.playlistIndex}.json" )
             try {
                 if (!playlistDir.exists()) {
                     playlistDir.mkdirs()
                 }
+                val outputFile = File(context.filesDir, "playlists/${playlist.playlistIndex}.json" )
                 FileWriter(outputFile).use { writer ->
                     writer.write(playlistJson)
                 }

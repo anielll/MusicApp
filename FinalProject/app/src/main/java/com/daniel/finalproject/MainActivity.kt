@@ -9,24 +9,33 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 import java.io.File
-import  com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
+import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
 class MainActivity : AppCompatActivity(),
-        OnPlaylistUpdatedListener,
-        OnSongUpdatedListener
+        OnSongUpdatedListener,
+        OnPlaylistUpdatedListener
 {
     private lateinit var playlistObjects : MutableList<PlaylistData>
     private lateinit var recyclerView : RecyclerView
-    override fun onPlaylistUpdated(newPlaylist: PlaylistData) {
-        if(newPlaylist.playlistIndex==-1){
-            return
-        }
-        playlistObjects[newPlaylist.playlistIndex] = newPlaylist
-    }
 
     override fun onSongUpdated(newSong: SongData?, index: Int?) {
         val fragment = supportFragmentManager.findFragmentById(R.id.playlist_view_container) as? PlaylistViewFragment
         fragment?.updateSong(newSong, index)
+    }
+
+    override fun onPlaylistUpdated(newPlaylist: PlaylistData?, index: Int?) {
+        if(newPlaylist==null){ // deletion
+            playlistObjects.removeAt(index!!)
+            recyclerView.adapter?.notifyItemRemoved(index)
+            return
+        }
+        if(index==null){ // replacement
+            playlistObjects[newPlaylist.playlistIndex] = newPlaylist
+            recyclerView.adapter?.notifyItemChanged(newPlaylist.playlistIndex+1)
+        }else{ // add
+//            songQueue.add(libraryIndex,newSong)
+//            recyclerView.adapter?.notifyItemInserted(songQueue.size()-1)
+        }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         //init
@@ -68,15 +77,9 @@ class MainActivity : AppCompatActivity(),
             recyclerView.adapter = playlistViewAdapter
     }
     private fun onClickOpenPlaylist(playlistIndex: Int){
-    val selectedPlaylist = if(playlistIndex==0){
-        readPlaylistDataFromFile(this, -1)
-    }else{
-        playlistObjects[playlistIndex - 1]
-    }
-        println(selectedPlaylist!!.songList.toIntArray().contentToString())
         val fragment = PlaylistViewFragment().apply {
             arguments = Bundle().apply {
-                putSerializable("selected_playlist", selectedPlaylist)
+                putInt("selected_playlist", (playlistIndex-1))
             }
         }
         supportFragmentManager.beginTransaction()
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
     private fun onClickPlaylistOptions(playlistIndex: Int){
-        val playlistOptionsFragment = PlaylistOptionsFragment.newInstance(playlistIndex)
+        val playlistOptionsFragment = PlaylistOptionsFragment.newInstance(playlistIndex-1)
         playlistOptionsFragment.show(supportFragmentManager, "SongOptions")
     }
 }

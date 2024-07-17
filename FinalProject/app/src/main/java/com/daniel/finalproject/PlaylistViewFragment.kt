@@ -22,7 +22,7 @@ class PlaylistViewFragment : Fragment()
         fun onSongUpdated(newSong:SongData?, index: Int?= null)
     }
     interface OnPlaylistUpdatedListener {
-        fun onPlaylistUpdated(newPlaylist: PlaylistData)
+        fun onPlaylistUpdated(newPlaylist:PlaylistData?, index: Int?= null)
     }
     companion object{
         fun deleteFolder(folder: File):Boolean{
@@ -48,16 +48,9 @@ class PlaylistViewFragment : Fragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        // else is deprecated in favor of if in SDK 33
-        @Suppress("DEPRECATION")
-        val playlistArg = if(Build.VERSION.SDK_INT >= 33){
-            arguments?.getSerializable("selected_playlist", PlaylistData::class.java)!!
-        }else{
-            arguments?.getSerializable("selected_playlist") as PlaylistData
-        }
-        println(playlistArg.songList.toIntArray().contentToString())
-
-        this.songQueue = SongQueue(requireActivity(),playlistArg)
+        val playlistFileIndex = arguments?.getInt("selected_playlist")!!
+        val playlistData = PlaylistData.readPlaylistDataFromFile(requireContext(),playlistFileIndex)!!
+        this.songQueue = SongQueue(requireActivity(),playlistData)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -8,20 +8,20 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.PlaylistViewFragment.Companion.deleteFolder
-import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
-import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
+import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 import java.io.File
 
-class DeleteSongDialogFragment : DialogFragment() {
+class DeletePlaylistDialogFragment : DialogFragment() {
 
-    private var libraryIndex: Int? = null
-    private var listener: OnSongUpdatedListener? = null
+    private var playlistIndex: Int? = null
+    private var listener: OnPlaylistUpdatedListener? = null
     companion object {
 
-        fun newInstance(index: Int): DeleteSongDialogFragment {
-            val fragment = DeleteSongDialogFragment()
+        fun newInstance(index: Int): DeletePlaylistDialogFragment {
+            val fragment = DeletePlaylistDialogFragment()
             val args = Bundle()
-            args.putInt("library_index", index)
+            args.putInt("playlist_index", index)
             fragment.arguments = args
             return fragment
         }
@@ -29,29 +29,25 @@ class DeleteSongDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex = arguments?.getInt("library_index")
+        playlistIndex = arguments?.getInt("playlist_index")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.delete_song, container, false)
-
-        val titleText = view.findViewById<TextView>(R.id.delete_song_text_title)
-        val artistText = view.findViewById<TextView>(R.id.delete_song_text_artist)
-        val confirmButton= view.findViewById<Button>(R.id.delete_song_confirm_button)
-        val cancelButton = view.findViewById<Button>(R.id.delete_song_cancel_button)
-
-        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)
-        titleText.text = songData?.title
-        artistText.text = songData?.artist
+        val view = inflater.inflate(R.layout.delete_playlist, container, false)
+        val playlistNameText= view.findViewById<TextView>(R.id.delete_playlist_name)
+        val confirmButton= view.findViewById<Button>(R.id.delete_playlist_confirm_button)
+        val cancelButton = view.findViewById<Button>(R.id.delete_playlist_cancel_button)
+        val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)
+        playlistNameText.text = playlistData?.playlistName
         cancelButton.setOnClickListener {
             dismiss()
         }
         confirmButton.setOnClickListener {
-            listener!!.onSongUpdated(null, libraryIndex)
-            deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
+            listener!!.onPlaylistUpdated(null, playlistIndex)
+            deleteFolder(File(requireContext().filesDir,"playlists/$playlistIndex.json"))
             dismiss()
         }
 
@@ -67,7 +63,7 @@ class DeleteSongDialogFragment : DialogFragment() {
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = context as OnSongUpdatedListener
+        listener = context as OnPlaylistUpdatedListener
     }
     override fun onDetach() {
         super.onDetach()
