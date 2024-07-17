@@ -7,7 +7,7 @@
     android:background="@color/black">
 
     <Button
-        android:id="@+id/editSongButton"
+        android:id="@+id/edit_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit Song"
@@ -16,7 +16,7 @@
         />
 
     <Button
-        android:id="@+id/deleteSongButton"
+        android:id="@+id/delete_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delete Song"

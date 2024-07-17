@@ -3,7 +3,6 @@ package com.daniel.finalproject
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
@@ -11,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 class SongViewAdapter(
     private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
-    private val longClickListener: (Int) -> Boolean,
+    private val optionsClickListener: (Int) -> Unit,
     private val fragmentManager : FragmentManager)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val VIEW_TYPE_SONG = 1
@@ -36,7 +35,7 @@ class SongViewAdapter(
         when (holder.itemViewType) {
             VIEW_TYPE_SONG -> {
                 val songViewHolder = holder as SongViewHolder
-                songViewHolder.bind(songObjects[recyclerPosition], clickListener, longClickListener)
+                songViewHolder.bind(songObjects[recyclerPosition], clickListener)
             }
             VIEW_TYPE_ADD_SONG -> {
                 val addSongViewHolder = holder as AddSongViewHolder
@@ -60,13 +59,14 @@ class SongViewAdapter(
     }
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val songNameTextView: TextView = itemView.findViewById(R.id.songName)
-        private val artistNameTextView: TextView = itemView.findViewById(R.id.artistName)
-        fun bind(songObject: SongData, clickListener: (Int) -> Unit, longClickListener: (Int) -> Boolean) {
+        private val songNameTextView: TextView = itemView.findViewById(R.id.song_name)
+        private val artistNameTextView: TextView = itemView.findViewById(R.id.artist_name)
+        private val optionsButton: ImageButton = itemView.findViewById(R.id.song_options_button)
+        fun bind(songObject: SongData, clickListener: (Int) -> Unit) {
             songNameTextView.text = songObject.title
             artistNameTextView.text = songObject.artist
             itemView.setOnClickListener { clickListener( bindingAdapterPosition)}
-            itemView.setOnLongClickListener { longClickListener(bindingAdapterPosition) }
+            optionsButton.setOnClickListener{optionsClickListener(bindingAdapterPosition)}
         }
     }
     inner class AddSongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

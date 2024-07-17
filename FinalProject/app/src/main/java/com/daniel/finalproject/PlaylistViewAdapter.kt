@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class PlaylistViewAdapter (
     private val playlistObjects: MutableList<PlaylistData>,
-    private val clickListener: (Int) -> Unit
-): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    private val clickListener: (Int) -> Unit,
+    private val optionsClickListener: (Int) -> Unit
+    ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private val VIEW_TYPE_LIBRARY = 1
     private val VIEW_TYPE_PLAYLIST = 2
     private val VIEW_TYPE_ADD_PLAYLIST = 3
@@ -43,9 +44,9 @@ class PlaylistViewAdapter (
                 playlistViewHolder.bind(playlistObjects[position-1],clickListener)
             }
             VIEW_TYPE_ADD_PLAYLIST -> {
-                val addplaylistViewHolder = holder as AddPlaylistViewHolder
-                addplaylistViewHolder.bind()
-                addplaylistViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
+                val addPlaylistViewHolder = holder as AddPlaylistViewHolder
+                addPlaylistViewHolder.bind()
+                addPlaylistViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
                     addPlaylist()
                 }
             }
@@ -66,10 +67,12 @@ class PlaylistViewAdapter (
     }
 
     inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val playlistNameNameTextView: TextView = itemView.findViewById(R.id.playListName)
+        private val playlistNameNameTextView: TextView = itemView.findViewById(R.id.playlist_name)
+        private val playlistOptionsButton: ImageButton = itemView.findViewById(R.id.playlist_options_button)
         fun bind(playlistObject: PlaylistData,clickListener: (Int) -> Unit) {
             playlistNameNameTextView.text = playlistObject.playlistName
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
+            playlistOptionsButton.setOnClickListener {optionsClickListener(bindingAdapterPosition)}
         }
     }
     inner class AddPlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

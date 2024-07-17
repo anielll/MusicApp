@@ -1,7 +1,6 @@
 package com.daniel.finalproject
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,12 +32,12 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.song_options, container, false)
 
-        view.findViewById<Button>(R.id.editSongButton).setOnClickListener {
+        view.findViewById<Button>(R.id.edit_song_button).setOnClickListener {
             editSong()
             dismiss()
         }
 
-        view.findViewById<Button>(R.id.deleteSongButton).setOnClickListener {
+        view.findViewById<Button>(R.id.delete_song_button).setOnClickListener {
             deleteSong()
             dismiss()
         }
@@ -49,12 +48,10 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
     private fun editSong() {
         val editSongDialogFragment = EditSongDialogFragment.newInstance(libraryIndex)
         editSongDialogFragment.show(parentFragmentManager, "EditSongDialogFragment")
-        dismiss()
     }
 
     private fun deleteSong() {
         val deleteSongDialogFragment = DeleteSongDialogFragment.newInstance(libraryIndex)
         deleteSongDialogFragment.show(parentFragmentManager, "DeleteSongDialogFragment")
-        dismiss()
     }
 }

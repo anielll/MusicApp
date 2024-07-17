@@ -12,7 +12,7 @@
         android:background="#222222">
 
         <ImageView
-            android:id="@+id/playListIcon"
+            android:id="@+id/playlist_icon"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
@@ -23,13 +23,13 @@
             />
 
         <TextView
-            android:id="@+id/playListName"
+            android:id="@+id/playlist_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            app:layout_constraintStart_toEndOf="@id/playListIcon"
+            app:layout_constraintStart_toEndOf="@id/playlist_icon"
             android:layout_marginHorizontal="10dp"
-            app:layout_constraintEnd_toStartOf="@id/playlistOptionsIcon"
+            app:layout_constraintEnd_toStartOf="@id/playlist_options_button"
             android:text="Playlist Name"
             android:textSize="30sp"
             android:textColor="@color/white"
@@ -39,12 +39,12 @@
 
 
         <ImageButton
-            android:id="@+id/playlistOptionsIcon"
+            android:id="@+id/playlist_options_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             app:layout_constraintDimensionRatio="1:1"
-            android:src="@drawable/play_button"
+            android:src="@drawable/options"
             android:layout_margin="15dp"
             android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"/>

@@ -20,6 +20,7 @@ class SongQueue{
         this.listener = activity as OnPlaylistUpdatedListener
         this.parentActivity = activity
         var wasFiltered = false
+        println(currentPlaylist.songList.toIntArray().contentToString())
         val filteredIndexList = currentPlaylist.songList
             .filter { // filter out songs that have been deleted
                 val exists = File(activity.filesDir, "songs/$it").exists()

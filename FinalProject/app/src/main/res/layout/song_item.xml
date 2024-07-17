@@ -30,12 +30,12 @@
             android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@id/songIcon"
             android:layout_marginHorizontal="10dp"
-            app:layout_constraintEnd_toStartOf="@id/playIcon"
+            app:layout_constraintEnd_toStartOf="@id/song_options_button"
 
             >
 
             <TextView
-                android:id="@+id/songName"
+                android:id="@+id/song_name"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -47,7 +47,7 @@
                 android:ellipsize="end"/>
 
             <TextView
-                android:id="@+id/artistName"
+                android:id="@+id/artist_name"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -61,12 +61,12 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/playIcon"
+            android:id="@+id/song_options_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             app:layout_constraintDimensionRatio="1:1"
-            android:src="@drawable/play_button"
+            android:src="@drawable/options"
             android:layout_margin="15dp"
             android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"/>

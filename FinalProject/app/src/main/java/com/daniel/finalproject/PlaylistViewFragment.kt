@@ -55,6 +55,8 @@ class PlaylistViewFragment : Fragment()
         }else{
             arguments?.getSerializable("selected_playlist") as PlaylistData
         }
+        println(playlistArg.songList.toIntArray().contentToString())
+
         this.songQueue = SongQueue(requireActivity(),playlistArg)
     }
     override fun onCreateView(
@@ -160,9 +162,8 @@ class PlaylistViewFragment : Fragment()
             clickListener = { playlistIndex ->
                 onClickPlaySong(playlistIndex)
             },
-            longClickListener = { playlistIndex ->
+            optionsClickListener = { playlistIndex ->
                 onClickSongOptions(playlistIndex)
-                true
             },
             parentFragmentManager
         )

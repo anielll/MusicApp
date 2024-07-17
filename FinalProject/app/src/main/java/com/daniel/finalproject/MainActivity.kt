@@ -60,7 +60,11 @@ class MainActivity : AppCompatActivity(),
                 playlistObjects,
                 clickListener = { songIndex ->
                     onClickOpenPlaylist(songIndex)
-                },)
+                },
+                optionsClickListener = { songIndex ->
+                    onClickPlaylistOptions(songIndex)
+                }
+                )
             recyclerView.adapter = playlistViewAdapter
     }
     private fun onClickOpenPlaylist(playlistIndex: Int){
@@ -69,6 +73,7 @@ class MainActivity : AppCompatActivity(),
     }else{
         playlistObjects[playlistIndex - 1]
     }
+        println(selectedPlaylist!!.songList.toIntArray().contentToString())
         val fragment = PlaylistViewFragment().apply {
             arguments = Bundle().apply {
                 putSerializable("selected_playlist", selectedPlaylist)
@@ -79,5 +84,9 @@ class MainActivity : AppCompatActivity(),
             .replace(R.id.playlist_view_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+    private fun onClickPlaylistOptions(playlistIndex: Int){
+        val playlistOptionsFragment = PlaylistOptionsFragment.newInstance(playlistIndex)
+        playlistOptionsFragment.show(supportFragmentManager, "SongOptions")
     }
 }
