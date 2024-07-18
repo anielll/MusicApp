@@ -7,11 +7,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 
 class AddPlaylistDialogFragment : DialogFragment() {
@@ -25,6 +29,7 @@ class AddPlaylistDialogFragment : DialogFragment() {
         val view = inflater.inflate(R.layout.add_playlist, container, false)
         val saveButton = view.findViewById<Button>(R.id.add_playlist_save_button)
         val cancelButton = view.findViewById<Button>(R.id.add_playlist_cancel_button)
+        val playlistNameEditText = view.findViewById<EditText>(R.id.add_playlist_name)
         cancelButton.setOnClickListener {
             dismiss()
         }
@@ -35,6 +40,16 @@ class AddPlaylistDialogFragment : DialogFragment() {
                 val newPlaylist = PlaylistData(requireContext(),playlistNameText.text.toString(), mutableListOf(),newPlaylistIndex)
                 listener!!.onPlaylistUpdated(newPlaylist,newPlaylistIndex)
         }
+
+        playlistNameEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                val imm = playlistNameEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(playlistNameEditText.windowToken, 0)
+                playlistNameEditText.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
         return view
     }
 

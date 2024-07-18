@@ -7,12 +7,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -58,6 +62,8 @@ class AddSongDialogFragment : DialogFragment() {
         val saveButton = view.findViewById<Button>(R.id.add_song_save_button)
         val cancelButton = view.findViewById<Button>(R.id.add_song_cancel_button)
         val mp3Button: Button = view.findViewById(R.id.add_song_mp3_button)
+        val titleEditText = view.findViewById<EditText>(R.id.add_song_title)
+        val artistEditText = view.findViewById<EditText>(R.id.add_song_artist)
 
         cancelButton.setOnClickListener {
             dismiss()
@@ -75,6 +81,24 @@ class AddSongDialogFragment : DialogFragment() {
         mp3Button.setOnClickListener {
             openFilePicker()
         }
+        titleEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                val imm =titleEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(titleEditText.windowToken, 0)
+                titleEditText.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+        artistEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                val imm = artistEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(artistEditText.windowToken, 0)
+                artistEditText.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
 
         return view
     }
@@ -107,7 +131,11 @@ class AddSongDialogFragment : DialogFragment() {
 
     private fun saveCurrentUri(){
         val library = PlaylistData.readPlaylistDataFromFile(requireContext(),-1)!!
-        val newSongIndex = library.songList.last() + 1
+        val newSongIndex = if(library.songList.isEmpty()) {
+            0
+        }else {
+             library.songList.last() + 1
+        }
         val titleEditText = requireView().findViewById<EditText>(R.id.add_song_title)
         val artistEditText = requireView().findViewById<EditText>(R.id.add_song_artist)
         val newSong = SongData(requireContext(),titleEditText.text.toString(),artistEditText.text.toString(),newSongIndex)

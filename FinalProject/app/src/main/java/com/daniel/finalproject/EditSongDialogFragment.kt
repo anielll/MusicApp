@@ -1,11 +1,15 @@
 package com.daniel.finalproject
 import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
@@ -53,6 +57,24 @@ class EditSongDialogFragment : DialogFragment() {
             listener!!.onSongUpdated(updatedSong)
             dismiss()
         }
+        titleEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                val imm =titleEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(titleEditText.windowToken, 0)
+                titleEditText.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+        artistEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                val imm = artistEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(artistEditText.windowToken, 0)
+                artistEditText.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
 
         return view
     }

@@ -15,6 +15,8 @@ class SongViewAdapter(
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val VIEW_TYPE_SONG = 1
     private val VIEW_TYPE_ADD_SONG = 2
+    private var selectedPosition = RecyclerView.NO_POSITION
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -36,13 +38,11 @@ class SongViewAdapter(
             VIEW_TYPE_SONG -> {
                 val songViewHolder = holder as SongViewHolder
                 songViewHolder.bind(songObjects[recyclerPosition], clickListener)
+                songViewHolder.itemView.isSelected = (selectedPosition == recyclerPosition)
             }
             VIEW_TYPE_ADD_SONG -> {
                 val addSongViewHolder = holder as AddSongViewHolder
                 addSongViewHolder.bind()
-//                addSongViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
-//                    addSong()
-//                }
             }
         }
     }
@@ -65,7 +65,10 @@ class SongViewAdapter(
         fun bind(songObject: SongData, clickListener: (Int) -> Unit) {
             songNameTextView.text = songObject.title
             artistNameTextView.text = songObject.artist
-            itemView.setOnClickListener { clickListener( bindingAdapterPosition)}
+            itemView.setOnClickListener {
+                clickListener( bindingAdapterPosition)
+                updateSelectedPosition(bindingAdapterPosition)
+            }
             optionsButton.setOnClickListener{optionsClickListener(bindingAdapterPosition)}
         }
     }
@@ -77,6 +80,12 @@ class SongViewAdapter(
                 addSongDialogFragment.show(fragmentManager, "AddSongDialogFragment")
             }
         }
+    }
+    fun updateSelectedPosition(newPosition: Int) {
+        val previousPosition = selectedPosition
+        selectedPosition = newPosition
+        notifyItemChanged(previousPosition)
+        notifyItemChanged(newPosition)
     }
 
 }

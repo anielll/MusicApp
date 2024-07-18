@@ -4,20 +4,20 @@ import android.app.Activity
 import android.content.Context
 import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
 import java.io.File
+import kotlin.random.Random
 
 class SongQueue{
     private var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
     private var currentPlaylist: PlaylistData
     private var parentActivity: Context
     private var songOrder: MutableList<Int>
-    var currentSong: Int
+    private var queueIndex: Int
     var looped: Boolean = false
     var shuffled: Boolean = false
     constructor(activity: Activity,playlist: PlaylistData){
         this.currentPlaylist = playlist
         this.parentActivity = activity
         var wasFiltered = false
-        println(currentPlaylist.songList.toIntArray().contentToString())
         val filteredIndexList = currentPlaylist.songList
             .filter { // filter out songs that have been deleted
                 val exists = File(activity.filesDir, "songs/$it").exists()
@@ -29,10 +29,9 @@ class SongQueue{
             .toMutableList()
         if(wasFiltered){ // reflect any null references in file storage
             currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex)
-            println("PlaylistUpdated")
         }
         songOrder = (0 until size()).toMutableList()
-        currentSong = 0
+        queueIndex = 0
     }
     fun libraryIndexOf(playlistIndex: Int) :Int{
         return currentPlaylist.songList[playlistIndex]
@@ -50,9 +49,18 @@ class SongQueue{
         return songObjects.size
     }
     fun delete(libraryIndex: Int){
-        songObjects.removeAt(playlistIndexOf(libraryIndex)) // update first
+        val playlistIndex = playlistIndexOf(libraryIndex)
+        songObjects.removeAt(playlistIndex) // update first
         currentPlaylist.songList.remove(libraryIndex) // update second
         writePlaylistDataToFile(parentActivity,currentPlaylist)
+        songOrder.remove(playlistIndex)
+        songOrder = songOrder.map{
+            if(it<playlistIndex){
+                it
+            }else{
+                it-1
+            }
+        }.toMutableList()
     }
     fun update(newSong: SongData){
         songObjects[playlistIndexOf(newSong.songIndex)] = newSong
@@ -62,44 +70,53 @@ class SongQueue{
         songObjects.add(newSong) // update first
         currentPlaylist.songList.add(libraryIndex) // update second
         writePlaylistDataToFile(parentActivity,currentPlaylist)
+        if(shuffled){
+            val newSongIndex = Random.nextInt(songOrder.size)
+            songOrder.add(newSongIndex,songOrder.size)
+        }else{
+            songOrder.add(songOrder.size)
+        }
     }
     fun next(): Int?{
-        if(currentSong == size()-1) {
+        if(queueIndex == size()-1) {
             if (looped) {
-                currentSong = 0
-                return songOrder[currentSong]
+                queueIndex = 0
+                return songOrder[queueIndex]
             } else {
                 return null
             }
         }
-        currentSong++
-        return  songOrder[currentSong]
+        queueIndex++
+        return  songOrder[queueIndex]
     }
     fun prev(): Int?{
-        if(currentSong == 0) {
+        if(queueIndex == 0) {
             if (looped) {
-                currentSong = size()-1
-                return songOrder[currentSong]
+                queueIndex = size()-1
+                return songOrder[queueIndex]
             } else {
                 return null
             }
         }
-        currentSong--
-        return  songOrder[currentSong]
+        queueIndex--
+        return  songOrder[queueIndex]
     }
     fun toggleLoop(){
         looped = !looped
     }
     fun toggleShuffle(){
         if(shuffled){
-            currentSong = songOrder[currentSong]
+            queueIndex = songOrder[queueIndex]
             songOrder = (0 until size()).toMutableList()
             shuffled = false
         }else{
             songOrder = (0 until size()).shuffled().toMutableList()
-            songOrder.remove(currentSong)
-            songOrder.add(0,currentSong)
+            songOrder.remove(queueIndex)
+            songOrder.add(0,queueIndex)
             shuffled = true
         }
+    }
+    fun setQueueCursor(playlistIndex: Int){
+        queueIndex = songOrder.indexOf(playlistIndex)
     }
 }

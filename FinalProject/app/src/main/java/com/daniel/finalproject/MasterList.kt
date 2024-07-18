@@ -70,7 +70,11 @@ object MasterList {
         return list.indexOf(fileIndex)+1
     }
     fun last():Int{
-        return list.last()
+        if(list.isEmpty()){
+            return 0
+        }else {
+            return list.last()
+        }
     }
 
 }

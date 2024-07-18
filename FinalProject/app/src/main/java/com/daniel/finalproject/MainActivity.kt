@@ -8,9 +8,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
-import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
 import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.daniel.finalproject.OnStartAssetManager.Companion.initializeDefaults
 class MainActivity : AppCompatActivity(),
         OnSongUpdatedListener,
         OnPlaylistUpdatedListener
