@@ -5,12 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 
-class PlaylistViewAdapter (
+class MainViewAdapter (
     private val playlistObjects: MutableList<PlaylistData>,
     private val clickListener: (Int) -> Unit,
-    private val optionsClickListener: (Int) -> Unit
+    private val optionsClickListener: (Int) -> Unit,
+    private val parentFragmentManager: FragmentManager
     ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private val VIEW_TYPE_LIBRARY = 1
     private val VIEW_TYPE_PLAYLIST = 2
@@ -46,9 +48,6 @@ class PlaylistViewAdapter (
             VIEW_TYPE_ADD_PLAYLIST -> {
                 val addPlaylistViewHolder = holder as AddPlaylistViewHolder
                 addPlaylistViewHolder.bind()
-                addPlaylistViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
-                    addPlaylist()
-                }
             }
         }
     }
@@ -76,7 +75,12 @@ class PlaylistViewAdapter (
         }
     }
     inner class AddPlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val addPlaylistButton: ImageButton = itemView.findViewById(R.id.addButton)
         fun bind() {
+            addPlaylistButton.setOnClickListener{
+                val addPlaylistDialogFragment = AddPlaylistDialogFragment()
+                addPlaylistDialogFragment.show(parentFragmentManager, "AddPlaylistDialogFragment")
+            }
         }
     }
     inner class LibraryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

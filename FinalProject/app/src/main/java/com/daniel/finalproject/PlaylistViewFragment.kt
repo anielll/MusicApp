@@ -19,10 +19,10 @@ import java.io.IOException
 class PlaylistViewFragment : Fragment()
 {
     interface OnSongUpdatedListener {
-        fun onSongUpdated(newSong:SongData?, index: Int?= null)
+        fun onSongUpdated(newSong:SongData?, libraryIndex: Int?= null)
     }
     interface OnPlaylistUpdatedListener {
-        fun onPlaylistUpdated(newPlaylist:PlaylistData?, index: Int?= null)
+        fun onPlaylistUpdated(newPlaylist:PlaylistData?, fileIndex: Int?= null)
     }
     companion object{
         fun deleteFolder(folder: File):Boolean{

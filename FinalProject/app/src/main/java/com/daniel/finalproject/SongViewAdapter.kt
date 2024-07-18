@@ -40,9 +40,9 @@ class SongViewAdapter(
             VIEW_TYPE_ADD_SONG -> {
                 val addSongViewHolder = holder as AddSongViewHolder
                 addSongViewHolder.bind()
-                addSongViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
-                    addSong()
-                }
+//                addSongViewHolder.itemView.findViewById<ImageButton>(R.id.addButton).setOnClickListener {
+//                    addSong()
+//                }
             }
         }
     }
@@ -73,13 +73,10 @@ class SongViewAdapter(
         private val addSongButton: ImageButton = itemView.findViewById(R.id.addButton)
         fun bind() {
             addSongButton.setOnClickListener{
-                addSong()
+                val addSongDialogFragment = AddSongDialogFragment()
+                addSongDialogFragment.show(fragmentManager, "AddSongDialogFragment")
             }
         }
-    }
-    private fun addSong() {
-        val addSongDialogFragment = AddSongDialogFragment()
-        addSongDialogFragment.show(fragmentManager, "AddSongDialogFragment")
     }
 
 }

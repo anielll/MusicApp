@@ -8,7 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
-import java.io.File
+import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
 import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
 class MainActivity : AppCompatActivity(),
@@ -18,23 +18,29 @@ class MainActivity : AppCompatActivity(),
     private lateinit var playlistObjects : MutableList<PlaylistData>
     private lateinit var recyclerView : RecyclerView
 
-    override fun onSongUpdated(newSong: SongData?, index: Int?) {
+    override fun onSongUpdated(newSong: SongData?, libraryIndex: Int?) {
         val fragment = supportFragmentManager.findFragmentById(R.id.playlist_view_container) as? PlaylistViewFragment
-        fragment?.updateSong(newSong, index)
+        fragment?.updateSong(newSong, libraryIndex)
     }
 
-    override fun onPlaylistUpdated(newPlaylist: PlaylistData?, index: Int?) {
+    override fun onPlaylistUpdated(newPlaylist: PlaylistData?, fileIndex: Int?) {
         if(newPlaylist==null){ // deletion
-            playlistObjects.removeAt(index!!)
-            recyclerView.adapter?.notifyItemRemoved(index)
+            val recyclerIndex = MasterList.recyclerIndexOf(fileIndex!!)
+            playlistObjects.removeAt(recyclerIndex-1)
+            MasterList.remove(fileIndex)
+            MasterList.save(this)
+            recyclerView.adapter?.notifyItemRemoved(recyclerIndex)
             return
         }
-        if(index==null){ // replacement
-            playlistObjects[newPlaylist.playlistIndex] = newPlaylist
-            recyclerView.adapter?.notifyItemChanged(newPlaylist.playlistIndex+1)
+        if(fileIndex==null){ // replacement
+            val recyclerIndex = MasterList.recyclerIndexOf(newPlaylist.fileIndex)
+            playlistObjects[recyclerIndex-1] = newPlaylist
+            recyclerView.adapter?.notifyItemChanged(recyclerIndex)
         }else{ // add
-//            songQueue.add(libraryIndex,newSong)
-//            recyclerView.adapter?.notifyItemInserted(songQueue.size()-1)
+            playlistObjects.add(newPlaylist)
+            MasterList.add(fileIndex)
+            MasterList.save(this)
+            recyclerView.adapter?.notifyItemInserted(playlistObjects.size)
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,32 +60,31 @@ class MainActivity : AppCompatActivity(),
         initPlaylistView()
     }
     private fun initPlaylistView(){
-            val playlistFolder = File(filesDir, "playlists")
-            val  playlistFileNames = playlistFolder.list()?: arrayOf()
-            playlistObjects = playlistFileNames.mapNotNull {
-                val index = it.substringBeforeLast('.').toInt()
-                if(index>=0){ // filter out library
-                    readPlaylistDataFromFile(this,index)
+            val  playlistFileIndexes = MasterList.get()
+            playlistObjects = playlistFileIndexes.mapNotNull {
+                if(it>=0){ // filter out library
+                    readPlaylistDataFromFile(this,it)
                 }else{
                     null
                 }
             }.toMutableList()
                 recyclerView = findViewById(R.id.playlistView)
-            val playlistViewAdapter = PlaylistViewAdapter(
+            val mainViewAdapter = MainViewAdapter(
                 playlistObjects,
                 clickListener = { songIndex ->
                     onClickOpenPlaylist(songIndex)
                 },
                 optionsClickListener = { songIndex ->
                     onClickPlaylistOptions(songIndex)
-                }
+                },
+                supportFragmentManager
                 )
-            recyclerView.adapter = playlistViewAdapter
+            recyclerView.adapter = mainViewAdapter
     }
-    private fun onClickOpenPlaylist(playlistIndex: Int){
+    private fun onClickOpenPlaylist(recyclerIndex: Int){
         val fragment = PlaylistViewFragment().apply {
             arguments = Bundle().apply {
-                putInt("selected_playlist", (playlistIndex-1))
+                putInt("selected_playlist", MasterList.fileIndexOf(recyclerIndex))
             }
         }
         supportFragmentManager.beginTransaction()
@@ -88,8 +93,8 @@ class MainActivity : AppCompatActivity(),
             .addToBackStack(null)
             .commit()
     }
-    private fun onClickPlaylistOptions(playlistIndex: Int){
-        val playlistOptionsFragment = PlaylistOptionsFragment.newInstance(playlistIndex-1)
+    private fun onClickPlaylistOptions(recyclerIndex: Int){
+        val playlistOptionsFragment = PlaylistOptionsFragment.newInstance(MasterList.fileIndexOf(recyclerIndex))
         playlistOptionsFragment.show(supportFragmentManager, "SongOptions")
     }
 }

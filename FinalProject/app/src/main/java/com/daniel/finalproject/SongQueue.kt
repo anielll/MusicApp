@@ -28,7 +28,7 @@ class SongQueue{
             .map{SongData(activity,it) }
             .toMutableList()
         if(wasFiltered){ // reflect any null references in file storage
-            currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.playlistIndex)
+            currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex)
             println("PlaylistUpdated")
         }
         songOrder = (0 until size()).toMutableList()

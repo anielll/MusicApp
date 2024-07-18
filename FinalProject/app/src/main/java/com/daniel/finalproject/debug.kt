@@ -12,13 +12,15 @@ val debug_files =
     true // Set to false to disable default (playlist and song) configuration for debug purposes
 
 fun initializeDefaults(context: Context) {
-    MasterList.initialize(context)
     if (debug_files) {
         PlaylistViewFragment.deleteFolder(File(context.filesDir,"songs"))
         PlaylistViewFragment.deleteFolder(File(context.filesDir,"playlists"))
         PlaylistViewFragment.deleteFolder(File(context.filesDir,"metadata"))
+        MasterList.initialize(context)
         initSongData(context)
         initPlaylistData(context)
+    }else{
+        MasterList.initialize(context)
     }
     initLibrary(context)
 }

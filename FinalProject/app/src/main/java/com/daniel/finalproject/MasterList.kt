@@ -20,8 +20,14 @@ object MasterList {
         }
     }
 
-    fun add(playlist: Int) {
-        list.add(playlist)
+    fun add(fileIndex: Int) {
+        list.add(fileIndex)
+    }
+    fun remove(fileIndex: Int){
+        list.remove(fileIndex)
+    }
+    fun get():MutableList<Int>{
+        return list
     }
 
     private fun readListFromFile(context: Context): MutableList<Int>? {
@@ -50,6 +56,21 @@ object MasterList {
         } catch (e: IOException) {
             Log.e("MusicApp", "Error writing file: ${e.message}")
         }
+    }
+    fun fileIndexOf(recyclerIndex: Int) :Int{
+        if(recyclerIndex==0){ // LIBRARY
+            return -1
+        }
+        return list[recyclerIndex-1]
+    }
+    fun recyclerIndexOf(fileIndex: Int): Int{
+        if(fileIndex==-1){ // LIBRARY
+            return 0
+        }
+        return list.indexOf(fileIndex)+1
+    }
+    fun last():Int{
+        return list.last()
     }
 
 }

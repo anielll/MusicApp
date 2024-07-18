@@ -43,7 +43,7 @@ class EditPlaylistDialogFragment : DialogFragment() {
         }
         saveButton.setOnClickListener {
             val playlistName = playlistNameEditText.text.toString()
-            val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.playlistIndex)
+            val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.fileIndex)
             listener!!.onPlaylistUpdated(updatedPlaylist)
             dismiss()
         }

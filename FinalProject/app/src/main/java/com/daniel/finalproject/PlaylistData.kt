@@ -7,16 +7,15 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
-import java.io.Serializable
 
 class PlaylistData{
     val playlistName : String
     val songList: MutableList<Int>
-    val playlistIndex: Int
+    val fileIndex: Int
     constructor(context: Context,playlistName:String, songList: MutableList<Int>,playlistIndex: Int){
         this.playlistName=playlistName
         this.songList=songList
-        this.playlistIndex = playlistIndex
+        this.fileIndex = playlistIndex
         writePlaylistDataToFile(context,this)
     }
     companion object{
@@ -38,7 +37,7 @@ class PlaylistData{
                 if (!playlistDir.exists()) {
                     playlistDir.mkdirs()
                 }
-                val outputFile = File(context.filesDir, "playlists/${playlist.playlistIndex}.json" )
+                val outputFile = File(context.filesDir, "playlists/${playlist.fileIndex}.json" )
                 FileWriter(outputFile).use { writer ->
                     writer.write(playlistJson)
                 }
