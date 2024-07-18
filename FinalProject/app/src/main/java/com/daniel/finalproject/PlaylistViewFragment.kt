@@ -46,7 +46,7 @@ class PlaylistViewFragment : Fragment() {
     private lateinit var updateProgressBarRunnable: Runnable
     private lateinit var recyclerView: RecyclerView
     private lateinit var songQueue: SongQueue
-    private lateinit var songViewAdapter :SongViewAdapter
+    private lateinit var songViewAdapter: SongViewAdapter
     private var currentSong: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,15 +64,15 @@ class PlaylistViewFragment : Fragment() {
         val view = inflater.inflate(R.layout.playlist_view_fragment, container, false)
         initSongView(view)
         initTopAndBottomBar(view)
-        setCurrentSong(0)
+        setCurrentSong(-1)
         return view
     }
 
     //
     override fun onDestroy() {
         super.onDestroy()
-        if(::updateProgressBarRunnable.isInitialized){
-        handler.removeCallbacks(updateProgressBarRunnable)
+        if (::updateProgressBarRunnable.isInitialized) {
+            handler.removeCallbacks(updateProgressBarRunnable)
         }
         if (::mediaPlayer.isInitialized) {
             mediaPlayer.release()
@@ -92,18 +92,19 @@ class PlaylistViewFragment : Fragment() {
                     if (nextSong == null) {
                         resetPlaylist()
                     } else {
-                        if(mediaPlayer.isPlaying){
+                        if (mediaPlayer.isPlaying) {
                             setCurrentSong(nextSong)
                             mediaPlayer.start()
                             playPauseButton.setImageResource(R.drawable.pause_button)
-                        }else{
+                        } else {
                             setCurrentSong(nextSong)
                         }
-                        currentSong = if(nextSong>playlistIndex){ // override onClickPlaySong setting currentSong
-                            nextSong-1 // if next song had higher playlistIndex, it will be shifted down one playlist index
-                        }else{
-                            nextSong
-                        }
+                        currentSong =
+                            if (nextSong > playlistIndex) { // override onClickPlaySong setting currentSong
+                                nextSong - 1 // if next song had higher playlistIndex, it will be shifted down one playlist index
+                            } else {
+                                nextSong
+                            }
                         songQueue.delete(libraryIndex)
                         recyclerView.adapter?.notifyItemRemoved(playlistIndex)
                         songViewAdapter.updateSelectedPosition(currentSong!!)
@@ -123,7 +124,7 @@ class PlaylistViewFragment : Fragment() {
             songQueue.add(libraryIndex, newSong)
             recyclerView.adapter?.notifyItemInserted(songQueue.size() - 1)
             if (songQueue.size() == 1) { // if first time, initialize
-                setCurrentSong(0)
+                setCurrentSong(-1)
             }
         }
     }
@@ -185,6 +186,21 @@ class PlaylistViewFragment : Fragment() {
             currentSong = null
             return
         }
+        if (playlistIndex == -1) {
+            currentSong = -1
+            songQueue.queueIndex = -1
+            songViewAdapter.updateSelectedPosition(-1)
+            if (::mediaPlayer.isInitialized) {
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.stop()
+                }
+                mediaPlayer.reset()
+            }
+            if (::updateProgressBarRunnable.isInitialized) {
+                handler.removeCallbacks(updateProgressBarRunnable)
+            }
+            return
+        }
         currentSong = playlistIndex
         songQueue.setQueueCursor(playlistIndex)
         songViewAdapter.updateSelectedPosition(playlistIndex)
@@ -200,10 +216,7 @@ class PlaylistViewFragment : Fragment() {
             mediaPlayer.setDataSource(path)
             mediaPlayer.prepare()
             mediaPlayer.setOnCompletionListener {
-                val nextSong = songQueue.next()
-                if (nextSong != null) {
-                    onClickPlaySong(nextSong)
-                }
+                nextSong()
             }
             if (::updateProgressBarRunnable.isInitialized) {
                 handler.removeCallbacks(updateProgressBarRunnable)
@@ -231,7 +244,7 @@ class PlaylistViewFragment : Fragment() {
 
     private fun resetPlaylist() {
         progressBar.progress = 0
-        setCurrentSong(0)
+        setCurrentSong(-1)
         playPauseButton.setImageResource(R.drawable.play_button)
         currentSong = null
     }
@@ -266,38 +279,54 @@ class PlaylistViewFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBar)
         playPauseButton = view.findViewById(R.id.master_play_pause_button)
         playPauseButton.setOnClickListener {
-            if (songQueue.size() != 0) {
-                if (mediaPlayer.isPlaying) {
-                    mediaPlayer.pause()
-                    playPauseButton.setImageResource(R.drawable.play_button)
-                    handler.removeCallbacks(updateProgressBarRunnable)
-                } else {
-                    mediaPlayer.start()
-                    playPauseButton.setImageResource(R.drawable.pause_button)
-                    updateProgressBar()
-                }
-            }
+            playCurrent()
         }
         val prevSongButton: ImageButton = view.findViewById(R.id.previous_song_button)
         val nextSongButton: ImageButton = view.findViewById(R.id.next_song_button)
         prevSongButton.setOnClickListener {
-            if (songQueue.size() != 0) {
-                val prevSong = songQueue.prev()
-                if (prevSong == null) {
-                    resetPlaylist()
-                } else {
-                    onClickPlaySong(prevSong)
-                }
-            }
+            prevSong()
         }
         nextSongButton.setOnClickListener {
-            if (songQueue.size() != 0) {
-                val nextSong = songQueue.next()
-                if (nextSong == null) {
-                    resetPlaylist()
-                } else {
-                    onClickPlaySong(nextSong)
-                }
+            nextSong()
+        }
+    }
+
+    private fun nextSong() {
+        if (songQueue.size() != 0) {
+            val nextSong = songQueue.next()
+            if (nextSong == null) {
+                resetPlaylist()
+            } else {
+                onClickPlaySong(nextSong)
+            }
+        }
+    }
+
+    private fun prevSong() {
+        if (songQueue.size() != 0) {
+            val prevSong = songQueue.prev()
+            if (prevSong == null) {
+                resetPlaylist()
+            } else {
+                onClickPlaySong(prevSong)
+            }
+        }
+    }
+
+    private fun playCurrent() {
+        if (currentSong==-1) {
+            nextSong()
+            return
+        }
+        if (songQueue.size() != 0) {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                playPauseButton.setImageResource(R.drawable.play_button)
+                handler.removeCallbacks(updateProgressBarRunnable)
+            } else {
+                mediaPlayer.start()
+                playPauseButton.setImageResource(R.drawable.pause_button)
+                updateProgressBar()
             }
         }
 

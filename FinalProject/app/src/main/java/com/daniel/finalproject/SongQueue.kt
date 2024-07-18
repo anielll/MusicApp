@@ -11,7 +11,7 @@ class SongQueue{
     private var currentPlaylist: PlaylistData
     private var parentActivity: Context
     private var songOrder: MutableList<Int>
-    private var queueIndex: Int
+    var queueIndex: Int
     var looped: Boolean = false
     var shuffled: Boolean = false
     constructor(activity: Activity,playlist: PlaylistData){
@@ -31,7 +31,7 @@ class SongQueue{
             currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex)
         }
         songOrder = (0 until size()).toMutableList()
-        queueIndex = 0
+        queueIndex = -1
     }
     fun libraryIndexOf(playlistIndex: Int) :Int{
         return currentPlaylist.songList[playlistIndex]
@@ -78,6 +78,10 @@ class SongQueue{
         }
     }
     fun next(): Int?{
+        if(queueIndex<0){
+            queueIndex = 0
+            return songOrder[queueIndex]
+        }
         if(queueIndex == size()-1) {
             if (looped) {
                 queueIndex = 0
@@ -90,6 +94,10 @@ class SongQueue{
         return  songOrder[queueIndex]
     }
     fun prev(): Int?{
+        if(queueIndex <0){
+            queueIndex = size()-1
+            return songOrder[queueIndex]
+        }
         if(queueIndex == 0) {
             if (looped) {
                 queueIndex = size()-1
@@ -106,13 +114,19 @@ class SongQueue{
     }
     fun toggleShuffle(){
         if(shuffled){
-            queueIndex = songOrder[queueIndex]
+            queueIndex = if(queueIndex==-1){
+                -1
+            }else {
+                songOrder[queueIndex]
+            }
             songOrder = (0 until size()).toMutableList()
             shuffled = false
         }else{
             songOrder = (0 until size()).shuffled().toMutableList()
-            songOrder.remove(queueIndex)
-            songOrder.add(0,queueIndex)
+            if(queueIndex>=0){
+                songOrder.remove(queueIndex)
+                songOrder.add(0,queueIndex)
+            }
             shuffled = true
         }
     }
