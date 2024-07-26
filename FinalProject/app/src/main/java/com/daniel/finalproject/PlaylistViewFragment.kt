@@ -252,13 +252,9 @@ class PlaylistViewFragment : Fragment() {
     private fun initTopAndBottomBar(view: View) {
         // Top Bar
         val playlistName: TextView = view.findViewById(R.id.playlistName)
-        val backButton: ImageButton = view.findViewById(R.id.backButton)
         val loopButton: ImageButton = view.findViewById(R.id.loop_playlist_button)
         val shuffleButton: ImageButton = view.findViewById(R.id.shuffle_playlist_button)
         playlistName.text = songQueue.playlistName()
-        backButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
         loopButton.setOnClickListener {
             songQueue.toggleLoop()
             if (songQueue.looped) {

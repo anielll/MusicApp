@@ -126,7 +126,7 @@ class SongQueue{
             if(queueIndex>=0){
                 songOrder.remove(queueIndex)
                 songOrder.add(0,queueIndex)
-                queueIndex
+                queueIndex = 0
             }
             shuffled = true
         }

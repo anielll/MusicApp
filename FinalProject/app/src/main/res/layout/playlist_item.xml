@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="75dp"
     android:background="@color/white"
-    android:paddingBottom="1dp">
+    android:paddingBottom="1px">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            android:src="@drawable/blank"
+            android:src="@drawable/blank_playlist"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="8dp"

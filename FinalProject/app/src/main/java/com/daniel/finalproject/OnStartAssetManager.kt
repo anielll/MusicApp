@@ -9,7 +9,7 @@ import java.io.OutputStream
 class OnStartAssetManager {
     companion object{
     val debug_files =
-        false // Set to false to disable default (playlist and song) configuration for debug purposes
+        true // Set to false to disable default (playlist and song) configuration for debug purposes
     val force_debug = false // Set to true to override all app data each time the app launches
     fun initializeDefaults(context: Context) {
         if (debug_files) {

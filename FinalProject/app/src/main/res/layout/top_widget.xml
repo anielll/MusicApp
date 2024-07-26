@@ -5,69 +5,60 @@
     android:layout_height="100dp"
     android:background="@color/black">
 
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginVertical="30dp"
-        android:src="@drawable/back_button"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@android:color/transparent"
-        android:scaleType="fitCenter"
-        />
     <ImageView
+        android:id="@+id/playlist_icon"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:layout_constraintDimensionRatio="1:1"
-        android:src="@drawable/blank"
-        android:id="@+id/playlist_icon"
-        app:layout_constraintStart_toEndOf="@id/backButton"
+        android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="15dp"
-        android:layout_marginLeft="10dp"
-        />
+        android:src="@drawable/blank_playlist"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/playlistName"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="5dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lines="2"
         android:text="Playlist Name"
         android:textColor="@color/white"
         android:textSize="30sp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/playlist_icon"
         app:layout_constraintEnd_toStartOf="@id/side_buttons"
-        android:gravity="center_vertical"
-        android:layout_marginLeft="10dp"
-        />
+        app:layout_constraintStart_toEndOf="@id/playlist_icon"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="vertical"
-        android:layout_margin="10dp"
         android:id="@+id/side_buttons"
-        >
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent">
+
         <ImageButton
             android:id="@+id/loop_playlist_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/loop_off"
-            app:layout_constraintDimensionRatio="1:1"
             android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:background="@android:color/transparent"/>
+            android:src="@drawable/loop_off"
+            app:layout_constraintDimensionRatio="1:1" />
+
         <ImageButton
             android:id="@+id/shuffle_playlist_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/shuffle_off"
-            app:layout_constraintDimensionRatio="1:1"
             android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:background="@android:color/transparent" />
+            android:src="@drawable/shuffle_off"
+            app:layout_constraintDimensionRatio="1:1" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

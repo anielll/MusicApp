@@ -28,7 +28,7 @@ class MainViewAdapter (
                 LibraryViewHolder(view)
             }
             VIEW_TYPE_ADD_PLAYLIST -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_item, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_playlist_item, parent, false)
                 AddPlaylistViewHolder(view)
             }
             else -> throw IllegalArgumentException("Invalid view type")

@@ -26,7 +26,7 @@ class SongViewAdapter(
                 SongViewHolder(view)
             }
             VIEW_TYPE_ADD_SONG -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_item, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.add_song_item, parent, false)
                 AddSongViewHolder(view)
             }
             else -> throw IllegalArgumentException("Invalid view type")
