@@ -1,8 +1,10 @@
 package com.daniel.finalproject
 
+import PhotoPicker
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -31,6 +34,8 @@ class AddSongDialogFragment : DialogFragment() {
     private var listener: OnSongUpdatedListener? = null
     private var selectedMp3Uri: Uri? = null
     private var selectedMp3Name: String? = null
+    private lateinit var photoPicker: PhotoPicker
+    private var photoSelected = false
     private lateinit var filePickerLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +69,8 @@ class AddSongDialogFragment : DialogFragment() {
         val mp3Button: Button = view.findViewById(R.id.add_song_mp3_button)
         val titleEditText = view.findViewById<EditText>(R.id.add_song_title)
         val artistEditText = view.findViewById<EditText>(R.id.add_song_artist)
+        val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
+        val selectButton = view.findViewById<Button>(R.id.select_image_button)
 
         cancelButton.setOnClickListener {
             dismiss()
@@ -99,6 +106,13 @@ class AddSongDialogFragment : DialogFragment() {
             }
             false
         })
+        photoPicker = PhotoPicker(this) { photoUri ->
+            selectBackground.setImageURI(photoUri)
+            photoSelected = true
+        }
+        selectButton.setOnClickListener{
+            photoPicker.openPhotoPicker()
+        }
 
         return view
     }
@@ -138,7 +152,13 @@ class AddSongDialogFragment : DialogFragment() {
         }
         val titleEditText = requireView().findViewById<EditText>(R.id.add_song_title)
         val artistEditText = requireView().findViewById<EditText>(R.id.add_song_artist)
-        val newSong = SongData(requireContext(),titleEditText.text.toString(),artistEditText.text.toString(),newSongIndex)
+        val selectBackground = requireView().findViewById<ImageView>(R.id.select_image_background)
+        val art = if(photoSelected){
+            (selectBackground.drawable as BitmapDrawable).bitmap
+        }else{
+            null
+        }
+        val newSong = SongData(requireContext(),titleEditText.text.toString(),artistEditText.text.toString(),newSongIndex, art)
         copyMp3ToInternalStorage(newSongIndex)
         library.songList.add(newSongIndex)
         PlaylistData.writePlaylistDataToFile(requireContext(),library)

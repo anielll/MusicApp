@@ -72,7 +72,7 @@ class OnStartAssetManager {
                 val destDir = File(context.filesDir, "songs/$index")
                 if (!destDir.exists()) {
                     destDir.mkdirs()
-                    copymp3FromAssets(context, "default_songs/$songName", "songs/$index/$songName")
+                    copyMp3FromAssets(context, "default_songs/$songName", "songs/$index/$songName")
                 }
             } catch (e: Exception) {
                 Log.e("MainActivity", "Failed to initialize songs ${e.message}")
@@ -81,7 +81,7 @@ class OnStartAssetManager {
     }
 
 
-    private fun copymp3FromAssets(context: Context, assetFileName: String, outputFilePath: String) {
+    private fun copyMp3FromAssets(context: Context, assetFileName: String, outputFilePath: String) {
         val inputStream: InputStream = context.assets.open(assetFileName)
         val outputStream: OutputStream = FileOutputStream(File(context.filesDir, outputFilePath))
         val buffer = ByteArray(1024)

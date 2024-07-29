@@ -1,5 +1,8 @@
 package com.daniel.finalproject
+import PhotoPicker
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -9,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
@@ -17,6 +21,8 @@ class EditSongDialogFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
     private var listener: OnSongUpdatedListener? = null
+    private lateinit var photoPicker: PhotoPicker
+    private var photoSelected = false
     companion object {
 
         fun newInstance(index: Int): EditSongDialogFragment {
@@ -43,17 +49,27 @@ class EditSongDialogFragment : DialogFragment() {
         val artistEditText = view.findViewById<EditText>(R.id.edit_song_artist)
         val saveButton = view.findViewById<Button>(R.id.edit_song_save_button)
         val cancelButton = view.findViewById<Button>(R.id.edit_song_cancel_button)
-
-        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)
-        titleEditText.setText(songData?.title)
-        artistEditText.setText(songData?.artist)
+        val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
+        val selectButton = view.findViewById<Button>(R.id.select_image_button)
+        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
+        val bitmap = songData.art
+        titleEditText.setText(songData.title)
+        artistEditText.setText(songData.artist)
+        if(bitmap!=null){
+            selectBackground.setImageBitmap(bitmap)
+        }
         cancelButton.setOnClickListener {
             dismiss()
         }
         saveButton.setOnClickListener {
             val title = titleEditText.text.toString()
             val artist = artistEditText.text.toString()
-            val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!)
+            val art = if(photoSelected){
+                    (selectBackground.drawable as BitmapDrawable).bitmap
+                }else{
+                    null
+                }
+            val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!,art)
             listener!!.onSongUpdated(updatedSong)
             dismiss()
         }
@@ -75,6 +91,14 @@ class EditSongDialogFragment : DialogFragment() {
             }
             false
         })
+
+        photoPicker = PhotoPicker(this) { photoUri ->
+            selectBackground.setImageURI(photoUri)
+            photoSelected = true
+        }
+        selectButton.setOnClickListener{
+            photoPicker.openPhotoPicker()
+        }
 
         return view
     }

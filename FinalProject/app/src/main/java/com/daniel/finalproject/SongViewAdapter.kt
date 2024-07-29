@@ -1,12 +1,16 @@
 package com.daniel.finalproject
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
+
 class SongViewAdapter(
     private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
@@ -61,10 +65,15 @@ class SongViewAdapter(
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val songNameTextView: TextView = itemView.findViewById(R.id.song_name)
         private val artistNameTextView: TextView = itemView.findViewById(R.id.artist_name)
+        private val songIcon: ImageView = itemView.findViewById(R.id.songIcon)
         private val optionsButton: ImageButton = itemView.findViewById(R.id.song_options_button)
         fun bind(songObject: SongData, clickListener: (Int) -> Unit) {
             songNameTextView.text = songObject.title
             artistNameTextView.text = songObject.artist
+            val bitmap = songObject.art
+            if(bitmap!=null){
+                songIcon.setImageBitmap(bitmap)
+            }
             itemView.setOnClickListener {
                 clickListener( bindingAdapterPosition)
                 updateSelectedPosition(bindingAdapterPosition)
