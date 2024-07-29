@@ -1,5 +1,7 @@
 package com.daniel.finalproject
+import PhotoPicker
 import android.content.Context
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.PlaylistViewFragment.OnPlaylistUpdatedListener
@@ -16,6 +19,8 @@ import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 class EditPlaylistDialogFragment : DialogFragment() {
     private var playlistIndex: Int? = null
     private var listener: OnPlaylistUpdatedListener? = null
+    private lateinit var photoPicker: PhotoPicker
+    private var photoSelected = false
     companion object {
         fun newInstance(index: Int): EditPlaylistDialogFragment {
             val fragment = EditPlaylistDialogFragment()
@@ -41,13 +46,20 @@ class EditPlaylistDialogFragment : DialogFragment() {
         val saveButton = view.findViewById<Button>(R.id.edit_playlist_save_button)
         val cancelButton = view.findViewById<Button>(R.id.edit_playlist_cancel_button)
         val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)!!
+        val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
+        val selectButton = view.findViewById<Button>(R.id.select_image_button)
         playlistNameEditText.setText(playlistData.playlistName)
         cancelButton.setOnClickListener {
             dismiss()
         }
         saveButton.setOnClickListener {
             val playlistName = playlistNameEditText.text.toString()
-            val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.fileIndex)
+            val art = if(photoSelected){
+                (selectBackground.drawable as BitmapDrawable).bitmap
+            }else{
+                null
+            }
+            val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.fileIndex,art)
             listener!!.onPlaylistUpdated(updatedPlaylist)
             dismiss()
         }
@@ -60,7 +72,13 @@ class EditPlaylistDialogFragment : DialogFragment() {
             }
             false
         })
-
+        photoPicker = PhotoPicker(this) { photoUri ->
+            selectBackground.setImageURI(photoUri)
+            photoSelected = true
+        }
+        selectButton.setOnClickListener{
+            photoPicker.openPhotoPicker()
+        }
         return view
     }
 

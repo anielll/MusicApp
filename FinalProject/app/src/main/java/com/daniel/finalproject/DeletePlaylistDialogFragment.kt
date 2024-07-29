@@ -47,7 +47,7 @@ class DeletePlaylistDialogFragment : DialogFragment() {
         }
         confirmButton.setOnClickListener {
             listener!!.onPlaylistUpdated(null, playlistIndex)
-            deleteFolder(File(requireContext().filesDir,"playlists/$playlistIndex.json"))
+            deleteFolder(File(requireContext().filesDir,"playlists/$playlistIndex"))
             dismiss()
         }
 

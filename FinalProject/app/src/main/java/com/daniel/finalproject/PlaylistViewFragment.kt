@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -254,7 +255,14 @@ class PlaylistViewFragment : Fragment() {
         val playlistName: TextView = view.findViewById(R.id.playlistName)
         val loopButton: ImageButton = view.findViewById(R.id.loop_playlist_button)
         val shuffleButton: ImageButton = view.findViewById(R.id.shuffle_playlist_button)
+        val playlistIcon: ImageView = view.findViewById(R.id.playlist_icon)
         playlistName.text = songQueue.playlistName()
+        if(songQueue.icon()!=null){
+            playlistIcon.setImageBitmap(songQueue.icon())
+        }
+        if(songQueue.playlistNumber()==-1){
+            playlistIcon.setImageResource(R.drawable.library_icon)
+        }
         loopButton.setOnClickListener {
             songQueue.toggleLoop()
             if (songQueue.looped) {

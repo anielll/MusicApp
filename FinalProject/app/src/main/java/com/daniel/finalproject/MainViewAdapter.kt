@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
@@ -68,10 +69,14 @@ class MainViewAdapter (
     inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val playlistNameNameTextView: TextView = itemView.findViewById(R.id.playlist_name)
         private val playlistOptionsButton: ImageButton = itemView.findViewById(R.id.playlist_options_button)
+        private val playlistIcon: ImageView = itemView.findViewById(R.id.playlist_icon)
         fun bind(playlistObject: PlaylistData,clickListener: (Int) -> Unit) {
             playlistNameNameTextView.text = playlistObject.playlistName
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
             playlistOptionsButton.setOnClickListener {optionsClickListener(bindingAdapterPosition)}
+            if(playlistObject.icon!=null){
+                playlistIcon.setImageBitmap(playlistObject.icon)
+            }
         }
     }
     inner class AddPlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

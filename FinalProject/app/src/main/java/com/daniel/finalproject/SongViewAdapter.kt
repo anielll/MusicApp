@@ -1,6 +1,5 @@
 package com.daniel.finalproject
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
 
 class SongViewAdapter(
     private val songObjects: MutableList<SongData>,
@@ -70,7 +68,7 @@ class SongViewAdapter(
         fun bind(songObject: SongData, clickListener: (Int) -> Unit) {
             songNameTextView.text = songObject.title
             artistNameTextView.text = songObject.artist
-            val bitmap = songObject.art
+            val bitmap = songObject.icon
             if(bitmap!=null){
                 songIcon.setImageBitmap(bitmap)
             }

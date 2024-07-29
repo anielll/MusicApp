@@ -33,7 +33,7 @@ class OnStartAssetManager {
         val songsFolder = File(context.filesDir, "songs")
         val allSongs: Array<String> = songsFolder.list() ?: arrayOf()
         val songMap = allSongs.map { it.toInt() }.toMutableList()
-        PlaylistData(context, "My Library", songMap, -1)
+        PlaylistData(context, "My Library", songMap, -1, null)
     }
 
     private fun initPlaylistData(context: Context) {
@@ -62,7 +62,7 @@ class OnStartAssetManager {
                 null
             }
         }.toMutableList()
-        PlaylistData(context, playlistName, songList, index)
+        PlaylistData(context, playlistName, songList, index,null)
     }
 
     private fun initSongData(context: Context) {

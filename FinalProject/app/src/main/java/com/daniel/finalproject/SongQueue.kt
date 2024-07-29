@@ -2,6 +2,7 @@ package com.daniel.finalproject
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
 import java.io.File
 import kotlin.random.Random
@@ -28,7 +29,7 @@ class SongQueue{
             .map{SongData(activity,it) }
             .toMutableList()
         if(wasFiltered){ // reflect any null references in file storage
-            currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex)
+            currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex,currentPlaylist.icon)
         }
         songOrder = (0 until size()).toMutableList()
         queueIndex = -1
@@ -48,6 +49,13 @@ class SongQueue{
     fun size(): Int{
         return songObjects.size
     }
+    fun icon(): Bitmap?{
+        return currentPlaylist.icon
+    }
+    fun playlistNumber(): Int{
+        return currentPlaylist.fileIndex
+    }
+
     fun delete(libraryIndex: Int){
         val playlistIndex = playlistIndexOf(libraryIndex)
         songObjects.removeAt(playlistIndex) // update first

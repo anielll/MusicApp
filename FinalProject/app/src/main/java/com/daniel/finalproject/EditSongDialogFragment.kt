@@ -1,7 +1,6 @@
 package com.daniel.finalproject
 import PhotoPicker
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.KeyEvent
@@ -52,7 +51,7 @@ class EditSongDialogFragment : DialogFragment() {
         val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
         val selectButton = view.findViewById<Button>(R.id.select_image_button)
         val songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
-        val bitmap = songData.art
+        val bitmap = songData.icon
         titleEditText.setText(songData.title)
         artistEditText.setText(songData.artist)
         if(bitmap!=null){

@@ -17,12 +17,12 @@ class SongData
     val title: String
     val artist: String
     val songIndex: Int
-    val art: Bitmap?
-    constructor(context: Context,title: String,artist: String,songIndex: Int,art: Bitmap?){ // Edit Constructor
+    val icon: Bitmap?
+    constructor(context: Context,title: String,artist: String,songIndex: Int,songIcon: Bitmap?){ // Edit Constructor
         this.title= title
         this.artist= artist
         this.songIndex = songIndex
-        this.art = art
+        this.icon = songIcon
         saveSongDataToFile(context,this)
     }
     constructor(context: Context, libraryIndex: Int) { // Init Constructor
@@ -31,7 +31,7 @@ class SongData
             this.title = songData.title
             this.artist = songData.artist
             this.songIndex = songData.songIndex
-            this.art = songData.art
+            this.icon = songData.icon
             return
         }
         // Else, parse mp3file for data
@@ -40,14 +40,14 @@ class SongData
         title = metaData.title
         artist = metaData.artist
         songIndex = libraryIndex
-        art = metaData.art
+        icon = metaData.icon
         saveSongDataToFile(context,this)
     }
 companion object {
     data class SongMetadata(
         val title: String,
         val artist: String,
-        val art: Bitmap?
+        val icon: Bitmap?
     )
     fun getMp3FilePath(context: Context,libraryIndex: Int):String{
         val rootDir = File(context.filesDir, "songs/$libraryIndex")
@@ -59,13 +59,13 @@ companion object {
         val retriever = MediaMetadataRetriever()
         var title = ""
         var artist = ""
-        var art: Bitmap? = null
+        var icon: Bitmap? = null
         try {
             retriever.setDataSource(mp3FilePath)
             title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
             artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: ""
             val artByteArray= retriever.embeddedPicture
-            art = toBitMap(artByteArray)
+            icon = toBitMap(artByteArray)
         } catch (e: Exception) {
             // use default values of "", "", empty
         } finally {
@@ -74,7 +74,7 @@ companion object {
         if(title == ""){
             title = mp3FilePath.substringAfterLast('/')
         }
-        return SongMetadata(title, artist, art)
+        return SongMetadata(title, artist, icon)
     }
     data class SongProperties(
         val title: String,
@@ -103,7 +103,7 @@ companion object {
         val pngBitmap = toBitMap(pngFile)
         return SongData(context, properties.title, properties.artist, properties.songIndex, pngBitmap)
     }
-    fun saveSongDataToFile(context: Context, song:SongData) {
+    private fun saveSongDataToFile(context: Context, song:SongData) {
         val songProperties = SongProperties(song.title,song.artist,song.songIndex)
         val songJson = Gson().toJson(songProperties)
         val fileIndex = songProperties.songIndex
@@ -119,10 +119,10 @@ companion object {
         } catch (e: IOException) {
             Log.e("SongData", "Failed to save song properties.", e)
         }
-        if(song.art!=null){
+        if(song.icon!=null){
             val file = File(songDir, "icon.png")
             try {
-                file.writeBytes(toByteArray(song.art))
+                file.writeBytes(toByteArray(song.icon))
             } catch (e: IOException) {
                 e.printStackTrace()
                 Log.e("SongData", "Failed to save song icon.", e)
