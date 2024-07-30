@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.PlaylistViewFragment.Companion.deleteFolder
@@ -38,10 +39,14 @@ class DeletePlaylistDialogFragment : DialogFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.delete_playlist, container, false)
         val playlistNameText= view.findViewById<TextView>(R.id.delete_playlist_name)
+        val playlistIcon = view.findViewById<ImageView>(R.id.playlist_icon)
         val confirmButton= view.findViewById<Button>(R.id.delete_playlist_confirm_button)
         val cancelButton = view.findViewById<Button>(R.id.delete_playlist_cancel_button)
-        val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)
-        playlistNameText.text = playlistData?.playlistName
+        val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)!!
+        playlistNameText.text = playlistData.playlistName
+        if(playlistData.icon!=null){
+            playlistIcon.setImageBitmap(playlistData.icon)
+        }
         cancelButton.setOnClickListener {
             dismiss()
         }
