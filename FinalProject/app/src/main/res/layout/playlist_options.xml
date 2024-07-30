@@ -23,7 +23,4 @@
         android:textColor="@color/white"
         android:backgroundTint="#cc0000"
         />
-
-    <!-- Add more buttons or UI components as needed -->
-
 </LinearLayout>

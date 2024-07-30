@@ -7,6 +7,15 @@
     android:background="@color/black">
 
     <Button
+        android:id="@+id/add_to_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Song to Other Playlist"
+        android:textColor="@color/white"
+        android:backgroundTint="#222222"
+        />
+
+    <Button
         android:id="@+id/edit_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,6 +25,14 @@
         />
 
     <Button
+        android:id="@+id/remove_song_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remove Song From Playlist"
+        android:textColor="@color/white"
+        android:backgroundTint="#222222"
+        />
+    <Button
         android:id="@+id/delete_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +40,4 @@
         android:textColor="@color/white"
         android:backgroundTint="#cc0000"
         />
-
-    <!-- Add more buttons or UI components as needed -->
-
 </LinearLayout>

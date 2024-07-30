@@ -49,9 +49,6 @@ class PlaylistData{
                 Log.e("SongData", "Failed to read song icon.", e)
             }
             val pngBitmap = toBitMap(pngFile)
-            if(playlistIndex==7){
-                println(1)
-            }
             return PlaylistData(context,properties.playlistName,properties.songList,properties.fileIndex,pngBitmap)
         }
         fun writePlaylistDataToFile(context: Context,playlist:PlaylistData){

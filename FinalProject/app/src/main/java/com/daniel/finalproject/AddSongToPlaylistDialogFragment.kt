@@ -1,0 +1,120 @@
+package com.daniel.finalproject
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
+import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
+import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
+import com.daniel.finalproject.PlaylistViewFragment.Companion.deleteFolder
+import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
+import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
+import java.io.File
+
+class AddSongToPlaylistDialogFragment : DialogFragment() {
+    private var libraryIndex: Int? = null
+    companion object {
+
+        fun newInstance(index: Int): AddSongToPlaylistDialogFragment {
+            val fragment = AddSongToPlaylistDialogFragment()
+            val args = Bundle()
+            args.putInt("library_index", index)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+    inner class PlaylistListAdapter (
+        private val playlistObjects: MutableList<PlaylistData>,
+        private val clickListener: (Int) -> Unit
+    ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
+            return PlaylistViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            val playlistViewHolder = holder as PlaylistViewHolder
+                playlistViewHolder.bind(playlistObjects[position],clickListener)
+        }
+
+        override fun getItemCount(): Int {
+            return playlistObjects.size
+        }
+
+        inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            private val playlistNameNameTextView: TextView = itemView.findViewById(R.id.playlist_name)
+            private val playlistOptionsButton: ImageButton = itemView.findViewById(R.id.playlist_options_button)
+            private val playlistIcon: ImageView = itemView.findViewById(R.id.playlist_icon)
+            fun bind(playlistObject: PlaylistData,clickListener: (Int) -> Unit) {
+                playlistNameNameTextView.text = playlistObject.playlistName
+                (playlistOptionsButton.parent as? ViewGroup)?.removeView(playlistOptionsButton)
+                if(playlistObject.icon!=null){
+                    playlistIcon.setImageBitmap(playlistObject.icon)
+                }
+                itemView.setOnClickListener {clickListener(playlistObjects[bindingAdapterPosition].fileIndex)}
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        libraryIndex = arguments?.getInt("library_index")
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.add_song_to_playlist, container, false)
+        val  playlistFileIndexes = MasterList.get()
+
+        val allPlaylistObjects = playlistFileIndexes.mapNotNull {
+            if(it>=0){ // filter out library
+                readPlaylistDataFromFile(requireContext(),it)
+            }else{
+                null
+            }
+        }
+        val playlistObjects = allPlaylistObjects.mapNotNull {
+            if(it.songList.contains(libraryIndex)){
+                null
+            }else{
+                it
+            }
+        }.toMutableList()
+        val recyclerView = view.findViewById<RecyclerView>(R.id.playlist_list_recycler_view)
+        val songViewAdapter = PlaylistListAdapter(
+                playlistObjects,
+                clickListener = { fileIndex ->
+                    addToPlaylist(fileIndex)
+                    dismiss()
+                }
+            )
+            recyclerView.adapter = songViewAdapter
+        return view
+    }
+    private fun addToPlaylist(fileIndex: Int){
+        val otherPlaylist = readPlaylistDataFromFile(requireContext(),fileIndex)
+        otherPlaylist!!.songList.add(libraryIndex!!)
+        writePlaylistDataToFile(requireContext(),otherPlaylist)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val window = dialog?.window
+        val params = window?.attributes
+        val displayMetrics = resources.displayMetrics
+        params?.width = ViewGroup.LayoutParams.MATCH_PARENT
+        params?.height = (displayMetrics.heightPixels * 0.5).toInt() // Half the screen height
+        window?.attributes = params
+    }
+
+
+}

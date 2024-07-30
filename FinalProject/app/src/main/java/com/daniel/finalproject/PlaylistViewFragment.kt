@@ -146,7 +146,7 @@ class PlaylistViewFragment : Fragment() {
 
     private fun onClickSongOptions(playlistIndex: Int) {
         val songOptionsFragment =
-            SongOptionsDialogFragment.newInstance(songQueue.libraryIndexOf(playlistIndex))
+            SongOptionsDialogFragment.newInstance(songQueue.libraryIndexOf(playlistIndex), songQueue.playlistNumber())
         songOptionsFragment.show(parentFragmentManager, "SongOptions")
     }
 
