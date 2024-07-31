@@ -11,16 +11,16 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 
-class PlaylistData{
-    val playlistName : String
-    val songList: MutableList<Int>
-    val fileIndex: Int
+class PlaylistData(
+    context: Context,
+    val playlistName: String,
+    val songList: MutableList<Int>,
+    playlistIndex: Int,
     val icon: Bitmap?
-    constructor(context: Context,playlistName:String, songList: MutableList<Int>,playlistIndex: Int, icon:Bitmap?){
-        this.playlistName=playlistName
-        this.songList=songList
-        this.fileIndex = playlistIndex
-        this.icon = icon
+) {
+    val fileIndex: Int = playlistIndex
+
+    init {
         writePlaylistDataToFile(context,this)
     }
     companion object{
@@ -32,7 +32,7 @@ class PlaylistData{
         fun readPlaylistDataFromFile(context: Context, playlistIndex: Int): PlaylistData? {
             val playlistDir = File(context.filesDir, "playlists/$playlistIndex")
             val propertiesDir = File(playlistDir, "properties.json")
-            var properties: PlaylistProperties? = null
+            val properties: PlaylistProperties?
             try {
                 properties = FileReader(propertiesDir).use { reader ->
                     Gson().fromJson(reader, PlaylistProperties::class.java)

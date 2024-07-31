@@ -15,9 +15,11 @@ class MainViewAdapter (
     private val optionsClickListener: (Int) -> Unit,
     private val parentFragmentManager: FragmentManager
     ): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-    private val VIEW_TYPE_LIBRARY = 1
-    private val VIEW_TYPE_PLAYLIST = 2
-    private val VIEW_TYPE_ADD_PLAYLIST = 3
+    companion object {
+        private const val VIEW_TYPE_ADD_PLAYLIST = 3
+        private const val VIEW_TYPE_LIBRARY = 1
+        private const val VIEW_TYPE_PLAYLIST = 2
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             VIEW_TYPE_PLAYLIST ->{
@@ -93,6 +95,5 @@ class MainViewAdapter (
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
         }
     }
-    private fun addPlaylist() {
-    }
+
 }

@@ -7,17 +7,15 @@ import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
 import java.io.File
 import kotlin.random.Random
 
-class SongQueue{
+class SongQueue(activity: Activity, playlist: PlaylistData){
     private var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
-    private var currentPlaylist: PlaylistData
-    private var parentActivity: Context
+    private var currentPlaylist: PlaylistData = playlist
+    private var parentActivity: Context = activity
     private var songOrder: MutableList<Int>
     var queueIndex: Int
     var looped: Boolean = false
     var shuffled: Boolean = false
-    constructor(activity: Activity,playlist: PlaylistData){
-        this.currentPlaylist = playlist
-        this.parentActivity = activity
+    init{
         var wasFiltered = false
         val filteredIndexList = currentPlaylist.songList
             .filter { // filter out songs that have been deleted

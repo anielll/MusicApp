@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Are you sure you want to permanently delete this playlist?"
+        android:text="@string/confirm_delete_playlist"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:gravity="center"
@@ -30,12 +30,13 @@
             android:src="@drawable/blank_playlist"
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
+            android:contentDescription="@string/playlist_icon"
             />
         <TextView
             android:id="@+id/delete_playlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Playlist Name"
+            android:text="@string/playlist_name"
             android:textColor="@color/white"
             android:textSize="32sp"
             android:gravity="center"
@@ -44,6 +45,7 @@
     </LinearLayout>
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -51,23 +53,24 @@
 
         <Button
             android:id="@+id/delete_playlist_cancel_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#222222"
             android:layout_marginHorizontal="5dp"
-            android:text="Cancel"
-            android:textColor="@color/white"
-            />
+            android:text="@string/cancel"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/delete_playlist_confirm_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#cc0000"
             android:layout_marginHorizontal="5dp"
-            android:text="Delete"
+            android:text="@string/delete"
             android:textColor="@color/white"
             />
     </LinearLayout>

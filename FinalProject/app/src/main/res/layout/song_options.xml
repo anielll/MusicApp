@@ -10,7 +10,7 @@
         android:id="@+id/add_to_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Song to Other Playlist"
+        android:text="@string/add_song_other"
         android:textColor="@color/white"
         android:backgroundTint="#222222"
         />
@@ -19,7 +19,7 @@
         android:id="@+id/edit_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Song"
+        android:text="@string/edit_song"
         android:textColor="@color/white"
         android:backgroundTint="#222222"
         />
@@ -28,7 +28,7 @@
         android:id="@+id/remove_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remove Song From Playlist"
+        android:text="@string/remove_song"
         android:textColor="@color/white"
         android:backgroundTint="#222222"
         />
@@ -36,7 +36,7 @@
         android:id="@+id/delete_song_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Song"
+        android:text="@string/delete_song"
         android:textColor="@color/white"
         android:backgroundTint="#cc0000"
         />

@@ -20,6 +20,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="8dp"
+            android:contentDescription="@string/playlist_icon"
             />
 
         <TextView
@@ -30,7 +31,7 @@
             app:layout_constraintStart_toEndOf="@id/playlist_icon"
             android:layout_marginHorizontal="10dp"
             app:layout_constraintEnd_toStartOf="@id/playlist_options_button"
-            android:text="Playlist Name"
+            android:text="@string/playlist_name"
             android:textSize="30sp"
             android:textColor="@color/white"
             android:singleLine="true"
@@ -47,7 +48,9 @@
             android:src="@drawable/options"
             android:layout_margin="15dp"
             android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/playlist_options"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

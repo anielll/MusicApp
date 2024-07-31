@@ -14,5 +14,6 @@
     android:scaleType="fitCenter"
     android:layout_margin="10dp"
     app:layout_constraintStart_toStartOf="parent"
+    android:contentDescription="@string/add_song"
     />
 </androidx.constraintlayout.widget.ConstraintLayout>

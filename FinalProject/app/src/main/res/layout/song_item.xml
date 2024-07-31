@@ -20,6 +20,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="8dp"
+            android:contentDescription="@string/song_icon"
             />
 
         <LinearLayout
@@ -39,10 +40,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="Song Name"
+                android:text="@string/song_title"
                 android:textSize="20sp"
                 android:textColor="@color/white"
-                android:gravity="left|bottom"
+                android:gravity="start|bottom"
                 android:singleLine="true"
                 android:ellipsize="end"/>
 
@@ -51,10 +52,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="Artist Name"
+                android:text="@string/artist"
                 android:textSize="16sp"
                 android:textColor="#dddddd"
-                android:gravity="left|top"
+                android:gravity="start|top"
                 android:singleLine="true"
                 android:ellipsize="end"
                 />
@@ -69,7 +70,9 @@
             android:src="@drawable/options"
             android:layout_margin="15dp"
             android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/song_options"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

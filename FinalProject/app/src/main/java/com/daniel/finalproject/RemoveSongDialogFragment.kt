@@ -8,10 +8,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import com.daniel.finalproject.PlaylistViewFragment.Companion.deleteFolder
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
 import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
-import java.io.File
 
 class RemoveSongDialogFragment : DialogFragment() {
 

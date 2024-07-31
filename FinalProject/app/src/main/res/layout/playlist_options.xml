@@ -10,7 +10,7 @@
         android:id="@+id/edit_playlist_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Playlist"
+        android:text="@string/edit_playlist"
         android:textColor="@color/white"
         android:backgroundTint="#222222"
         />
@@ -19,7 +19,7 @@
         android:id="@+id/delete_playlist_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Playlist"
+        android:text="@string/delete_playlist"
         android:textColor="@color/white"
         android:backgroundTint="#cc0000"
         />

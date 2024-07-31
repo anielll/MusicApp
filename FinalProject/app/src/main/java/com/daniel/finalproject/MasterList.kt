@@ -70,10 +70,10 @@ object MasterList {
         return list.indexOf(fileIndex)+1
     }
     fun last():Int{
-        if(list.isEmpty()){
-            return 0
+        return if(list.isEmpty()){
+            0
         }else {
-            return list.last()
+            list.last()
         }
     }
 

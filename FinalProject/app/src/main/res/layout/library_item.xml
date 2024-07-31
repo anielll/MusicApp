@@ -20,6 +20,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="8dp"
+            android:contentDescription="@string/library_icon"
             />
 
         <TextView
@@ -29,7 +30,7 @@
             app:layout_constraintStart_toEndOf="@id/libraryIcon"
             android:layout_marginHorizontal="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="My Library"
+            android:text="@string/my_library"
             android:textSize="30sp"
             android:textColor="@color/white"
             android:singleLine="true"

@@ -1,15 +1,12 @@
 package com.daniel.finalproject
 
-import PhotoPicker
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.media.Image
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.KeyEvent
@@ -19,7 +16,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -177,12 +173,12 @@ class AddSongDialogFragment : DialogFragment() {
         listener!!.onSongUpdated(newSong,newSongIndex)
     }
 
-    private fun copyMp3ToInternalStorage(newSongIndex: Int): File? {
+    private fun copyMp3ToInternalStorage(newSongIndex: Int){
         val file = File(requireContext().filesDir, "songs/$newSongIndex")
         if (!file.exists()) {
             file.mkdirs()
         }
-        val destinationFile = File(file, selectedMp3Name)
+        val destinationFile = File(file, selectedMp3Name!!)
         val inputStream: InputStream = requireContext().contentResolver.openInputStream(selectedMp3Uri!!)!!
         val outputStream = FileOutputStream(destinationFile)
         val buffer = ByteArray(4 * 1024)
@@ -195,10 +191,10 @@ class AddSongDialogFragment : DialogFragment() {
         }
         inputStream.close()
         outputStream.close()
-        return destinationFile
+        return
     }
 
-    fun parseMetaData(context: Context, uri: Uri): SongMetadata {
+    private fun parseMetaData(context: Context, uri: Uri): SongMetadata {
         val retriever = MediaMetadataRetriever()
         var title = ""
         var artist = ""
@@ -209,7 +205,7 @@ class AddSongDialogFragment : DialogFragment() {
                 title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
                 artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: ""
                 val artByteArray= retriever.embeddedPicture
-                icon = SongData.Companion.toBitMap(artByteArray)
+                icon = toBitMap(artByteArray)
             }
         } catch (e: Exception) {
             // use default values of "", "", empty
@@ -229,10 +225,10 @@ class AddSongDialogFragment : DialogFragment() {
         requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val colIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (colIndex != -1) {
-                    fileName = cursor.getString(colIndex)
+                fileName = if (colIndex != -1) {
+                    cursor.getString(colIndex)
                 }else{
-                    fileName = "ERROR"
+                    "ERROR"
                 }
             }
         }

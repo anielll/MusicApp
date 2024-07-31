@@ -15,12 +15,11 @@ class SongViewAdapter(
     private val optionsClickListener: (Int) -> Unit,
     private val fragmentManager : FragmentManager)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val VIEW_TYPE_SONG = 1
-    private val VIEW_TYPE_ADD_SONG = 2
     private var selectedPosition = RecyclerView.NO_POSITION
-
-
-
+    companion object {
+        private const val VIEW_TYPE_SONG = 1
+        private const val VIEW_TYPE_ADD_SONG = 2
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             VIEW_TYPE_SONG -> {
@@ -94,5 +93,6 @@ class SongViewAdapter(
         notifyItemChanged(previousPosition)
         notifyItemChanged(newPosition)
     }
+
 
 }

@@ -17,6 +17,7 @@
             android:layout_height="match_parent"
             app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/blank_song"
+            android:contentDescription="@string/select_image"
             />
 
         <View
@@ -29,7 +30,7 @@
             android:id="@+id/select_image_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Select Image"
+            android:text="@string/select_image"
             android:textColor="@color/white"
             android:textSize="32sp"
             android:padding="8dp"
@@ -49,24 +50,31 @@
             android:id="@+id/edit_song_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Song Title"
+            android:hint="@string/song_title"
             android:textColor="@color/white"
             android:textColorHint="#bbbbbb"
-            android:textSize="24sp"/>
+            android:textSize="24sp"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            />
 
         <EditText
             android:id="@+id/edit_song_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Artist"
+            android:hint="@string/artist"
             android:textColor="@color/white"
             android:textColorHint="#bbbbbb"
-            android:textSize="24sp"/>
+            android:textSize="24sp"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            />
 
 
     </LinearLayout>
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -74,23 +82,24 @@
 
         <Button
             android:id="@+id/edit_song_cancel_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#cc0000"
             android:layout_marginHorizontal="5dp"
-            android:text="Cancel"
-            android:textColor="@color/white"
-            />
+            android:text="@string/cancel"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/edit_song_save_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#222222"
             android:layout_marginHorizontal="5dp"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/white"
             />
     </LinearLayout>

@@ -190,8 +190,8 @@ class PlaylistViewFragment : Fragment() {
             seekBar.progress = 0
             playPauseButton.setImageResource(R.drawable.play_button)
             currentSong = null
-            currentSongTime.text = "0:00"
-            songDuration.text = "0:00"
+            currentSongTime.text = getString(R.string.zeroed_time)
+            songDuration.text = getString(R.string.zeroed_time)
             seekBar.isEnabled=false
             return
         }
@@ -208,8 +208,8 @@ class PlaylistViewFragment : Fragment() {
             if (::updateProgressBarRunnable.isInitialized) {
                 handler.removeCallbacks(updateProgressBarRunnable)
             }
-            currentSongTime.text = "0:00"
-            songDuration.text = "0:00"
+            currentSongTime.text = getString(R.string.zeroed_time)
+            songDuration.text = getString(R.string.zeroed_time)
             seekBar.isEnabled=false
             return
         }
@@ -234,7 +234,7 @@ class PlaylistViewFragment : Fragment() {
             if (::updateProgressBarRunnable.isInitialized) {
                 handler.removeCallbacks(updateProgressBarRunnable)
             }
-            currentSongTime.text = "0:00"
+            currentSongTime.text = getString(R.string.zeroed_time)
             songDuration.text = formatTime(mediaPlayer.duration)
             updateProgressBar()
         } catch (e: IOException) {

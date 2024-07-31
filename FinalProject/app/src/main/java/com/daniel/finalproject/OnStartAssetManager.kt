@@ -8,13 +8,13 @@ import java.io.InputStream
 import java.io.OutputStream
 class OnStartAssetManager {
     companion object{
-    val debug_files =
+    private const val DEBUG_FILES =
         true // Set to false to disable default (playlist and song) configuration for debug purposes
-    val force_debug = true // Set to true to override all app data each time the app launches
+    private const val FORCE_DEBUG = true // Set to true to override all app data each time the app launches
     fun initializeDefaults(context: Context) {
-        if (debug_files) {
+        if (DEBUG_FILES) {
             val metaDataFolder = File(context.filesDir, "metadata")
-            if (!metaDataFolder.exists() || force_debug) {
+            if (!metaDataFolder.exists() || FORCE_DEBUG) {
                 PlaylistViewFragment.deleteFolder(File(context.filesDir, "songs"))
                 PlaylistViewFragment.deleteFolder(File(context.filesDir, "playlists"))
                 PlaylistViewFragment.deleteFolder(File(context.filesDir, "metadata"))

@@ -9,9 +9,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Are you sure you want to permanently delete this song from your library all playlists?"
+        android:text="@string/confirm_delete_song"
         android:textColor="@color/white"
-        android:textSize="24dp"
+        android:textSize="24sp"
         android:gravity="center"
         android:textStyle="bold"
         android:paddingBottom="16dp"
@@ -30,12 +30,13 @@
             android:src="@drawable/blank_song"
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
+            android:contentDescription="@string/song_icon"
             />
         <TextView
             android:id="@+id/delete_song_text_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Song Name"
+            android:text="@string/song_title"
             android:textColor="@color/white"
             android:textSize="32sp"
             android:gravity="center"
@@ -45,7 +46,7 @@
             android:id="@+id/delete_song_text_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Song Artist"
+            android:text="@string/artist"
             android:textColor="#bbbbbb"
             android:textSize="24sp"
             android:gravity="center"
@@ -55,6 +56,7 @@
     </LinearLayout>
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -62,23 +64,24 @@
 
         <Button
             android:id="@+id/delete_song_cancel_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#222222"
             android:layout_marginHorizontal="5dp"
-            android:text="Cancel"
-            android:textColor="@color/white"
-            />
+            android:text="@string/cancel"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/delete_song_confirm_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#cc0000"
             android:layout_marginHorizontal="5dp"
-            android:text="Delete"
+            android:text="@string/delete"
             android:textColor="@color/white"
             />
     </LinearLayout>

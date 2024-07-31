@@ -1,5 +1,4 @@
 package com.daniel.finalproject
-import PhotoPicker
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle

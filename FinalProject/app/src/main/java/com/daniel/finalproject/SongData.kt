@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.util.Log
 import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
@@ -163,10 +162,10 @@ companion object {
         val parenMatches = parenthesesPattern.findAll(title)
         for (match in parenMatches) {
             val textInParentheses = match.groupValues[1]
-            if(artist==""){
-            artist = textInParentheses.trim()}
-            else{
-                artist = "$artist, $textInParentheses".trim()
+            artist = if(artist==""){
+                textInParentheses.trim()
+            } else{
+                "$artist, $textInParentheses".trim()
             }
         }
         title = title.replace(parenthesesPattern, "").trim()
@@ -175,10 +174,10 @@ companion object {
         val bracketMatches = bracketsPattern.findAll(title)
         for (match in bracketMatches) {
             val textInBrackets = match.groupValues[1]
-            if(artist==""){
-                artist = textInBrackets.trim()}
-            else{
-                artist = "$artist, $textInBrackets".trim()
+            artist = if(artist==""){
+                textInBrackets.trim()
+            } else{
+                "$artist, $textInBrackets".trim()
             }
         }
         title = title.replace(bracketsPattern, "").trim()
