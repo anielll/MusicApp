@@ -8,7 +8,7 @@
     android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
-    android:layout_margin="5px"
+    android:padding="1px"
     tools:ignore="PxUsage">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/playlist_list_recycler_view"
@@ -16,6 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/playlist_item"
-        android:background="@color/black"
+        android:background="#222222"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

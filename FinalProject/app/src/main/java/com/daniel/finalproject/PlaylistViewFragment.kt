@@ -9,13 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.SongData.Companion.getMp3FilePath
 import java.io.File
 import java.io.IOException
+import java.util.Locale
 
 class PlaylistViewFragment : Fragment() {
     interface OnSongUpdatedListener {
@@ -42,13 +43,15 @@ class PlaylistViewFragment : Fragment() {
 
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var playPauseButton: ImageButton
-    private lateinit var progressBar: ProgressBar
-    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var seekBar: SeekBar
     private lateinit var updateProgressBarRunnable: Runnable
     private lateinit var recyclerView: RecyclerView
     private lateinit var songQueue: SongQueue
     private lateinit var songViewAdapter: SongViewAdapter
+    private lateinit var currentSongTime: TextView
+    private lateinit var songDuration: TextView
     private var currentSong: Int? = null
+    private val handler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val playlistFileIndex = arguments?.getInt("selected_playlist")!!
@@ -136,8 +139,10 @@ class PlaylistViewFragment : Fragment() {
                 if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
                     val progress =
                         ((mediaPlayer.currentPosition.toFloat() / mediaPlayer.duration) * 4096).toInt()
-                    progressBar.progress = progress
-                    handler.postDelayed(this, 20)
+                    seekBar.progress = progress
+                    val currentTime = (mediaPlayer.currentPosition.toFloat()).toInt()
+                    currentSongTime.text = formatTime(currentTime)
+                    handler.postDelayed(this, mediaPlayer.duration.toLong()/4096)
                 }
             }
         }
@@ -169,10 +174,10 @@ class PlaylistViewFragment : Fragment() {
     }
 
     private fun setCurrentSong(playlistIndex: Int?) {
-        if (songQueue.size() == 0) {
+        if (songQueue.size() == 0) { // if initializing empty playlist... don't
             return
         }
-        if (playlistIndex == null) {
+        if (playlistIndex == null) { // uninitializes playlist
             if (::mediaPlayer.isInitialized) {
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.stop()
@@ -182,9 +187,12 @@ class PlaylistViewFragment : Fragment() {
             if (::updateProgressBarRunnable.isInitialized) {
                 handler.removeCallbacks(updateProgressBarRunnable)
             }
-            progressBar.progress = 0
+            seekBar.progress = 0
             playPauseButton.setImageResource(R.drawable.play_button)
             currentSong = null
+            currentSongTime.text = "0:00"
+            songDuration.text = "0:00"
+            seekBar.isEnabled=false
             return
         }
         if (playlistIndex == -1) {
@@ -200,11 +208,15 @@ class PlaylistViewFragment : Fragment() {
             if (::updateProgressBarRunnable.isInitialized) {
                 handler.removeCallbacks(updateProgressBarRunnable)
             }
+            currentSongTime.text = "0:00"
+            songDuration.text = "0:00"
+            seekBar.isEnabled=false
             return
         }
         currentSong = playlistIndex
         songQueue.setQueueCursor(playlistIndex)
         songViewAdapter.updateSelectedPosition(playlistIndex)
+        seekBar.isEnabled=true
         if (::mediaPlayer.isInitialized) {
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
@@ -222,6 +234,8 @@ class PlaylistViewFragment : Fragment() {
             if (::updateProgressBarRunnable.isInitialized) {
                 handler.removeCallbacks(updateProgressBarRunnable)
             }
+            currentSongTime.text = "0:00"
+            songDuration.text = formatTime(mediaPlayer.duration)
             updateProgressBar()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -244,7 +258,7 @@ class PlaylistViewFragment : Fragment() {
     }
 
     private fun resetPlaylist() {
-        progressBar.progress = 0
+        seekBar.progress = 0
         setCurrentSong(-1)
         playPauseButton.setImageResource(R.drawable.play_button)
         currentSong = null
@@ -280,19 +294,53 @@ class PlaylistViewFragment : Fragment() {
             }
         }
         // Bottom Bar
-        progressBar = view.findViewById(R.id.progressBar)
+        seekBar = view.findViewById(R.id.progressBar)
         playPauseButton = view.findViewById(R.id.master_play_pause_button)
         playPauseButton.setOnClickListener {
             playCurrent()
         }
         val prevSongButton: ImageButton = view.findViewById(R.id.previous_song_button)
         val nextSongButton: ImageButton = view.findViewById(R.id.next_song_button)
+        currentSongTime = view.findViewById(R.id.duration_start_text)
+        songDuration = view.findViewById(R.id.duration_end_text)
         prevSongButton.setOnClickListener {
             prevSong()
         }
         nextSongButton.setOnClickListener {
             nextSong()
         }
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            var wasPlaying: Boolean = false
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser && ::mediaPlayer.isInitialized) {
+                    val seekPosition = (progress / 4096.0 * mediaPlayer.duration).toInt()
+                    mediaPlayer.seekTo(seekPosition)
+                    currentSongTime.text = formatTime(seekPosition)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                if(!::mediaPlayer.isInitialized ){
+                    return
+                }
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.pause()
+                    wasPlaying = true
+                }else{
+                    wasPlaying= false
+                }
+                handler.removeCallbacks(updateProgressBarRunnable)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if (::mediaPlayer.isInitialized && wasPlaying) {
+                    mediaPlayer.start()
+                }
+                updateProgressBar()
+            }
+        })
+
+
     }
 
     private fun nextSong() {
@@ -333,6 +381,11 @@ class PlaylistViewFragment : Fragment() {
                 updateProgressBar()
             }
         }
-
+    }
+    private fun formatTime(milliseconds: Int): String {
+        val totalSeconds = (milliseconds / 1000)
+        val minutes =  totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format(Locale.getDefault(),"%01d:%02d", minutes, seconds)
     }
 }

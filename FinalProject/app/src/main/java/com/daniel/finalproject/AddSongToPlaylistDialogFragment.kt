@@ -1,23 +1,16 @@
 package com.daniel.finalproject
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daniel.finalproject.PlaylistData.Companion.readPlaylistDataFromFile
 import com.daniel.finalproject.PlaylistData.Companion.writePlaylistDataToFile
-import com.daniel.finalproject.PlaylistViewFragment.Companion.deleteFolder
-import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
-import com.daniel.finalproject.SongData.Companion.readSongDataFromFile
-import java.io.File
-
 class AddSongToPlaylistDialogFragment : DialogFragment() {
     private var libraryIndex: Int? = null
     companion object {
@@ -41,7 +34,7 @@ class AddSongToPlaylistDialogFragment : DialogFragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val playlistViewHolder = holder as PlaylistViewHolder
-                playlistViewHolder.bind(playlistObjects[position],clickListener)
+            playlistViewHolder.bind(playlistObjects[position],clickListener)
         }
 
         override fun getItemCount(): Int {
@@ -104,16 +97,17 @@ class AddSongToPlaylistDialogFragment : DialogFragment() {
         val otherPlaylist = readPlaylistDataFromFile(requireContext(),fileIndex)
         otherPlaylist!!.songList.add(libraryIndex!!)
         writePlaylistDataToFile(requireContext(),otherPlaylist)
+        Toast.makeText(requireContext(), "Successfully Saved Song To: ${otherPlaylist.playlistName}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onStart() {
         super.onStart()
-        val window = dialog?.window
-        val params = window?.attributes
+        val window = requireDialog().window
+        val params = window!!.attributes
         val displayMetrics = resources.displayMetrics
-        params?.width = ViewGroup.LayoutParams.MATCH_PARENT
-        params?.height = (displayMetrics.heightPixels * 0.5).toInt() // Half the screen height
-        window?.attributes = params
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT // Full screen width
+        params.height = (displayMetrics.heightPixels * 0.5).toInt() // Half the screen height
+        window.attributes = params
     }
 
 
