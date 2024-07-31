@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.util.Log
 import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
@@ -55,7 +56,7 @@ companion object {
         val mp3File = songFiles.firstOrNull { it.endsWith(".mp3") }
         return File(rootDir, mp3File!!).absolutePath
     }
-    private fun parseMetaData(mp3FilePath: String): SongMetadata{
+    fun parseMetaData(mp3FilePath: String): SongMetadata{
         val retriever = MediaMetadataRetriever()
         var title = ""
         var artist = ""
@@ -71,11 +72,15 @@ companion object {
         } finally {
             retriever.release()
         }
-        if(title == ""){
-            title = mp3FilePath.substringAfterLast('/')
+        val (inferredTitle:String , inferredArtist:String) = titleAndArtistFromFileName(mp3FilePath.substringAfterLast('/'))
+        if(title == "" || artist ==""){
+            title = inferredTitle
+            artist= inferredArtist
+
         }
         return SongMetadata(title, artist, icon)
     }
+
     data class SongProperties(
         val title: String,
         val artist: String,
@@ -129,7 +134,7 @@ companion object {
             }
         }
     }
-    private fun toBitMap(byteArray: ByteArray?): Bitmap?{
+    fun toBitMap(byteArray: ByteArray?): Bitmap?{
         return if(byteArray!=null) {
             BitmapFactory.decodeByteArray(byteArray, 0,byteArray.size)
         }else{
@@ -140,6 +145,45 @@ companion object {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
         return byteArrayOutputStream.toByteArray()
+    }
+    fun titleAndArtistFromFileName(file: String): Pair<String, String> {
+        val fileName= file.substringBeforeLast('.')
+        val dashIndex = fileName.indexOf("-")
+        var title: String
+        var artist: String
+        if (dashIndex != -1) {
+            artist = fileName.substring(0, dashIndex).trim()
+            title = fileName.substring(dashIndex + 1).trim()
+            Pair(artist, title)
+        } else {
+            title = fileName.trim()
+            artist =""
+        }
+        val parenthesesPattern = "\\(([^)]+)\\)".toRegex()
+        val parenMatches = parenthesesPattern.findAll(title)
+        for (match in parenMatches) {
+            val textInParentheses = match.groupValues[1]
+            if(artist==""){
+            artist = textInParentheses.trim()}
+            else{
+                artist = "$artist, $textInParentheses".trim()
+            }
+        }
+        title = title.replace(parenthesesPattern, "").trim()
+
+        val bracketsPattern = "\\[([^)]+)]".toRegex()
+        val bracketMatches = bracketsPattern.findAll(title)
+        for (match in bracketMatches) {
+            val textInBrackets = match.groupValues[1]
+            if(artist==""){
+                artist = textInBrackets.trim()}
+            else{
+                artist = "$artist, $textInBrackets".trim()
+            }
+        }
+        title = title.replace(bracketsPattern, "").trim()
+
+        return  Pair(title,artist)
     }
 }
 }

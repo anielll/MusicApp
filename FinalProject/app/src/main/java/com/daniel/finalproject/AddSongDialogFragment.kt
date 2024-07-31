@@ -4,7 +4,10 @@ import PhotoPicker
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.media.Image
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,6 +28,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.daniel.finalproject.PlaylistViewFragment.OnSongUpdatedListener
+import com.daniel.finalproject.SongData.Companion.SongMetadata
+import com.daniel.finalproject.SongData.Companion.titleAndArtistFromFileName
+import com.daniel.finalproject.SongData.Companion.toBitMap
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -49,10 +55,16 @@ class AddSongDialogFragment : DialogFragment() {
                     selectedMp3Uri = uri
                     selectedMp3Name = getFileNameFromUri(uri)
                     val titleEditText = requireView().findViewById<EditText>(R.id.add_song_title)
+                    val artistEditText = requireView().findViewById<EditText>(R.id.add_song_artist)
+                    val songIcon = requireView().findViewById<ImageView>(R.id.select_image_background)
                     val btnSelectSong = view?.findViewById<Button>(R.id.add_song_mp3_button)!!
                     if (selectedMp3Name != null) {
                         btnSelectSong.text = selectedMp3Name
-                        titleEditText.setText(selectedMp3Name)
+                        val metadata = parseMetaData(requireContext(), uri)
+                        titleEditText.setText(metadata.title)
+                        artistEditText.setText(metadata.artist)
+                        songIcon.setImageBitmap(metadata.icon)
+                        photoSelected = true
                     }
                 }
             }
@@ -184,6 +196,33 @@ class AddSongDialogFragment : DialogFragment() {
         inputStream.close()
         outputStream.close()
         return destinationFile
+    }
+
+    fun parseMetaData(context: Context, uri: Uri): SongMetadata {
+        val retriever = MediaMetadataRetriever()
+        var title = ""
+        var artist = ""
+        var icon: Bitmap? = null
+        try {
+            context.contentResolver.openFileDescriptor(uri, "r")?.use {uriFile ->
+                retriever.setDataSource(uriFile.fileDescriptor)
+                title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
+                artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: ""
+                val artByteArray= retriever.embeddedPicture
+                icon = SongData.Companion.toBitMap(artByteArray)
+            }
+        } catch (e: Exception) {
+            // use default values of "", "", empty
+        } finally {
+            retriever.release()
+        }
+        val (inferredTitle: String, inferredArtist: String) = titleAndArtistFromFileName(getFileNameFromUri(uri)!!.substringAfterLast('/'))
+        if(title == "" || artist ==""){
+            title = inferredTitle
+            artist= inferredArtist
+
+        }
+        return SongMetadata(title, artist, icon)
     }
     private fun getFileNameFromUri(uri: Uri): String? {
         var fileName: String? = null

@@ -10,7 +10,7 @@ class OnStartAssetManager {
     companion object{
     val debug_files =
         true // Set to false to disable default (playlist and song) configuration for debug purposes
-    val force_debug = false // Set to true to override all app data each time the app launches
+    val force_debug = true // Set to true to override all app data each time the app launches
     fun initializeDefaults(context: Context) {
         if (debug_files) {
             val metaDataFolder = File(context.filesDir, "metadata")
