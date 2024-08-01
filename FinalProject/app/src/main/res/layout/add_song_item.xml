@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="#222222">
+    android:background="@color/medium_gray">
 <ImageButton
     android:id="@+id/addButton"
     android:layout_width="0dp"
@@ -12,7 +12,7 @@
     android:background="@android:color/transparent"
     android:src="@drawable/plus"
     android:scaleType="fitCenter"
-    android:layout_margin="10dp"
+    android:layout_margin="6dp"
     app:layout_constraintStart_toStartOf="parent"
     android:contentDescription="@string/add_song"
     />

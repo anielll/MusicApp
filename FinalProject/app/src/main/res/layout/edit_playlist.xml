@@ -17,13 +17,13 @@
             android:layout_height="match_parent"
             app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/blank_playlist"
-            android:contentDescription="@string/select_image"
+            android:contentDescription="@string/default_image"
             />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#80000000"
+            android:background="@color/cover"
             />
 
         <Button
@@ -44,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#222222"
+        android:background="@color/medium_gray"
         android:padding="16dp">
         <EditText
             android:id="@+id/edit_playlist_name"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/playlist_name"
             android:textColor="@color/white"
-            android:textColorHint="#bbbbbb"
+            android:textColorHint="@color/light_gray"
             android:textSize="24sp"
             android:importantForAutofill="no"
             android:inputType="text"
@@ -74,10 +74,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#cc0000"
+            android:backgroundTint="@color/delete_red"
             android:layout_marginHorizontal="5dp"
             android:text="@string/cancel"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            />
 
         <Button
             android:id="@+id/edit_playlist_save_button"
@@ -85,10 +87,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#222222"
+            android:backgroundTint="@color/medium_light_gray"
             android:layout_marginHorizontal="5dp"
             android:text="@string/save"
             android:textColor="@color/white"
+            android:textStyle="bold"
             />
     </LinearLayout>
 </LinearLayout>

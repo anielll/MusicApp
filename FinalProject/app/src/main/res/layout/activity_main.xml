@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="#111111"
+    android:background="@color/black"
     >
 
     <androidx.constraintlayout.widget.Guideline
@@ -16,25 +16,60 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.12" />
 
-    <include layout="@layout/home_page_top_widget"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_width="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/mainTopGuideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlistView"
-        app:layoutManager="LinearLayoutManager"
-        android:layout_width="0dp"
+        android:background="@color/black">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="15dp"
+            >
+            <ImageView
+                android:id="@+id/appIcon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintDimensionRatio="1:1"
+                android:src="@drawable/app_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/app_icon"
+                />
+            <TextView
+                app:layout_constraintStart_toEndOf="@id/appIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="20dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textSize="40sp"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="@id/mainTopGuideline"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/playlist_item"
-        />
+        android:background="@color/dark_gray"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlistView"
+            app:layoutManager="LinearLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/playlist_item"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <FrameLayout
         android:id="@+id/playlist_view_container"
         android:layout_width="match_parent"

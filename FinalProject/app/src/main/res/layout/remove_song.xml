@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#222222"
+        android:background="@color/medium_gray"
         android:padding="16dp">
         <ImageView
             android:id="@+id/song_icon"
@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/artist"
-            android:textColor="#bbbbbb"
+            android:textColor="@color/light_gray"
             android:textSize="24sp"
             android:gravity="center"
             />
@@ -68,10 +68,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#222222"
+            android:backgroundTint="@color/medium_light_gray"
             android:layout_marginHorizontal="5dp"
             android:text="@string/cancel"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            />
 
         <Button
             android:id="@+id/remove_song_confirm_button"
@@ -79,10 +81,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#cc0000"
+            android:backgroundTint="@color/delete_red"
             android:layout_marginHorizontal="5dp"
             android:text="@string/remove"
             android:textColor="@color/white"
+            android:textStyle="bold"
             />
     </LinearLayout>
 </LinearLayout>

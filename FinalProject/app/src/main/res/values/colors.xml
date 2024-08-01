@@ -4,4 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="selected_item_color">#333333</color>
     <color name="unselected_item_color">#222222</color>
+    <color name="dark_gray">#111111</color>
+    <color name="cover">#80000000</color>
+    <color name="medium_gray">#222222</color>
+    <color name="light_gray">#bbbbbb</color>
+    <color name="delete_red">#cc0000</color>
+    <color name="confirm_green">#009900</color>
+    <color name="medium_light_gray">#444444</color>
 </resources>

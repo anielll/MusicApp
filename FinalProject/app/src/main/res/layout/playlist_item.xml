@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#222222">
+        android:background="@color/medium_gray">
 
         <ImageView
             android:id="@+id/playlist_icon"
@@ -46,7 +46,7 @@
             android:background="@android:color/transparent"
             app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/options"
-            android:layout_margin="15dp"
+            android:layout_margin="12dp"
             android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="@string/playlist_options"

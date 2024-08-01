@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:text="@string/add_song_other"
         android:textColor="@color/white"
-        android:backgroundTint="#222222"
+        android:backgroundTint="@color/medium_light_gray"
+        android:textStyle="bold"
         />
 
     <Button
@@ -21,7 +22,8 @@
         android:layout_height="wrap_content"
         android:text="@string/edit_song"
         android:textColor="@color/white"
-        android:backgroundTint="#222222"
+        android:backgroundTint="@color/medium_light_gray"
+        android:textStyle="bold"
         />
 
     <Button
@@ -30,7 +32,8 @@
         android:layout_height="wrap_content"
         android:text="@string/remove_song"
         android:textColor="@color/white"
-        android:backgroundTint="#222222"
+        android:backgroundTint="@color/medium_light_gray"
+        android:textStyle="bold"
         />
     <Button
         android:id="@+id/delete_song_button"
@@ -38,6 +41,7 @@
         android:layout_height="wrap_content"
         android:text="@string/delete_song"
         android:textColor="@color/white"
-        android:backgroundTint="#cc0000"
+        android:backgroundTint="@color/delete_red"
+        android:textStyle="bold"
         />
 </LinearLayout>
