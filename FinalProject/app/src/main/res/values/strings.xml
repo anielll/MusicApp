@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Final Project</string>
+    <string name="app_name">Music App</string>
     <string name="zeroed_time">0:00</string>
     <string name="select_image">Select Image</string>
     <string name="playlist_name">Playlist Name</string>

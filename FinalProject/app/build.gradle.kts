@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.daniel.finalproject"
+    namespace = "com.couturier.musicapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.daniel.finalproject"
+        applicationId = "com.couturier.musicapp"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
