@@ -82,8 +82,8 @@ class SongViewAdapter(
         private val addSongButton: ImageButton = itemView.findViewById(R.id.addButton)
         fun bind() {
             addSongButton.setOnClickListener{
-                val addSongDialogFragment = AddSongDialogFragment()
-                addSongDialogFragment.show(fragmentManager, "AddSongDialogFragment")
+                val addSongFragment = AddSongFragment()
+                addSongFragment.show(fragmentManager, "AddSongFragment")
             }
         }
     }

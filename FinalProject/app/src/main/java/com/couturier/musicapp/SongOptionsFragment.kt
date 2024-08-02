@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class SongOptionsDialogFragment : BottomSheetDialogFragment() {
+class SongOptionsFragment : BottomSheetDialogFragment() {
 
     private var libraryIndex: Int = -1
     private var playlistNumber: Int = -1
     companion object {
-        fun newInstance(libraryIndex:Int, playlistNumber: Int): SongOptionsDialogFragment {
-            val fragment = SongOptionsDialogFragment()
+        fun newInstance(libraryIndex:Int, playlistNumber: Int): SongOptionsFragment {
+            val fragment = SongOptionsFragment()
             val args = Bundle()
             args.putInt("library_index", libraryIndex)
             args.putInt("playlist_number", playlistNumber)
@@ -60,19 +60,19 @@ class SongOptionsDialogFragment : BottomSheetDialogFragment() {
         return view
     }
     private fun addTo(){
-        val addSongToPlaylistDialogFragment = AddSongToPlaylistDialogFragment.newInstance(libraryIndex)
-        addSongToPlaylistDialogFragment.show(parentFragmentManager, "AddSongToPlaylistDialogFragment")
+        val addSongToPlaylistFragment = AddSongToPlaylistFragment.newInstance(libraryIndex)
+        addSongToPlaylistFragment.show(parentFragmentManager, "AddSongToPlaylistFragment")
     }
     private fun editSong() {
-        val editSongDialogFragment = EditSongDialogFragment.newInstance(libraryIndex)
-        editSongDialogFragment.show(parentFragmentManager, "EditSongDialogFragment")
+        val editSongFragment = EditSongFragment.newInstance(libraryIndex)
+        editSongFragment.show(parentFragmentManager, "EditSongFragment")
     }
     private fun removeFrom(){
-        val removeSongDialogFragment= RemoveSongDialogFragment.newInstance(libraryIndex)
-        removeSongDialogFragment.show(parentFragmentManager, "RemoveSongDialogFragment")
+        val removeSongFragment= RemoveSongFragment.newInstance(libraryIndex)
+        removeSongFragment.show(parentFragmentManager, "RemoveSongFragment")
     }
     private fun deleteSong() {
-        val deleteSongDialogFragment = DeleteSongDialogFragment.newInstance(libraryIndex)
-        deleteSongDialogFragment.show(parentFragmentManager, "DeleteSongDialogFragment")
+        val deleteSongFragment = DeleteSongFragment.newInstance(libraryIndex)
+        deleteSongFragment.show(parentFragmentManager, "DeleteSongFragment")
     }
 }

@@ -8,17 +8,19 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.couturier.musicapp.PlaylistViewFragment.Companion.deleteFolder
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
+import java.io.File
 
-class RemoveSongDialogFragment : DialogFragment() {
+class DeleteSongFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
     private var listener: OnSongUpdatedListener? = null
     companion object {
 
-        fun newInstance(index: Int): RemoveSongDialogFragment {
-            val fragment = RemoveSongDialogFragment()
+        fun newInstance(index: Int): DeleteSongFragment {
+            val fragment = DeleteSongFragment()
             val args = Bundle()
             args.putInt("library_index", index)
             fragment.arguments = args
@@ -35,12 +37,13 @@ class RemoveSongDialogFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.remove_song, container, false)
-        val titleText = view.findViewById<TextView>(R.id.remove_song_text_title)
-        val artistText = view.findViewById<TextView>(R.id.remove_song_text_artist)
+        val view = inflater.inflate(R.layout.delete_song, container, false)
+
+        val titleText = view.findViewById<TextView>(R.id.delete_song_text_title)
+        val artistText = view.findViewById<TextView>(R.id.delete_song_text_artist)
         val songIcon = view.findViewById<ImageView>(R.id.song_icon)
-        val confirmButton= view.findViewById<Button>(R.id.remove_song_confirm_button)
-        val cancelButton = view.findViewById<Button>(R.id.remove_song_cancel_button)
+        val confirmButton= view.findViewById<Button>(R.id.delete_song_confirm_button)
+        val cancelButton = view.findViewById<Button>(R.id.delete_song_cancel_button)
         val songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
         titleText.text = songData.title
         artistText.text = songData.artist
@@ -52,6 +55,7 @@ class RemoveSongDialogFragment : DialogFragment() {
         }
         confirmButton.setOnClickListener {
             listener!!.onSongUpdate(null, libraryIndex)
+            deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
             dismiss()
         }
 

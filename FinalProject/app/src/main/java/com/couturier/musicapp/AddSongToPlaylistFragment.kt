@@ -11,12 +11,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
 import com.couturier.musicapp.PlaylistData.Companion.writePlaylistDataToFile
-class AddSongToPlaylistDialogFragment : DialogFragment() {
+class AddSongToPlaylistFragment : DialogFragment() {
     private var libraryIndex: Int? = null
     companion object {
 
-        fun newInstance(index: Int): AddSongToPlaylistDialogFragment {
-            val fragment = AddSongToPlaylistDialogFragment()
+        fun newInstance(index: Int): AddSongToPlaylistFragment {
+            val fragment = AddSongToPlaylistFragment()
             val args = Bundle()
             args.putInt("library_index", index)
             fragment.arguments = args

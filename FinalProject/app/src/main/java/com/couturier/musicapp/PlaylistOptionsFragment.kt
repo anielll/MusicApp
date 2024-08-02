@@ -46,12 +46,12 @@ class PlaylistOptionsFragment : BottomSheetDialogFragment() {
     }
 
     private fun editPlaylist() {
-        val editPlaylistDialogFragment = EditPlaylistDialogFragment.newInstance(playlistIndex)
-        editPlaylistDialogFragment.show(parentFragmentManager, "EditPlaylistDialogFragment")
+        val editPlaylistFragment = EditPlaylistFragment.newInstance(playlistIndex)
+        editPlaylistFragment.show(parentFragmentManager, "EditPlaylistFragment")
     }
 
     private fun deletePlaylist() {
-        val deletePlaylistDialogFragment = DeletePlaylistDialogFragment.newInstance(playlistIndex)
-        deletePlaylistDialogFragment.show(parentFragmentManager, "DeletePlaylistDialogFragment")
+        val deletePlaylistFragment = DeletePlaylistFragment.newInstance(playlistIndex)
+        deletePlaylistFragment.show(parentFragmentManager, "DeletePlaylistFragment")
     }
 }

@@ -15,7 +15,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
-class EditSongDialogFragment : DialogFragment() {
+class EditSongFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
     private var listener: OnSongUpdatedListener? = null
@@ -23,8 +23,8 @@ class EditSongDialogFragment : DialogFragment() {
     private var photoSelected = false
     companion object {
 
-        fun newInstance(index: Int): EditSongDialogFragment {
-            val fragment = EditSongDialogFragment()
+        fun newInstance(index: Int): EditSongFragment {
+            val fragment = EditSongFragment()
             val args = Bundle()
             args.putInt("library_index", index)
             fragment.arguments = args

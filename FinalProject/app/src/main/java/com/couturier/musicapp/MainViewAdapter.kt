@@ -85,8 +85,8 @@ class MainViewAdapter (
         private val addPlaylistButton: ImageButton = itemView.findViewById(R.id.addButton)
         fun bind() {
             addPlaylistButton.setOnClickListener{
-                val addPlaylistDialogFragment = AddPlaylistDialogFragment()
-                addPlaylistDialogFragment.show(parentFragmentManager, "AddPlaylistDialogFragment")
+                val addPlaylistFragment = AddPlaylistFragment()
+                addPlaylistFragment.show(parentFragmentManager, "AddPlaylistFragment")
             }
         }
     }

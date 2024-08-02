@@ -31,7 +31,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-class AddSongDialogFragment : DialogFragment() {
+class AddSongFragment : DialogFragment() {
 
     private var listener: OnSongUpdatedListener? = null
     private var selectedMp3Uri: Uri? = null

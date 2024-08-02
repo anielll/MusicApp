@@ -13,14 +13,14 @@ import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
 import java.io.File
 
-class DeletePlaylistDialogFragment : DialogFragment() {
+class DeletePlaylistFragment : DialogFragment() {
 
     private var playlistIndex: Int? = null
     private var listener: OnPlaylistUpdatedListener? = null
     companion object {
 
-        fun newInstance(index: Int): DeletePlaylistDialogFragment {
-            val fragment = DeletePlaylistDialogFragment()
+        fun newInstance(index: Int): DeletePlaylistFragment {
+            val fragment = DeletePlaylistFragment()
             val args = Bundle()
             args.putInt("playlist_index", index)
             fragment.arguments = args
