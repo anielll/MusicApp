@@ -43,7 +43,7 @@ class AddPlaylistDialogFragment : DialogFragment() {
                     null
                 }
                 val newPlaylist = PlaylistData(requireContext(),playlistNameText.text.toString(), mutableListOf(),newPlaylistIndex,art)
-                listener!!.onPlaylistUpdated(newPlaylist,newPlaylistIndex)
+                listener!!.onPlaylistUpdate(newPlaylist,newPlaylistIndex)
         }
 
         playlistNameEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->

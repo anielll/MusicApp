@@ -16,21 +16,19 @@ class OnStartAssetManager {
             false // Set to true to override all app data each time the app launches
 
         fun initializeDefaults(context: Context) {
-            if (DEBUG_FILES || FORCE_DEBUG) {
-                val metaDataFolder = File(context.filesDir, "metadata")
-                // This code only runs once per device unless FORCE_DEBUG==true
-                if (!metaDataFolder.exists() || FORCE_DEBUG) {
-                    PlaylistViewFragment.deleteFolder(File(context.filesDir, "songs"))
-                    PlaylistViewFragment.deleteFolder(File(context.filesDir, "playlists"))
-                    PlaylistViewFragment.deleteFolder(File(context.filesDir, "metadata"))
-                    MasterList.initialize(context) // Initialize global shared object
-                    initSongData(context)
-                    initPlaylistData(context)
-                    initLibrary(context)
-                    return
-                }
+            val metaDataFolder = File(context.filesDir, "metadata")
+            if (FORCE_DEBUG || (DEBUG_FILES && !metaDataFolder.exists())) {
+                PlaylistViewFragment.deleteFolder(File(context.filesDir, "songs"))
+                PlaylistViewFragment.deleteFolder(File(context.filesDir, "playlists"))
+                PlaylistViewFragment.deleteFolder(File(context.filesDir, "metadata"))
+                MasterList.initialize(context) // Initialize global shared object
+                initSongData(context)
+                initPlaylistData(context)
+                initLibrary(context)
+                return
+            } else {
+                MasterList.initialize(context) // Initialize global shared object
             }
-            MasterList.initialize(context) // Initialize global shared object
         }
 
         private fun initSongData(context: Context) {

@@ -170,7 +170,7 @@ class AddSongDialogFragment : DialogFragment() {
         copyMp3ToInternalStorage(newSongIndex)
         library.songList.add(newSongIndex)
         PlaylistData.writePlaylistDataToFile(requireContext(),library)
-        listener!!.onSongUpdated(newSong,newSongIndex)
+        listener!!.onSongUpdate(newSong,newSongIndex)
     }
 
     private fun copyMp3ToInternalStorage(newSongIndex: Int){

@@ -9,6 +9,14 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 
+// A Data Structure Storing all playlists the user has on their device
+// Playlists are stored in this.list such that list[recyclerIndex] = fileIndex
+// If the user does not delete any playlists, the typical data would look like:
+// [0,1,2,3,...,n] which does not accomplish much
+// But when the user deletes or moves playlist items in the MainActivity,
+// The file and recycler indexes de-sync, which this data structure aims to solve
+// Currently maintains the invariant: list[i] < list[i+1],
+// Since moving items is not yet implemented
 object MasterList {
     private lateinit var list: MutableList<Int>
     fun initialize(context: Context) {

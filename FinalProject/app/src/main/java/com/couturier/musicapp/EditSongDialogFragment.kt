@@ -68,7 +68,7 @@ class EditSongDialogFragment : DialogFragment() {
                     null
                 }
             val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!,art)
-            listener!!.onSongUpdated(updatedSong)
+            listener!!.onSongUpdate(updatedSong)
             dismiss()
         }
         titleEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->

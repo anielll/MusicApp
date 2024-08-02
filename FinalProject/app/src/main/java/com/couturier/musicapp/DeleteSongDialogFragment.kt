@@ -54,7 +54,7 @@ class DeleteSongDialogFragment : DialogFragment() {
             dismiss()
         }
         confirmButton.setOnClickListener {
-            listener!!.onSongUpdated(null, libraryIndex)
+            listener!!.onSongUpdate(null, libraryIndex)
             deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
             dismiss()
         }

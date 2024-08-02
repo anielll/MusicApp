@@ -20,11 +20,11 @@ import java.util.Locale
 
 class PlaylistViewFragment : Fragment() {
     interface OnSongUpdatedListener {
-        fun onSongUpdated(newSong: SongData?, libraryIndex: Int? = null)
+        fun onSongUpdate(newSong: SongData?, libraryIndex: Int? = null)
     }
 
     interface OnPlaylistUpdatedListener {
-        fun onPlaylistUpdated(newPlaylist: PlaylistData?, fileIndex: Int? = null)
+        fun onPlaylistUpdate(newPlaylist: PlaylistData?, fileIndex: Int? = null)
     }
 
     companion object {

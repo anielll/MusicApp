@@ -13,7 +13,6 @@
         android:text="@string/add_song_other"
         android:textColor="@color/white"
         android:backgroundTint="@color/medium_gray"
-        android:textStyle="bold"
         />
 
     <Button
@@ -23,7 +22,6 @@
         android:text="@string/edit_song"
         android:textColor="@color/white"
         android:backgroundTint="@color/medium_gray"
-        android:textStyle="bold"
         />
 
     <Button
@@ -33,7 +31,6 @@
         android:text="@string/remove_song"
         android:textColor="@color/white"
         android:backgroundTint="@color/medium_gray"
-        android:textStyle="bold"
         />
     <Button
         android:id="@+id/delete_song_button"
@@ -42,6 +39,5 @@
         android:text="@string/delete_song"
         android:textColor="@color/white"
         android:backgroundTint="@color/delete_red"
-        android:textStyle="bold"
         />
 </LinearLayout>

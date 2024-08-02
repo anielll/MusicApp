@@ -59,7 +59,7 @@ class EditPlaylistDialogFragment : DialogFragment() {
                 null
             }
             val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.fileIndex,art)
-            listener!!.onPlaylistUpdated(updatedPlaylist)
+            listener!!.onPlaylistUpdate(updatedPlaylist)
             dismiss()
         }
         playlistNameEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->

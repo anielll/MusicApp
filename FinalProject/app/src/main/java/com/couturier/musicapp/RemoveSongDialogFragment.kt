@@ -51,7 +51,7 @@ class RemoveSongDialogFragment : DialogFragment() {
             dismiss()
         }
         confirmButton.setOnClickListener {
-            listener!!.onSongUpdated(null, libraryIndex)
+            listener!!.onSongUpdate(null, libraryIndex)
             dismiss()
         }
 

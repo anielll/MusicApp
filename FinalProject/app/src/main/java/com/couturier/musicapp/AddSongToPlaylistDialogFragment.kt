@@ -69,11 +69,7 @@ class AddSongToPlaylistDialogFragment : DialogFragment() {
         val  playlistFileIndexes = MasterList.get()
 
         val allPlaylistObjects = playlistFileIndexes.mapNotNull {
-            if(it>=0){ // filter out library
                 readPlaylistDataFromFile(requireContext(),it)
-            }else{
-                null
-            }
         }
         val playlistObjects = allPlaylistObjects.mapNotNull {
             if(it.songList.contains(libraryIndex)){
