@@ -99,7 +99,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/medium_light_gray"
+            android:backgroundTint="@color/medium_gray"
             android:layout_marginHorizontal="5dp"
             android:text="@string/save"
             android:textColor="@color/white"

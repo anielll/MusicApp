@@ -19,7 +19,8 @@
             android:src="@drawable/blank_playlist"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="8dp"
+            android:layout_marginVertical="13dp"
+            android:layout_marginHorizontal="8dp"
             android:contentDescription="@string/playlist_icon"
             />
 
@@ -29,12 +30,12 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             app:layout_constraintStart_toEndOf="@id/playlist_icon"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginStart="10dp"
             app:layout_constraintEnd_toStartOf="@id/playlist_options_button"
             android:text="@string/playlist_name"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:textColor="@color/white"
-            android:singleLine="true"
+            android:lines="2"
             android:ellipsize="end"
             />
 
@@ -46,7 +47,7 @@
             android:background="@android:color/transparent"
             app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/options"
-            android:layout_margin="12dp"
+            android:layout_marginVertical="12dp"
             android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="@string/playlist_options"

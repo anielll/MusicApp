@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/edit_playlist"
         android:textColor="@color/white"
-        android:backgroundTint="@color/medium_light_gray"
+        android:backgroundTint="@color/medium_gray"
         />
 
     <Button

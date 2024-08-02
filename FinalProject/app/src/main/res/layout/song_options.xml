@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/add_song_other"
         android:textColor="@color/white"
-        android:backgroundTint="@color/medium_light_gray"
+        android:backgroundTint="@color/medium_gray"
         android:textStyle="bold"
         />
 
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:text="@string/edit_song"
         android:textColor="@color/white"
-        android:backgroundTint="@color/medium_light_gray"
+        android:backgroundTint="@color/medium_gray"
         android:textStyle="bold"
         />
 
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:text="@string/remove_song"
         android:textColor="@color/white"
-        android:backgroundTint="@color/medium_light_gray"
+        android:backgroundTint="@color/medium_gray"
         android:textStyle="bold"
         />
     <Button

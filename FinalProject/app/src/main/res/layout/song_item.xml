@@ -30,7 +30,7 @@
             android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@id/songIcon"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginStart="10dp"
             app:layout_constraintEnd_toStartOf="@id/song_options_button"
 
             >
@@ -68,7 +68,7 @@
             android:background="@android:color/transparent"
             app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/options"
-            android:layout_margin="8dp"
+            android:layout_marginVertical="8dp"
             android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="@string/song_options"

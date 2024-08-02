@@ -19,7 +19,8 @@
             android:src="@drawable/library_icon"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="8dp"
+            android:layout_marginVertical="13dp"
+            android:layout_marginHorizontal="8dp"
             android:contentDescription="@string/library_icon"
             />
 
@@ -31,7 +32,7 @@
             android:layout_marginHorizontal="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@string/my_library"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:textColor="@color/white"
             android:singleLine="true"
             android:ellipsize="end"

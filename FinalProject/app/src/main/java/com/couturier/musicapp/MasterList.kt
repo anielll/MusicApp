@@ -11,70 +11,63 @@ import java.io.IOException
 
 object MasterList {
     private lateinit var list: MutableList<Int>
-    fun initialize(context:Context){
-        val masterList: MutableList<Int>? = readListFromFile(context)
-        if(masterList!= null){
-            this.list = masterList
-        }else{
-            this.list = mutableListOf()
-        }
+    fun initialize(context: Context) {
+        this.list = readFromFile(context) ?: mutableListOf()
     }
 
     fun add(fileIndex: Int) {
         list.add(fileIndex)
     }
-    fun remove(fileIndex: Int){
+
+    fun remove(fileIndex: Int) {
         list.remove(fileIndex)
     }
-    fun get():MutableList<Int>{
+
+    fun get(): MutableList<Int> {
         return list
     }
 
-    private fun readListFromFile(context: Context): MutableList<Int>? {
+    private fun readFromFile(context: Context): MutableList<Int>? {
         val file = File(context.filesDir, "metadata/master_list.json")
-        try {
-            val masterList = FileReader(file).use { reader ->
-                val type =  (object : TypeToken<MutableList<Int>>(){}).type
-                Gson().fromJson<MutableList<Int>>(reader,  type)
+        return try {
+            FileReader(file).use { reader ->
+                val type = (object : TypeToken<MutableList<Int>>() {}).type
+                Gson().fromJson(reader, type)
             }
-            return masterList
-        } catch (e: IOException) {
-            return null
+        } catch (e: Exception) {
+            null
         }
     }
 
     fun save(context: Context) {
         val metaDataDir = File(context.filesDir, "metadata")
+        if (!metaDataDir.exists()) {
+            metaDataDir.mkdirs()
+        }
         try {
-            if (!metaDataDir.exists()) {
-                metaDataDir.mkdirs()
-            }
             val outputFile = File(context.filesDir, "metadata/master_list.json")
             FileWriter(outputFile).use { writer ->
                 writer.write(Gson().toJson(this.list))
             }
         } catch (e: IOException) {
-            Log.e("MusicApp", "Error writing file: ${e.message}")
+            Log.e("MasterList", "Failed to save master list")
         }
     }
-    fun fileIndexOf(recyclerIndex: Int) :Int{
-        if(recyclerIndex==0){ // LIBRARY
-            return -1
-        }
-        return list[recyclerIndex-1]
+
+    fun fileIndexOf(recyclerIndex: Int): Int {
+        return if (recyclerIndex == 0) -1
+        else list[recyclerIndex - 1]
+
     }
-    fun recyclerIndexOf(fileIndex: Int): Int{
-        if(fileIndex==-1){ // LIBRARY
-            return 0
-        }
-        return list.indexOf(fileIndex)+1
+
+    fun recyclerIndexOf(fileIndex: Int): Int {
+        return if (fileIndex == -1) 0
+        else list.indexOf(fileIndex) + 1
     }
-    fun last():Int{
-        return if(list.isEmpty()){
-            0
-        }else {
-            list.last()
-        }
+
+    fun nextAvailableIndex(): Int {
+        return if (list.isEmpty()) 0
+        else list.last()
     }
 
 }

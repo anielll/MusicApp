@@ -35,7 +35,7 @@ class AddPlaylistDialogFragment : DialogFragment() {
         }
         saveButton.setOnClickListener {
              dismiss()
-                val newPlaylistIndex = MasterList.last() + 1
+                val newPlaylistIndex = MasterList.nextAvailableIndex() + 1
                 val playlistNameText = requireView().findViewById<EditText>(R.id.add_playlist_name)
                 val art = if(photoSelected){
                     (selectBackground.drawable as BitmapDrawable).bitmap
