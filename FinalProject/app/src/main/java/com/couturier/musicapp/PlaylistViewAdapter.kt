@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 
-class SongViewAdapter(
+class PlaylistViewAdapter(
     private val songObjects: MutableList<SongData>,
     private val clickListener: (Int) -> Unit,
     private val optionsClickListener: (Int) -> Unit,
@@ -67,9 +67,9 @@ class SongViewAdapter(
         fun bind(songObject: SongData, clickListener: (Int) -> Unit) {
             songNameTextView.text = songObject.title
             artistNameTextView.text = songObject.artist
-            val bitmap = songObject.icon
-            if(bitmap!=null){
-                songIcon.setImageBitmap(bitmap)
+            songObject.icon.let{
+                if(it!=null) songIcon.setImageBitmap(it)
+                else songIcon.setImageResource(R.drawable.blank_song)
             }
             itemView.setOnClickListener {
                 clickListener( bindingAdapterPosition)

@@ -101,8 +101,7 @@ companion object {
         try {
             pngFile = pngFilePath.readBytes()
         } catch (e: IOException) {
-            e.printStackTrace()
-            Log.e("SongData", "Failed to read song icon.", e)
+            Log.e("SongData", "Failed to read song icon.")
         }
         val pngBitmap = toBitMap(pngFile)
         return SongData(context, properties.title, properties.artist, properties.songIndex, pngBitmap)

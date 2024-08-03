@@ -47,7 +47,7 @@ class PlaylistViewFragment : Fragment() {
     private lateinit var updateProgressBarRunnable: Runnable
     private lateinit var recyclerView: RecyclerView
     private lateinit var songQueue: SongQueue
-    private lateinit var songViewAdapter: SongViewAdapter
+    private lateinit var playlistViewAdapter: PlaylistViewAdapter
     private lateinit var currentSongTime: TextView
     private lateinit var songDuration: TextView
     private var currentSong: Int? = null
@@ -65,7 +65,7 @@ class PlaylistViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.playlist_view_fragment, container, false)
+        val view = inflater.inflate(R.layout.playlist_view, container, false)
         initSongView(view)
         initTopAndBottomBar(view)
         setCurrentSong(-1)
@@ -111,7 +111,7 @@ class PlaylistViewFragment : Fragment() {
                             }
                         songQueue.delete(libraryIndex)
                         recyclerView.adapter?.notifyItemRemoved(playlistIndex)
-                        songViewAdapter.updateSelectedPosition(currentSong!!)
+                        playlistViewAdapter.updateSelectedPosition(currentSong!!)
                         songQueue.setQueueCursor(currentSong!!)
                         return
                     }
@@ -198,7 +198,7 @@ class PlaylistViewFragment : Fragment() {
         if (playlistIndex == -1) {
             currentSong = -1
             songQueue.queueIndex = -1
-            songViewAdapter.updateSelectedPosition(-1)
+            playlistViewAdapter.updateSelectedPosition(-1)
             if (::mediaPlayer.isInitialized) {
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.stop()
@@ -215,7 +215,7 @@ class PlaylistViewFragment : Fragment() {
         }
         currentSong = playlistIndex
         songQueue.setQueueCursor(playlistIndex)
-        songViewAdapter.updateSelectedPosition(playlistIndex)
+        playlistViewAdapter.updateSelectedPosition(playlistIndex)
         seekBar.isEnabled=true
         if (::mediaPlayer.isInitialized) {
             if (mediaPlayer.isPlaying) {
@@ -244,7 +244,7 @@ class PlaylistViewFragment : Fragment() {
 
     private fun initSongView(view: View) {
         recyclerView = view.findViewById(R.id.songView)
-        songViewAdapter = SongViewAdapter(
+        playlistViewAdapter = PlaylistViewAdapter(
             songQueue.getSongObjects(),
             clickListener = { playlistIndex ->
                 onClickPlaySong(playlistIndex)
@@ -254,7 +254,7 @@ class PlaylistViewFragment : Fragment() {
             },
             parentFragmentManager
         )
-        recyclerView.adapter = songViewAdapter
+        recyclerView.adapter = playlistViewAdapter
     }
 
     private fun resetPlaylist() {

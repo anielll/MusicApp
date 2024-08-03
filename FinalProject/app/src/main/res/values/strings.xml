@@ -27,9 +27,9 @@
     <string name="confirm_remove_song">Are you sure you want to remove this song from this playlist?</string>
     <string name="remove">Remove</string>
     <string name="playlist_options">Playlist Options</string>
-    <string name="add_song_other">Add Song to Other Playlist</string>
+    <string name="add_song_other">Add to Other Playlist</string>
     <string name="edit_song">Edit Song</string>
-    <string name="remove_song">Remove Song From Playlist</string>
+    <string name="remove_song">Remove From Playlist</string>
     <string name="delete_song">Delete Song</string>
     <string name="loop">Loop Playlist</string>
     <string name="shuffle">Shuffle Playlist</string>

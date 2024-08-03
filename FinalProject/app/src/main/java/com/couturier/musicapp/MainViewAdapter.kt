@@ -27,7 +27,7 @@ class MainViewAdapter (
                 PlaylistViewHolder(view)
             }
             VIEW_TYPE_LIBRARY -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.library_item, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
                 LibraryViewHolder(view)
             }
             VIEW_TYPE_ADD_PLAYLIST -> {
@@ -76,8 +76,9 @@ class MainViewAdapter (
             playlistNameNameTextView.text = playlistObject.playlistName
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
             playlistOptionsButton.setOnClickListener {optionsClickListener(bindingAdapterPosition)}
-            if(playlistObject.icon!=null){
-                playlistIcon.setImageBitmap(playlistObject.icon)
+            playlistObject.icon.let{
+                if(it!=null) playlistIcon.setImageBitmap(playlistObject.icon)
+                else playlistIcon.setImageResource(R.drawable.blank_playlist)
             }
         }
     }
@@ -93,6 +94,11 @@ class MainViewAdapter (
     inner class LibraryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(clickListener: (Int) -> Unit) {
             itemView.setOnClickListener { clickListener(bindingAdapterPosition)}
+            itemView.findViewById<ImageView>(R.id.playlist_icon).setImageResource(R.drawable.library_icon)
+            itemView.findViewById<ImageButton>(R.id.playlist_options_button).let{
+                (it.parent as? ViewGroup?)?.removeView(it)
+            }
+            itemView.findViewById<TextView>(R.id.playlist_name).setText(R.string.my_library)
         }
     }
 
