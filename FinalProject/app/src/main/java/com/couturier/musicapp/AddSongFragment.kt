@@ -1,8 +1,6 @@
 package com.couturier.musicapp
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.media.MediaMetadataRetriever
@@ -20,8 +18,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.SongMetadata
@@ -36,36 +32,8 @@ class AddSongFragment : DialogFragment() {
     private var listener: OnSongUpdatedListener? = null
     private var selectedMp3Uri: Uri? = null
     private var selectedMp3Name: String? = null
-    private lateinit var photoPicker: PhotoPicker
+    private val filePicker = FilePicker(this)
     private var photoSelected = false
-    private lateinit var filePickerLauncher: ActivityResultLauncher<Intent>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        filePickerLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val uri = result.data?.data
-                if (uri != null) {
-                    selectedMp3Uri = uri
-                    selectedMp3Name = getFileNameFromUri(uri)
-                    val titleEditText = requireView().findViewById<EditText>(R.id.add_song_title)
-                    val artistEditText = requireView().findViewById<EditText>(R.id.add_song_artist)
-                    val songIcon = requireView().findViewById<ImageView>(R.id.select_image_background)
-                    val btnSelectSong = view?.findViewById<Button>(R.id.add_song_mp3_button)!!
-                    if (selectedMp3Name != null) {
-                        btnSelectSong.text = selectedMp3Name
-                        val metadata = parseMetaData(requireContext(), uri)
-                        titleEditText.setText(metadata.title)
-                        artistEditText.setText(metadata.artist)
-                        songIcon.setImageBitmap(metadata.icon)
-                        photoSelected = true
-                    }
-                }
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,7 +47,6 @@ class AddSongFragment : DialogFragment() {
         val artistEditText = view.findViewById<EditText>(R.id.add_song_artist)
         val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
         val selectButton = view.findViewById<Button>(R.id.select_image_button)
-
         cancelButton.setOnClickListener {
             dismiss()
         }
@@ -94,7 +61,18 @@ class AddSongFragment : DialogFragment() {
         }
         }
         mp3Button.setOnClickListener {
-            openFilePicker()
+            filePicker.openFilePicker("audio/mpeg") { uri ->
+                selectedMp3Uri = uri
+                selectedMp3Name = getFileNameFromUri(uri)
+                if (selectedMp3Name != null) {
+                    mp3Button.text = selectedMp3Name
+                    val metadata = parseMetaData(requireContext(), uri)
+                    titleEditText.setText(metadata.title)
+                    artistEditText.setText(metadata.artist)
+                    selectBackground.setImageBitmap(metadata.icon)
+                    photoSelected = true
+                }
+            }
         }
         titleEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -114,12 +92,11 @@ class AddSongFragment : DialogFragment() {
             }
             false
         })
-        photoPicker = PhotoPicker(this) { photoUri ->
-            selectBackground.setImageURI(photoUri)
-            photoSelected = true
-        }
         selectButton.setOnClickListener{
-            photoPicker.openPhotoPicker()
+            filePicker.openFilePicker("image/png"){ photoUri ->
+                selectBackground.setImageURI(photoUri)
+                photoSelected = true
+            }
         }
 
         return view
@@ -143,13 +120,6 @@ class AddSongFragment : DialogFragment() {
         listener = null
     }
 
-    private fun openFilePicker() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "audio/mpeg"
-        }
-        filePickerLauncher.launch(intent)
-    }
 
     private fun saveCurrentUri(){
         val library = PlaylistData.readPlaylistDataFromFile(requireContext(),-1)!!

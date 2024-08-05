@@ -18,7 +18,7 @@ import androidx.fragment.app.DialogFragment
 class AddPlaylistFragment : DialogFragment() {
 
     private var listener: PlaylistViewFragment.OnPlaylistUpdatedListener? = null
-    private lateinit var photoPicker: PhotoPicker
+    private val filePicker = FilePicker(this)
     private var photoSelected = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,12 +55,11 @@ class AddPlaylistFragment : DialogFragment() {
             }
             false
         })
-        photoPicker = PhotoPicker(this) { photoUri ->
-            selectBackground.setImageURI(photoUri)
-            photoSelected = true
-        }
         selectButton.setOnClickListener{
-            photoPicker.openPhotoPicker()
+            filePicker.openFilePicker("image/png"){ photoUri ->
+                selectBackground.setImageURI(photoUri)
+                photoSelected = true
+            }
         }
         return view
     }

@@ -19,7 +19,7 @@ class EditSongFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
     private var listener: OnSongUpdatedListener? = null
-    private lateinit var photoPicker: PhotoPicker
+    private val  filePicker = FilePicker(this)
     private var photoSelected = false
     companion object {
 
@@ -90,12 +90,11 @@ class EditSongFragment : DialogFragment() {
             false
         })
 
-        photoPicker = PhotoPicker(this) { photoUri ->
-            selectBackground.setImageURI(photoUri)
-            photoSelected = true
-        }
         selectButton.setOnClickListener{
-            photoPicker.openPhotoPicker()
+            filePicker.openFilePicker("image/png") { photoUri ->
+                selectBackground.setImageURI(photoUri)
+                photoSelected = true
+            }
         }
 
         return view

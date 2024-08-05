@@ -18,7 +18,7 @@ import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
 class EditPlaylistFragment : DialogFragment() {
     private var playlistIndex: Int? = null
     private var listener: OnPlaylistUpdatedListener? = null
-    private lateinit var photoPicker: PhotoPicker
+    private val filePicker = FilePicker(this)
     private var photoSelected = false
     companion object {
         fun newInstance(index: Int): EditPlaylistFragment {
@@ -71,12 +71,11 @@ class EditPlaylistFragment : DialogFragment() {
             }
             false
         })
-        photoPicker = PhotoPicker(this) { photoUri ->
-            selectBackground.setImageURI(photoUri)
-            photoSelected = true
-        }
         selectButton.setOnClickListener{
-            photoPicker.openPhotoPicker()
+            filePicker.openFilePicker("image/png"){ photoUri ->
+                selectBackground.setImageURI(photoUri)
+                photoSelected = true
+            }
         }
         return view
     }

@@ -3,29 +3,34 @@ package com.couturier.musicapp
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 
-class PhotoPicker(
-    fragment: Fragment,
-    private val onPhotoSelected: (Uri?) -> Unit
+class FilePicker(
+    fragment: Fragment
 ) {
-
-    private val photoResultLauncher: ActivityResultLauncher<Intent> =
+    private lateinit var onFileSelected: (Uri) -> Unit
+    private val fileResultLauncher: ActivityResultLauncher<Intent> =
         fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val photoUri = result.data?.data
-                onPhotoSelected(photoUri)
+                val uri = result.data?.data
+                if(uri==null){
+                    Toast.makeText(fragment.requireContext(), "Invalid File", Toast.LENGTH_SHORT).show()
+                }else{
+                    onFileSelected(uri)
+                }
             }
         }
 
-    fun openPhotoPicker() {
+    fun openFilePicker(fileType: String, onFileSelected: (Uri) -> Unit) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = "image/png"
+            type = fileType
         }
-        photoResultLauncher.launch(intent)
+        this.onFileSelected = onFileSelected
+        fileResultLauncher.launch(intent)
     }
 }
