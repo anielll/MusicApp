@@ -12,56 +12,35 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
 
 class AddPlaylistFragment : DialogFragment() {
-
-    private var listener: PlaylistViewFragment.OnPlaylistUpdatedListener? = null
-    private val filePicker = FilePicker(this)
+    // Data Variables
     private var photoSelected = false
+    private val filePicker = FilePicker(this)
+    // View Variables
+    private lateinit var saveButton: Button
+    private lateinit var cancelButton: Button
+    private lateinit var selectButton: Button
+    private lateinit var playlistNameEditText: EditText
+    private lateinit var selectBackground: ImageView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.add_playlist, container, false)
-        val saveButton = view.findViewById<Button>(R.id.add_playlist_save_button)
-        val cancelButton = view.findViewById<Button>(R.id.add_playlist_cancel_button)
-        val playlistNameEditText = view.findViewById<EditText>(R.id.add_playlist_name)
-        val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
-        val selectButton = view.findViewById<Button>(R.id.select_image_button)
-        cancelButton.setOnClickListener {
-            dismiss()
-        }
-        saveButton.setOnClickListener {
-             dismiss()
-                val newPlaylistIndex = MasterList.nextAvailableIndex() + 1
-                val playlistNameText = requireView().findViewById<EditText>(R.id.add_playlist_name)
-                val art = if(photoSelected){
-                    (selectBackground.drawable as BitmapDrawable).bitmap
-                }else{
-                    null
-                }
-                val newPlaylist = PlaylistData(requireContext(),playlistNameText.text.toString(), mutableListOf(),newPlaylistIndex,art)
-                listener!!.onPlaylistUpdate(newPlaylist,newPlaylistIndex)
-        }
+        return inflater.inflate(R.layout.add_playlist, container, false).apply {
+            saveButton = findViewById(R.id.save_button)
+            cancelButton = findViewById(R.id.cancel_button)
+            playlistNameEditText = findViewById(R.id.playlist_name)
+            selectBackground = findViewById(R.id.select_image_background)
+            selectButton = findViewById(R.id.select_image_button)
 
-        playlistNameEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                val imm = playlistNameEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(playlistNameEditText.windowToken, 0)
-                playlistNameEditText.clearFocus()
-                return@OnEditorActionListener true
-            }
-            false
-        })
-        selectButton.setOnClickListener{
-            filePicker.openFilePicker("image/png"){ photoUri ->
-                selectBackground.setImageURI(photoUri)
-                photoSelected = true
-            }
+            selectButton.setOnClickListener { onSelect() }
+            saveButton.setOnClickListener { onSave(); dismiss() }
+            cancelButton.setOnClickListener { dismiss() }
+            setReturnToCloseKeyboard(playlistNameEditText)
         }
-        return view
     }
 
     override fun onStart() {
@@ -72,15 +51,41 @@ class AddPlaylistFragment : DialogFragment() {
         )
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as PlaylistViewFragment.OnPlaylistUpdatedListener
+    private fun onSelect() {
+        filePicker.openFilePicker("image/png") { photoUri ->
+            selectBackground.setImageURI(photoUri)
+            photoSelected = true
+        }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+    private fun onSave() {
+        val newPlaylistIndex = MasterList.nextAvailableIndex() + 1
+        val newPlaylist = PlaylistData(
+            context = requireContext(),
+            playlistName = playlistNameEditText.text.toString(),
+            songList = mutableListOf(),
+            playlistIndex = newPlaylistIndex,
+            icon = (selectBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
+        )
+        // Update Main Activity
+        (requireContext() as OnPlaylistUpdatedListener).onPlaylistUpdate(
+            newPlaylist,
+            newPlaylistIndex
+        )
+        dismiss()
     }
 
+    private fun setReturnToCloseKeyboard(editText: EditText) {
+        editText.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                (editText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(editText.windowToken, 0)
+                editText.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+    }
 
 }

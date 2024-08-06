@@ -89,5 +89,9 @@ class PlaylistData(
             return byteArrayOutputStream.toByteArray()
         }
     }
+    fun nextAvailableIndex(): Int {
+        return if (songList.isEmpty()) 0
+        else songList.last()
+    }
 
 }

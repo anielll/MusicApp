@@ -48,7 +48,7 @@
         android:background="@color/medium_gray"
         android:padding="16dp">
         <EditText
-            android:id="@+id/add_playlist_name"
+            android:id="@+id/playlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:importantForAutofill="no"
@@ -67,7 +67,7 @@
         android:layout_marginTop="10dp">
 
         <Button
-            android:id="@+id/add_playlist_cancel_button"
+            android:id="@+id/cancel_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             />
 
         <Button
-            android:id="@+id/add_playlist_save_button"
+            android:id="@+id/save_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -48,7 +48,7 @@
         android:background="@color/medium_gray"
         android:padding="16dp">
         <Button
-            android:id="@+id/add_song_mp3_button"
+            android:id="@+id/select_song_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/choose_mp3"
@@ -57,7 +57,7 @@
             android:backgroundTint="@color/medium_light_gray"
             />
         <EditText
-            android:id="@+id/add_song_title"
+            android:id="@+id/song_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/song_title"
@@ -69,7 +69,7 @@
             />
 
         <EditText
-            android:id="@+id/add_song_artist"
+            android:id="@+id/song_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/artist"
@@ -91,7 +91,7 @@
         android:layout_marginTop="10dp">
 
         <Button
-            android:id="@+id/add_song_cancel_button"
+            android:id="@+id/cancel_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             />
 
         <Button
-            android:id="@+id/add_song_save_button"
+            android:id="@+id/save_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
