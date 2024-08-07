@@ -18,21 +18,14 @@ import java.io.IOException
 // Currently maintains the invariant: list[i] < list[i+1],
 // Since moving items is not yet implemented
 object MasterList {
-    private lateinit var list: MutableList<Int>
+    lateinit var playlistList: MutableList<Int>
+    lateinit var library: PlaylistData
     fun initialize(context: Context) {
-        this.list = readFromFile(context) ?: mutableListOf()
-    }
-
-    fun add(fileIndex: Int) {
-        list.add(fileIndex)
-    }
-
-    fun remove(fileIndex: Int) {
-        list.remove(fileIndex)
-    }
-
-    fun get(): MutableList<Int> {
-        return list
+        this.playlistList = readFromFile(context) ?: mutableListOf()
+        val songList = (
+                File(context.filesDir, "songs").list() ?: arrayOf()
+                ).map { it.toInt() }.toMutableList()
+        library = PlaylistData(context, "My Library", songList, -1, null)
     }
 
     private fun readFromFile(context: Context): MutableList<Int>? {
@@ -47,7 +40,7 @@ object MasterList {
         }
     }
 
-    fun save(context: Context) {
+    fun savePlaylistList(context: Context) {
         val metaDataDir = File(context.filesDir, "metadata")
         if (!metaDataDir.exists()) {
             metaDataDir.mkdirs()
@@ -55,27 +48,41 @@ object MasterList {
         try {
             val outputFile = File(context.filesDir, "metadata/master_list.json")
             FileWriter(outputFile).use { writer ->
-                writer.write(Gson().toJson(this.list))
+                writer.write(Gson().toJson(this.playlistList))
             }
         } catch (e: IOException) {
             Log.e("MasterList", "Failed to save master list")
         }
     }
 
+    fun addPlaylist(fileIndex: Int) {
+        playlistList.add(fileIndex)
+    }
+
+    fun removePlaylist(fileIndex: Int) {
+        playlistList.remove(fileIndex)
+    }
+
     fun fileIndexOf(recyclerIndex: Int): Int {
         return if (recyclerIndex == 0) -1
-        else list[recyclerIndex - 1]
+        else playlistList[recyclerIndex - 1]
 
     }
 
     fun recyclerIndexOf(fileIndex: Int): Int {
         return if (fileIndex == -1) 0
-        else list.indexOf(fileIndex) + 1
+        else playlistList.indexOf(fileIndex) + 1
     }
 
-    fun nextAvailableIndex(): Int {
-        return if (list.isEmpty()) 0
-        else list.last()
+    fun nextAvailablePlaylistIndex(): Int {
+        return if (playlistList.isEmpty()) 0
+        else playlistList.last()
+    }
+    fun addSong(): Int {
+        val newIndex = if (library.songList.isEmpty()) 0
+        else library.songList.last()
+        library.songList.add(newIndex)
+        return  newIndex
     }
 
 }

@@ -56,7 +56,11 @@ class PlaylistViewFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val playlistFileIndex = arguments?.getInt("selected_playlist")!!
         val playlistData =
+            if(playlistFileIndex != -1)
             PlaylistData.readPlaylistDataFromFile(requireContext(), playlistFileIndex)!!
+            else{
+                MasterList.library
+            }
         this.songQueue = SongQueue(requireActivity(), playlistData)
 
     }

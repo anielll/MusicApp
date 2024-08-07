@@ -15,12 +15,15 @@ class FilePicker(
     private val fileResultLauncher = fragment.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        val uri = result.data?.data
-        if (result.resultCode == Activity.RESULT_OK && uri != null) {
-            onFileSelected(uri)
-        } else {
-            Toast.makeText(fragment.requireContext(), "Invalid File", Toast.LENGTH_SHORT).show()
+        if (result.resultCode != Activity.RESULT_OK){
+            return@registerForActivityResult
         }
+        val uri = result.data?.data
+        if(uri==null){
+            Toast.makeText(fragment.requireContext(), "Invalid File", Toast.LENGTH_SHORT).show()
+            return@registerForActivityResult
+        }
+        onFileSelected(uri)
     }
 
     fun openFilePicker(fileType: String, onFileSelected: (Uri) -> Unit) {

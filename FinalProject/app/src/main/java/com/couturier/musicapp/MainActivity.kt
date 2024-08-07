@@ -41,7 +41,7 @@ class MainActivity :
     }
 
     private fun initializeView() {
-        playlistObjects = MasterList.get() // Shared pointer, should only be initialized once
+        playlistObjects = MasterList.playlistList // Shared pointer, should only be initialized once
             .mapNotNull {
                 readPlaylistDataFromFile(this, it)
             }.toMutableList()
@@ -91,8 +91,8 @@ class MainActivity :
 
     private fun playlistAddUpdate(newPlaylist: PlaylistData) {
         playlistObjects.add(newPlaylist)
-        MasterList.add(newPlaylist.fileIndex)
-        MasterList.save(this)
+        MasterList.addPlaylist(newPlaylist.fileIndex)
+        MasterList.savePlaylistList(this)
         recyclerView.adapter!!.notifyItemInserted(playlistObjects.size)
     }
 
@@ -105,8 +105,8 @@ class MainActivity :
     private fun playlistDeleteUpdate(fileIndex: Int) {
         val recyclerIndex = MasterList.recyclerIndexOf(fileIndex)
         playlistObjects.removeAt(recyclerIndex - 1)
-        MasterList.remove(fileIndex)
-        MasterList.save(this)
+        MasterList.removePlaylist(fileIndex)
+        MasterList.savePlaylistList(this)
         recyclerView.adapter!!.notifyItemRemoved(recyclerIndex)
     }
 

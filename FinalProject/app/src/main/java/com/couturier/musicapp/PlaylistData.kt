@@ -21,7 +21,9 @@ class PlaylistData(
     val fileIndex: Int = playlistIndex
 
     init {
-        writePlaylistDataToFile(context,this)
+        if(playlistIndex!=-1){
+            writePlaylistDataToFile(context,this)
+        }
     }
     companion object{
         data class PlaylistProperties(
@@ -89,9 +91,4 @@ class PlaylistData(
             return byteArrayOutputStream.toByteArray()
         }
     }
-    fun nextAvailableIndex(): Int {
-        return if (songList.isEmpty()) 0
-        else songList.last()
-    }
-
 }

@@ -8,9 +8,12 @@ import android.util.Log
 import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileDescriptor
+import java.io.FileOutputStream
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
+import java.io.InputStream
 
 class SongData
 {
@@ -36,7 +39,10 @@ class SongData
         }
         // Else, parse mp3file for data
         val mp3FilePath = getMp3FilePath(context,libraryIndex)
-        val metaData = parseMetaData(mp3FilePath)
+        val metaData = parseMetaData(
+            fileDescriptor = FileOutputStream(mp3FilePath).fd,
+            fileName = mp3FilePath.substringAfterLast("/")
+        )
         title = metaData.title
         artist = metaData.artist
         songIndex = libraryIndex
@@ -49,19 +55,19 @@ companion object {
         val artist: String,
         val icon: Bitmap?
     )
-    fun getMp3FilePath(context: Context,libraryIndex: Int):String{
+    fun getMp3FilePath(context: Context, libraryIndex: Int):String{
         val rootDir = File(context.filesDir, "songs/$libraryIndex")
         val songFiles = rootDir.list() ?: arrayOf()
         val mp3File = songFiles.firstOrNull { it.endsWith(".mp3") }
         return File(rootDir, mp3File!!).absolutePath
     }
-    fun parseMetaData(mp3FilePath: String): SongMetadata{
+    fun parseMetaData(fileDescriptor: FileDescriptor, fileName: String): SongMetadata{
         val retriever = MediaMetadataRetriever()
         var title = ""
         var artist = ""
         var icon: Bitmap? = null
         try {
-            retriever.setDataSource(mp3FilePath)
+            retriever.setDataSource(fileDescriptor)
             title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
             artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: ""
             val artByteArray= retriever.embeddedPicture
@@ -71,7 +77,7 @@ companion object {
         } finally {
             retriever.release()
         }
-        val (inferredTitle:String , inferredArtist:String) = titleAndArtistFromFileName(mp3FilePath.substringAfterLast('/'))
+        val (inferredTitle:String , inferredArtist:String) = titleAndArtistFromFileName(fileName)
         if(title == "" || artist ==""){
             title = inferredTitle
             artist= inferredArtist
@@ -132,7 +138,7 @@ companion object {
             }
         }
     }
-    fun toBitMap(byteArray: ByteArray?): Bitmap?{
+    private fun toBitMap(byteArray: ByteArray?): Bitmap?{
         return if(byteArray!=null) {
             BitmapFactory.decodeByteArray(byteArray, 0,byteArray.size)
         }else{
@@ -144,7 +150,7 @@ companion object {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
         return byteArrayOutputStream.toByteArray()
     }
-    fun titleAndArtistFromFileName(file: String): Pair<String, String> {
+    private fun titleAndArtistFromFileName(file: String): Pair<String, String> {
         val fileName= file.substringBeforeLast('.')
         val dashIndex = fileName.indexOf("-")
         var title: String
@@ -183,5 +189,24 @@ companion object {
 
         return  Pair(title,artist)
     }
+
+    fun importMp3FromInputStream(
+        context: Context,
+        inputStream: InputStream,
+        destinationIndex: Int,
+        fileName: String
+    ) {
+            FileOutputStream(File(context.filesDir, "songs/$destinationIndex/$fileName")).use { outputStream ->
+                val buffer = ByteArray(1024)
+                var numBytes: Int
+                while (inputStream.read(buffer).also { numBytes = it } != -1) {
+                    outputStream.write(buffer, 0, numBytes)
+                }
+                outputStream.flush()
+            }
+    }
+
+
+
 }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +17,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
-import com.couturier.musicapp.UriManager.Companion.copyMp3ToInternalStorage
-import com.couturier.musicapp.UriManager.Companion.getFileNameFromUri
-import com.couturier.musicapp.UriManager.Companion.parseMetaData
+import com.couturier.musicapp.SongData.Companion.importMp3FromInputStream
+import com.couturier.musicapp.SongData.Companion.parseMetaData
 
 class AddSongFragment : DialogFragment() {
     //Data Variables
@@ -69,7 +69,7 @@ class AddSongFragment : DialogFragment() {
     private fun onSelectSong() {
         filePicker.openFilePicker("audio/mpeg") { uri ->
             getFileNameFromUri(requireContext(),uri).let {
-                if (it == null || !it.endsWith(".mp3")) {
+                if (!it.endsWith(".mp3")) {
                     Toast.makeText(
                         requireContext(),
                         "Invalid File: Selected file must be .mp3",
@@ -80,7 +80,9 @@ class AddSongFragment : DialogFragment() {
                     selectedMp3Uri = uri
                     selectedMp3Name = it
                     selectSongButton.text = it
-                    val metadata = parseMetaData(requireContext(), uri)
+                    val metadata = requireContext().contentResolver.openFileDescriptor(uri, "r")?.use { uriFD ->
+                        parseMetaData(uriFD.fileDescriptor, selectedMp3Name)
+                    }!!
                     titleEditText.setText(metadata.title)
                     artistEditText.setText(metadata.artist)
                     selectBackground.setImageBitmap(metadata.icon)
@@ -96,8 +98,7 @@ class AddSongFragment : DialogFragment() {
         }
     }
     private fun onSaveSong() {
-        val library = PlaylistData.readPlaylistDataFromFile(requireContext(), -1)!!
-        val newSongIndex = library.nextAvailableIndex()
+        val newSongIndex = MasterList.addSong()
         val newSong = SongData(
             context = requireContext(),
             title = titleEditText.text.toString(),
@@ -105,9 +106,9 @@ class AddSongFragment : DialogFragment() {
             songIndex = newSongIndex,
             songIcon = (selectBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
         )
-        copyMp3ToInternalStorage(requireContext(),selectedMp3Uri,selectedMp3Name,newSongIndex)
-        library.songList.add(newSongIndex)
-        PlaylistData.writePlaylistDataToFile(requireContext(), library)
+        requireContext().contentResolver.openInputStream(selectedMp3Uri)!!.use { inputStream ->
+            importMp3FromInputStream(requireContext(), inputStream, newSongIndex,selectedMp3Name)
+        }
         (requireContext() as OnSongUpdatedListener).onSongUpdate(newSong, newSongIndex)
     }
 
@@ -125,5 +126,16 @@ class AddSongFragment : DialogFragment() {
             }
         }
     }
-
+    private fun getFileNameFromUri(context:Context, uri: Uri): String {
+        context.contentResolver.query(uri, null, null, null, null).use { cursor ->
+            if (cursor != null) {
+                cursor.moveToFirst()
+                val colIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (colIndex != -1) {
+                    cursor.getString(colIndex)
+                }
+            }
+        }
+        return uri.lastPathSegment!!
+    }
 }

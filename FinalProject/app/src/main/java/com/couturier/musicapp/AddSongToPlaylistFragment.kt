@@ -66,7 +66,7 @@ class AddSongToPlaylistFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.add_song_to_playlist, container, false)
-        val  playlistFileIndexes = MasterList.get()
+        val  playlistFileIndexes = MasterList.playlistList
 
         val allPlaylistObjects = playlistFileIndexes.mapNotNull {
                 readPlaylistDataFromFile(requireContext(),it)

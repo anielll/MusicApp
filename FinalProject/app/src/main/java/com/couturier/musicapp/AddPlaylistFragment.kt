@@ -59,7 +59,7 @@ class AddPlaylistFragment : DialogFragment() {
     }
 
     private fun onSave() {
-        val newPlaylistIndex = MasterList.nextAvailableIndex() + 1
+        val newPlaylistIndex = MasterList.nextAvailablePlaylistIndex() + 1
         val newPlaylist = PlaylistData(
             context = requireContext(),
             playlistName = playlistNameEditText.text.toString(),
