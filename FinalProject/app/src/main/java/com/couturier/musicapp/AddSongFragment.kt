@@ -22,10 +22,10 @@ import com.couturier.musicapp.SongData.Companion.parseMetaData
 
 class AddSongFragment : DialogFragment() {
     //Data Variables
-    private lateinit var selectedMp3Uri: Uri
-    private lateinit var selectedMp3Name: String
+    private var selectedMp3Uri: Uri? = null
     private val filePicker = FilePicker(this)
     private var photoSelected = false
+
     //View variables
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
@@ -51,6 +51,7 @@ class AddSongFragment : DialogFragment() {
             saveButton.setOnClickListener { onSaveSong(); dismiss() }
             selectSongButton.setOnClickListener { onSelectSong() }
             selectButton.setOnClickListener { onSelectPhoto() }
+
             setReturnToCloseKeyboard(titleEditText)
             setReturnToCloseKeyboard(artistEditText)
         }
@@ -65,53 +66,69 @@ class AddSongFragment : DialogFragment() {
     }
 
 
-
     private fun onSelectSong() {
         filePicker.openFilePicker("audio/mpeg") { uri ->
-            getFileNameFromUri(requireContext(),uri).let {
-                if (!it.endsWith(".mp3")) {
+            val fileName = getFileNameFromUri(uri)
+            if (!fileName.endsWith(".mp3")) {
+                Toast.makeText(
+                    requireContext(),
+                    "Invalid File: Selected file must be .mp3",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@openFilePicker
+            }
+            val metadata = requireContext().contentResolver.openFileDescriptor(uri, "r")
+                ?.use { uriFD -> parseMetaData(uriFD.fileDescriptor, fileName) }
+                ?: run {
                     Toast.makeText(
                         requireContext(),
-                        "Invalid File: Selected file must be .mp3",
+                        "Error Saving File",
                         Toast.LENGTH_SHORT
                     ).show()
-
-                } else {
-                    selectedMp3Uri = uri
-                    selectedMp3Name = it
-                    selectSongButton.text = it
-                    val metadata = requireContext().contentResolver.openFileDescriptor(uri, "r")?.use { uriFD ->
-                        parseMetaData(uriFD.fileDescriptor, selectedMp3Name)
-                    }!!
-                    titleEditText.setText(metadata.title)
-                    artistEditText.setText(metadata.artist)
-                    selectBackground.setImageBitmap(metadata.icon)
-                    photoSelected = true
+                    return@openFilePicker
                 }
-            }
+            // Update visual elements with metadata from selected file
+            selectedMp3Uri = uri
+            selectSongButton.text = fileName
+            titleEditText.setText(metadata.title)
+            artistEditText.setText(metadata.artist)
+            selectBackground.setImageBitmap(metadata.icon)
+            photoSelected = true
         }
     }
-    private fun onSelectPhoto(){
+
+
+    private fun onSelectPhoto() {
         filePicker.openFilePicker("image/png") { photoUri ->
             selectBackground.setImageURI(photoUri)
             photoSelected = true
         }
     }
-    private fun onSaveSong() {
-        val newSongIndex = MasterList.addSong()
-        val newSong = SongData(
-            context = requireContext(),
-            title = titleEditText.text.toString(),
-            artist = artistEditText.text.toString(),
-            songIndex = newSongIndex,
-            songIcon = (selectBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
-        )
-        requireContext().contentResolver.openInputStream(selectedMp3Uri)!!.use { inputStream ->
-            importMp3FromInputStream(requireContext(), inputStream, newSongIndex,selectedMp3Name)
-        }
-        (requireContext() as OnSongUpdatedListener).onSongUpdate(newSong, newSongIndex)
-    }
 
+    private fun onSaveSong() {
+        selectedMp3Uri?.let { uri ->
+            val newSongIndex = MasterList.addSong()
+            val songIcon = (selectBackground.drawable as BitmapDrawable).bitmap
+            val newSong = SongData(
+                context = requireContext(),
+                title = titleEditText.text.toString(),
+                artist = artistEditText.text.toString(),
+                songIndex = newSongIndex,
+                songIcon = songIcon.takeIf { photoSelected }
+            )
+            // Copy mp3 from external storage to local
+            requireContext().contentResolver.openInputStream(uri)!!.use { inputStream ->
+                importMp3FromInputStream(
+                    requireContext(),
+                    inputStream,
+                    newSongIndex,
+                    selectSongButton.text.toString()
+                )
+            }
+            // Update PlaylistViewFragment via Main Activity
+            (requireContext() as OnSongUpdatedListener).onSongUpdate(newSong, newSongIndex)
+        }
+    }
 
 
     private fun setReturnToCloseKeyboard(editText: EditText) {
@@ -126,16 +143,17 @@ class AddSongFragment : DialogFragment() {
             }
         }
     }
-    private fun getFileNameFromUri(context:Context, uri: Uri): String {
-        context.contentResolver.query(uri, null, null, null, null).use { cursor ->
-            if (cursor != null) {
-                cursor.moveToFirst()
-                val colIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (colIndex != -1) {
-                    cursor.getString(colIndex)
-                }
+
+    private fun getFileNameFromUri(uri: Uri): String {
+        // Get "DISPLAY_NAME" else "lastPathSegment" else ERROR (which is processed as invalid because no .mp3)
+        return requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            cursor.moveToFirst()
+            cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).let { colIndex ->
+                cursor.getString(colIndex)
+                    .takeIf { colIndex != -1 }
+                    ?: uri.lastPathSegment
+                    ?: "ERROR"
             }
-        }
-        return uri.lastPathSegment!!
+        } ?: "ERROR"
     }
 }
