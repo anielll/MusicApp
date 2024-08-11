@@ -69,7 +69,7 @@
         android:layout_marginTop="10dp">
 
         <Button
-            android:id="@+id/edit_playlist_cancel_button"
+            android:id="@+id/cancel_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
             />
 
         <Button
-            android:id="@+id/edit_playlist_save_button"
+            android:id="@+id/save_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

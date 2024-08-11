@@ -33,7 +33,7 @@
             android:contentDescription="@string/playlist_icon"
             />
         <TextView
-            android:id="@+id/delete_playlist_name"
+            android:id="@+id/playlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/playlist_name"
@@ -52,7 +52,7 @@
         android:layout_marginTop="10dp">
 
         <Button
-            android:id="@+id/delete_playlist_cancel_button"
+            android:id="@+id/cancel_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
             />
 
         <Button
-            android:id="@+id/delete_playlist_confirm_button"
+            android:id="@+id/confirm_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

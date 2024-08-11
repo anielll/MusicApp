@@ -76,11 +76,11 @@ object MasterList {
 
     fun nextAvailablePlaylistIndex(): Int {
         return if (playlistList.isEmpty()) 0
-        else playlistList.last()
+        else playlistList.last()+1
     }
     fun addSong(): Int {
         val newIndex = if (library.songList.isEmpty()) 0
-        else library.songList.last()
+        else library.songList.last()+1
         library.songList.add(newIndex)
         return  newIndex
     }

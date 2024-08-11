@@ -8,98 +8,54 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
+import com.couturier.musicapp.databinding.EditSongBinding
+
 class EditSongFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
-    private var listener: OnSongUpdatedListener? = null
     private val  filePicker = FilePicker(this)
     private var photoSelected = false
-    companion object {
-
-        fun newInstance(index: Int): EditSongFragment {
-            val fragment = EditSongFragment()
-            val args = Bundle()
-            args.putInt("library_index", index)
-            fragment.arguments = args
-            return fragment
+    private lateinit var songData: SongData
+    private var _binding: EditSongBinding? = null
+    private val binding get() = _binding!!
+    companion object { // Get what Song this was fragment was called regarding
+        private const val ARG_LIBRARY_INDEX = "library_index"
+        fun newInstance(index: Int) = EditSongFragment().apply {
+            arguments = Bundle().apply { putInt(ARG_LIBRARY_INDEX, index) }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex = arguments?.getInt("library_index")
+        libraryIndex = requireArguments().getInt(ARG_LIBRARY_INDEX)
+        songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.edit_song, container, false)
-
-        val titleEditText = view.findViewById<EditText>(R.id.edit_song_title)
-        val artistEditText = view.findViewById<EditText>(R.id.edit_song_artist)
-        val saveButton = view.findViewById<Button>(R.id.edit_song_save_button)
-        val cancelButton = view.findViewById<Button>(R.id.edit_song_cancel_button)
-        val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
-        val selectButton = view.findViewById<Button>(R.id.select_image_button)
-        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
-        val bitmap = songData.icon
-        titleEditText.setText(songData.title)
-        artistEditText.setText(songData.artist)
-        if(bitmap!=null){
-            selectBackground.setImageBitmap(bitmap)
+    ): View {
+        _binding = EditSongBinding.inflate(inflater, container, false).apply{
+            editSongTitle.setText(songData.title)
+            editSongArtist.setText(songData.artist)
+            songData.icon?.let{selectImageBackground.setImageBitmap(it)}
+            cancelButton.setOnClickListener {dismiss()}
+            saveButton.setOnClickListener {onSave();dismiss()}
+            selectImageButton.setOnClickListener{onSelect() }
+            setReturnToCloseKeyboard(editSongTitle)
+            setReturnToCloseKeyboard(editSongArtist)
         }
-        cancelButton.setOnClickListener {
-            dismiss()
-        }
-        saveButton.setOnClickListener {
-            val title = titleEditText.text.toString()
-            val artist = artistEditText.text.toString()
-            val art = if(photoSelected){
-                    (selectBackground.drawable as BitmapDrawable).bitmap
-                }else{
-                    null
-                }
-            val updatedSong = SongData(requireContext(), title, artist, libraryIndex!!,art)
-            listener!!.onSongUpdate(updatedSong)
-            dismiss()
-        }
-        titleEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                val imm =titleEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(titleEditText.windowToken, 0)
-                titleEditText.clearFocus()
-                return@OnEditorActionListener true
-            }
-            false
-        })
-        artistEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                val imm = artistEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(artistEditText.windowToken, 0)
-                artistEditText.clearFocus()
-                return@OnEditorActionListener true
-            }
-            false
-        })
-
-        selectButton.setOnClickListener{
-            filePicker.openFilePicker("image/png") { photoUri ->
-                selectBackground.setImageURI(photoUri)
-                photoSelected = true
-            }
-        }
-
-        return view
+        return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
@@ -107,13 +63,35 @@ class EditSongFragment : DialogFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-            listener = context as OnSongUpdatedListener
-        }
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+    private fun onSave(){
+        val updatedSong =
+            SongData(
+                context = requireContext(),
+                title = binding.editSongTitle.text.toString(),
+                artist = binding.editSongArtist.text.toString(),
+                songIndex =  libraryIndex!!,
+                songIcon = (binding.selectImageBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
+            )
+        (requireContext() as OnSongUpdatedListener).onSongUpdate(updatedSong)
     }
+    private fun onSelect(){
+        filePicker.openFilePicker("image/png") { photoUri ->
+            binding.selectImageBackground.setImageURI(photoUri)
+            photoSelected = true
+        }
+    }
+    private fun setReturnToCloseKeyboard(editText: EditText) {
+        editText.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                (editText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(editText.windowToken, 0)
+                editText.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
 
 }

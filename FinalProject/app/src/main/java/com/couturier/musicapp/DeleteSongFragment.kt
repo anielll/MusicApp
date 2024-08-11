@@ -1,65 +1,51 @@
 package com.couturier.musicapp
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.Companion.deleteFolder
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
+import com.couturier.musicapp.databinding.DeleteSongBinding
 import java.io.File
 
 class DeleteSongFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
-    private var listener: OnSongUpdatedListener? = null
-    companion object {
-
-        fun newInstance(index: Int): DeleteSongFragment {
-            val fragment = DeleteSongFragment()
-            val args = Bundle()
-            args.putInt("library_index", index)
-            fragment.arguments = args
-            return fragment
+    private lateinit var songData: SongData
+    private var _binding: DeleteSongBinding? = null
+    private val binding get() = _binding!!
+        companion object { // Get what Song this was fragment was called regarding
+            private const val ARG_LIBRARY_INDEX = "library_index"
+            fun newInstance(index: Int) = DeleteSongFragment().apply {
+                arguments = Bundle().apply { putInt(ARG_LIBRARY_INDEX, index) }
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex = arguments?.getInt("library_index")
+        libraryIndex = requireArguments().getInt(ARG_LIBRARY_INDEX)
+        songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.delete_song, container, false)
+    ): View {
+        _binding = DeleteSongBinding.inflate(inflater, container, false).apply{
+            songTitle.text = songData.title
+            songArtist.text = songData.artist
+            songData.icon?.let{songIcon.setImageBitmap(songData.icon)}
+            cancelButton.setOnClickListener {dismiss()}
+            confirmButton.setOnClickListener {onDelete();dismiss()}
+        }
+        return binding.root
+    }
 
-        val titleText = view.findViewById<TextView>(R.id.delete_song_text_title)
-        val artistText = view.findViewById<TextView>(R.id.delete_song_text_artist)
-        val songIcon = view.findViewById<ImageView>(R.id.song_icon)
-        val confirmButton= view.findViewById<Button>(R.id.delete_song_confirm_button)
-        val cancelButton = view.findViewById<Button>(R.id.delete_song_cancel_button)
-        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
-        titleText.text = songData.title
-        artistText.text = songData.artist
-        if(songData.icon!=null){
-            songIcon.setImageBitmap(songData.icon)
-        }
-        cancelButton.setOnClickListener {
-            dismiss()
-        }
-        confirmButton.setOnClickListener {
-            listener!!.onSongUpdate(null, libraryIndex)
-            deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
-            dismiss()
-        }
-
-        return view
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onStart() {
@@ -69,13 +55,10 @@ class DeleteSongFragment : DialogFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as OnSongUpdatedListener
+    private fun onDelete(){
+        (requireContext() as OnSongUpdatedListener).onSongUpdate(null, libraryIndex)
+        deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
     }
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
+
 
 }

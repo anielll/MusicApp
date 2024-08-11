@@ -11,7 +11,7 @@
     android:padding="1px"
     tools:ignore="PxUsage">
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlist_list_recycler_view"
+        android:id="@+id/recycler_view"
         app:layoutManager="LinearLayoutManager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

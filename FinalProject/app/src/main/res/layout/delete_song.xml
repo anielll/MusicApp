@@ -33,7 +33,7 @@
             android:contentDescription="@string/song_icon"
             />
         <TextView
-            android:id="@+id/delete_song_text_title"
+            android:id="@+id/song_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/song_title"
@@ -43,7 +43,7 @@
             />
 
         <TextView
-            android:id="@+id/delete_song_text_artist"
+            android:id="@+id/song_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/artist"
@@ -63,7 +63,7 @@
         android:layout_marginTop="10dp">
 
         <Button
-            android:id="@+id/delete_song_cancel_button"
+            android:id="@+id/cancel_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
             />
 
         <Button
-            android:id="@+id/delete_song_confirm_button"
+            android:id="@+id/confirm_button"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

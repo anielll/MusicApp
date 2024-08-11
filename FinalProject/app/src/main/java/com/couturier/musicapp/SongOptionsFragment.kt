@@ -4,75 +4,61 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import com.couturier.musicapp.databinding.SongOptionsBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SongOptionsFragment : BottomSheetDialogFragment() {
 
-    private var libraryIndex: Int = -1
-    private var playlistNumber: Int = -1
+    private var libraryIndex: Int? = null
+    private var fileIndex: Int? = null
+    private var _binding: SongOptionsBinding? = null
+    private val binding get() = _binding!!
     companion object {
-        fun newInstance(libraryIndex:Int, playlistNumber: Int): SongOptionsFragment {
-            val fragment = SongOptionsFragment()
-            val args = Bundle()
-            args.putInt("library_index", libraryIndex)
-            args.putInt("playlist_number", playlistNumber)
-            fragment.arguments = args
-            return fragment
+        private const val ARG_LIBRARY_INDEX = "library_index"
+        private const val ARG_FILE_INDEX= "file_index"
+        fun newInstance(libraryIndex: Int ,fileIndex: Int) = SongOptionsFragment().apply {
+            arguments = Bundle().apply {
+                putInt(ARG_LIBRARY_INDEX, libraryIndex)
+                putInt(ARG_FILE_INDEX, fileIndex)
+            }
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex= requireArguments().getInt("library_index")
-        playlistNumber= requireArguments().getInt("playlist_number")
-
+        libraryIndex= requireArguments().getInt(ARG_LIBRARY_INDEX)
+        fileIndex= requireArguments().getInt(ARG_FILE_INDEX)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.song_options, container, false)
-
-        view.findViewById<Button>(R.id.add_to_button).setOnClickListener {
-            addTo()
-            dismiss()
-        }
-        view.findViewById<Button>(R.id.edit_song_button).setOnClickListener {
-            editSong()
-            dismiss()
-        }
-        val removeSongButton = view.findViewById<Button>(R.id.remove_song_button)
-        if (playlistNumber==-1) {
-            (removeSongButton.parent as? ViewGroup)?.removeView(removeSongButton)
-        }else {
-            removeSongButton.setOnClickListener {
-                removeFrom()
-                dismiss()
+    ): View {
+        _binding = SongOptionsBinding.inflate(inflater, container, false).apply{
+            addToButton.setOnClickListener { addTo() ;dismiss()}
+            editSongButton.setOnClickListener {editSong();dismiss()}
+            if (fileIndex==-1) { // Library doesn't have removeSongButton
+                (removeSongButton.parent as ViewGroup).removeView(removeSongButton)
+            }else {
+                removeSongButton.setOnClickListener {removeFrom(); dismiss()}
             }
+            deleteSongButton.setOnClickListener { deleteSong() ;dismiss() }
         }
-        view.findViewById<Button>(R.id.delete_song_button).setOnClickListener {
-            deleteSong()
-            dismiss()
-        }
-
-        return view
+        return binding.root
     }
     private fun addTo(){
-        val addSongToPlaylistFragment = AddSongToPlaylistFragment.newInstance(libraryIndex)
-        addSongToPlaylistFragment.show(parentFragmentManager, "AddSongToPlaylistFragment")
+        AddSongToPlaylistFragment.newInstance(libraryIndex!!)
+            .show(parentFragmentManager, "AddSongToPlaylistFragment")
     }
     private fun editSong() {
-        val editSongFragment = EditSongFragment.newInstance(libraryIndex)
-        editSongFragment.show(parentFragmentManager, "EditSongFragment")
+        EditSongFragment.newInstance(libraryIndex!!)
+            .show(parentFragmentManager, "EditSongFragment")
     }
     private fun removeFrom(){
-        val removeSongFragment= RemoveSongFragment.newInstance(libraryIndex)
-        removeSongFragment.show(parentFragmentManager, "RemoveSongFragment")
+        RemoveSongFragment.newInstance(libraryIndex!!)
+            .show(parentFragmentManager, "RemoveSongFragment")
     }
     private fun deleteSong() {
-        val deleteSongFragment = DeleteSongFragment.newInstance(libraryIndex)
-        deleteSongFragment.show(parentFragmentManager, "DeleteSongFragment")
+        DeleteSongFragment.newInstance(libraryIndex!!)
+            .show(parentFragmentManager, "DeleteSongFragment")
     }
 }

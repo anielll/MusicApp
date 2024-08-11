@@ -9,40 +9,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.couturier.musicapp.databinding.AddPlaylistBinding
 
 class AddPlaylistFragment : DialogFragment() {
     // Data Variables
     private var photoSelected = false
     private val filePicker = FilePicker(this)
-    // View Variables
-    private lateinit var saveButton: Button
-    private lateinit var cancelButton: Button
-    private lateinit var selectButton: Button
-    private lateinit var playlistNameEditText: EditText
-    private lateinit var selectBackground: ImageView
+    private var _binding: AddPlaylistBinding? = null
+    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.add_playlist, container, false).apply {
-            saveButton = findViewById(R.id.save_button)
-            cancelButton = findViewById(R.id.cancel_button)
-            playlistNameEditText = findViewById(R.id.playlist_name)
-            selectBackground = findViewById(R.id.select_image_background)
-            selectButton = findViewById(R.id.select_image_button)
-
-            selectButton.setOnClickListener { onSelect() }
+    ): View {
+        _binding =  AddPlaylistBinding.inflate(inflater, container, false).apply {
+            selectImageButton.setOnClickListener { onSelect() }
             saveButton.setOnClickListener { onSave(); dismiss() }
             cancelButton.setOnClickListener { dismiss() }
-            setReturnToCloseKeyboard(playlistNameEditText)
+            setReturnToCloseKeyboard(playlistName)
         }
+        return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
@@ -53,19 +47,20 @@ class AddPlaylistFragment : DialogFragment() {
 
     private fun onSelect() {
         filePicker.openFilePicker("image/png") { photoUri ->
-            selectBackground.setImageURI(photoUri)
+            binding.selectImageBackground.setImageURI(photoUri)
             photoSelected = true
         }
     }
 
     private fun onSave() {
+        // Create and Save new Playlist
         val newPlaylistIndex = MasterList.nextAvailablePlaylistIndex() + 1
         val newPlaylist = PlaylistData(
             context = requireContext(),
-            playlistName = playlistNameEditText.text.toString(),
+            playlistName = binding.playlistName.text.toString(),
             songList = mutableListOf(),
             playlistIndex = newPlaylistIndex,
-            icon = (selectBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
+            icon = (binding.selectImageBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
         )
         // Update Main Activity
         (requireContext() as OnPlaylistUpdatedListener).onPlaylistUpdate(

@@ -62,21 +62,20 @@ companion object {
         return File(rootDir, mp3File!!).absolutePath
     }
     fun parseMetaData(fileDescriptor: FileDescriptor, fileName: String): SongMetadata{
-        val retriever = MediaMetadataRetriever()
         var title = ""
         var artist = ""
         var icon: Bitmap? = null
-        try {
+        try{
+        MediaMetadataRetriever().use { retriever ->
             retriever.setDataSource(fileDescriptor)
             title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
             artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: ""
-            val artByteArray= retriever.embeddedPicture
-            icon = toBitMap(artByteArray)
-        } catch (e: Exception) {
-            // use default values of "", "", empty
-        } finally {
-            retriever.release()
+            icon = toBitMap(retriever.embeddedPicture)
         }
+        }catch (e: Exception){
+            // no change in data
+        }
+
         val (inferredTitle:String , inferredArtist:String) = titleAndArtistFromFileName(fileName)
         if(title == "" || artist ==""){
             title = inferredTitle

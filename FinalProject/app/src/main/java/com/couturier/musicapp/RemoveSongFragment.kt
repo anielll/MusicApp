@@ -1,63 +1,52 @@
 package com.couturier.musicapp
-import android.content.Context
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
+import com.couturier.musicapp.databinding.RemoveSongBinding
 
 class RemoveSongFragment : DialogFragment() {
 
     private var libraryIndex: Int? = null
-    private var listener: OnSongUpdatedListener? = null
-    companion object {
+    private lateinit var songData: SongData
+    private var _binding: RemoveSongBinding? = null
+    private val binding get() = _binding!!
 
-        fun newInstance(index: Int): RemoveSongFragment {
-            val fragment = RemoveSongFragment()
-            val args = Bundle()
-            args.putInt("library_index", index)
-            fragment.arguments = args
-            return fragment
+    companion object { // Get what Song this was fragment was called regarding
+        private const val ARG_LIBRARY_INDEX = "library_index"
+        fun newInstance(index: Int) = RemoveSongFragment().apply {
+            arguments = Bundle().apply { putInt(ARG_LIBRARY_INDEX, index) }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex = arguments?.getInt("library_index")
+        libraryIndex = arguments?.getInt(ARG_LIBRARY_INDEX)
+        songData = readSongDataFromFile(requireContext(), libraryIndex!!)!!
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.remove_song, container, false)
-        val titleText = view.findViewById<TextView>(R.id.remove_song_text_title)
-        val artistText = view.findViewById<TextView>(R.id.remove_song_text_artist)
-        val songIcon = view.findViewById<ImageView>(R.id.song_icon)
-        val confirmButton= view.findViewById<Button>(R.id.remove_song_confirm_button)
-        val cancelButton = view.findViewById<Button>(R.id.remove_song_cancel_button)
-        val songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
-        titleText.text = songData.title
-        artistText.text = songData.artist
-        if(songData.icon!=null){
-            songIcon.setImageBitmap(songData.icon)
+    ): View {
+        _binding = RemoveSongBinding.inflate(inflater, container, false).apply {
+            songTitle.text = songData.title
+            songArtist.text = songData.artist
+            songData.icon?.let{songIcon.setImageBitmap(it)}
+            cancelButton.setOnClickListener {dismiss()}
+            confirmButton.setOnClickListener { onRemove();dismiss()}
         }
-        cancelButton.setOnClickListener {
-            dismiss()
-        }
-        confirmButton.setOnClickListener {
-            listener!!.onSongUpdate(null, libraryIndex)
-            dismiss()
-        }
-
-        return view
+        return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
@@ -65,13 +54,7 @@ class RemoveSongFragment : DialogFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as OnSongUpdatedListener
+    private fun onRemove(){
+        (requireContext() as OnSongUpdatedListener).onSongUpdate(null, libraryIndex)
     }
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
 }

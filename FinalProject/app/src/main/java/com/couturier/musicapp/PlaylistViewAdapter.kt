@@ -71,10 +71,10 @@ class PlaylistViewAdapter(
                 if(it!=null) songIcon.setImageBitmap(it)
                 else songIcon.setImageResource(R.drawable.blank_song)
             }
-            itemView.setOnClickListener {
-                clickListener( bindingAdapterPosition)
-                updateSelectedPosition(bindingAdapterPosition)
-            }
+//            itemView.setOnClickListener {
+//                clickListener( bindingAdapterPosition)
+//                updateSelectedPosition(bindingAdapterPosition)
+//            }
             optionsButton.setOnClickListener{optionsClickListener(bindingAdapterPosition)}
         }
     }

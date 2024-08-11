@@ -1,4 +1,5 @@
 package com.couturier.musicapp
+
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -8,76 +9,51 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
+import com.couturier.musicapp.databinding.EditPlaylistBinding
+
 class EditPlaylistFragment : DialogFragment() {
-    private var playlistIndex: Int? = null
-    private var listener: OnPlaylistUpdatedListener? = null
+    private var fileIndex: Int? = null
     private val filePicker = FilePicker(this)
     private var photoSelected = false
-    companion object {
-        fun newInstance(index: Int): EditPlaylistFragment {
-            val fragment = EditPlaylistFragment()
-            val args = Bundle()
-            args.putInt("playlist_index", index)
-            fragment.arguments = args
-            return fragment
+    private lateinit var playlistData: PlaylistData
+    private var _binding: EditPlaylistBinding? = null
+    private val binding get() = _binding!!
+
+    companion object { // Get what Playlist this was fragment was called regarding
+        private const val ARG_FILE_INDEX = "file_index"
+        fun newInstance(index: Int) = EditPlaylistFragment().apply {
+            arguments = Bundle().apply { putInt(ARG_FILE_INDEX, index) }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        playlistIndex= arguments?.getInt("playlist_index")
+        fileIndex = requireArguments().getInt(ARG_FILE_INDEX)
+        playlistData = readPlaylistDataFromFile(requireContext(), fileIndex!!)!!
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.edit_playlist, container, false)
+    ): View {
+        _binding = EditPlaylistBinding.inflate(inflater, container, false).apply {
+            editPlaylistName.setText(playlistData.playlistName)
+            cancelButton.setOnClickListener { dismiss() }
+            saveButton.setOnClickListener { onSave();dismiss() }
+            selectImageButton.setOnClickListener { onSelect() }
+            setReturnToCloseKeyboard(editPlaylistName)
+        }
+        return binding.root
+    }
 
-        val playlistNameEditText= view.findViewById<EditText>(R.id.edit_playlist_name)
-        val saveButton = view.findViewById<Button>(R.id.edit_playlist_save_button)
-        val cancelButton = view.findViewById<Button>(R.id.edit_playlist_cancel_button)
-        val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)!!
-        val selectBackground = view.findViewById<ImageView>(R.id.select_image_background)
-        val selectButton = view.findViewById<Button>(R.id.select_image_button)
-        playlistNameEditText.setText(playlistData.playlistName)
-        cancelButton.setOnClickListener {
-            dismiss()
-        }
-        saveButton.setOnClickListener {
-            val playlistName = playlistNameEditText.text.toString()
-            val art = if(photoSelected){
-                (selectBackground.drawable as BitmapDrawable).bitmap
-            }else{
-                null
-            }
-            val updatedPlaylist = PlaylistData(requireContext(),playlistName,playlistData.songList,playlistData.fileIndex,art)
-            listener!!.onPlaylistUpdate(updatedPlaylist)
-            dismiss()
-        }
-        playlistNameEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                val imm = playlistNameEditText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(playlistNameEditText.windowToken, 0)
-                playlistNameEditText.clearFocus()
-                return@OnEditorActionListener true
-            }
-            false
-        })
-        selectButton.setOnClickListener{
-            filePicker.openFilePicker("image/png"){ photoUri ->
-                selectBackground.setImageURI(photoUri)
-                photoSelected = true
-            }
-        }
-        return view
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onStart() {
@@ -87,13 +63,37 @@ class EditPlaylistFragment : DialogFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as OnPlaylistUpdatedListener
+
+    private fun onSave() {
+        val updatedPlaylist = PlaylistData(
+            context = requireContext(),
+            playlistName = binding.editPlaylistName.text.toString(),
+            songList =  playlistData.songList,
+            playlistIndex= playlistData.fileIndex,
+            icon = (binding.selectImageBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
+        )
+        (requireContext() as OnPlaylistUpdatedListener).onPlaylistUpdate(updatedPlaylist)
     }
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+
+    private fun onSelect() {
+        filePicker.openFilePicker("image/png") { photoUri ->
+            binding.selectImageBackground.setImageURI(photoUri)
+            photoSelected = true
+        }
     }
+
+    private fun setReturnToCloseKeyboard(editText: EditText) {
+        editText.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
+                (editText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(editText.windowToken, 0)
+                editText.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
 
 }

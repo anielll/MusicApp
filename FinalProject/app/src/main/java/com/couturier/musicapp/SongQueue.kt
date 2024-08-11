@@ -74,8 +74,10 @@ class SongQueue(activity: Activity, playlist: PlaylistData){
     }
     fun add(libraryIndex: Int, newSong: SongData){
         songObjects.add(newSong) // update first
-        currentPlaylist.songList.add(libraryIndex) // update second
-        writePlaylistDataToFile(parentActivity,currentPlaylist)
+        if(currentPlaylist.fileIndex!=-1){
+            currentPlaylist.songList.add(libraryIndex) // update second
+            writePlaylistDataToFile(parentActivity,currentPlaylist)
+        }
         if(shuffled){
             val newSongIndex = Random.nextInt(songOrder.size)
             songOrder.add(newSongIndex,songOrder.size)

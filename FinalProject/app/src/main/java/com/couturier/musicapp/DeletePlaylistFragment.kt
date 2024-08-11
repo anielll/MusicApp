@@ -1,62 +1,51 @@
 package com.couturier.musicapp
-import android.content.Context
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.Companion.deleteFolder
 import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
+import com.couturier.musicapp.databinding.DeletePlaylistBinding
 import java.io.File
 
 class DeletePlaylistFragment : DialogFragment() {
+    private lateinit var playlistData: PlaylistData
+    private var fileIndex: Int? = null
+    private var _binding: DeletePlaylistBinding? = null
+    private val binding get() = _binding!!
 
-    private var playlistIndex: Int? = null
-    private var listener: OnPlaylistUpdatedListener? = null
-    companion object {
-
-        fun newInstance(index: Int): DeletePlaylistFragment {
-            val fragment = DeletePlaylistFragment()
-            val args = Bundle()
-            args.putInt("playlist_index", index)
-            fragment.arguments = args
-            return fragment
+    companion object { // Get what playlist this was fragment was called regarding
+        private const val ARG_FILE_INDEX = "file_index"
+        fun newInstance(index: Int) = DeletePlaylistFragment().apply {
+            arguments = Bundle().apply { putInt(ARG_FILE_INDEX, index) }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        playlistIndex = arguments?.getInt("playlist_index")
+        fileIndex = requireArguments().getInt(ARG_FILE_INDEX)
+        playlistData = readPlaylistDataFromFile(requireContext(), fileIndex!!)!!
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.delete_playlist, container, false)
-        val playlistNameText= view.findViewById<TextView>(R.id.delete_playlist_name)
-        val playlistIcon = view.findViewById<ImageView>(R.id.playlist_icon)
-        val confirmButton= view.findViewById<Button>(R.id.delete_playlist_confirm_button)
-        val cancelButton = view.findViewById<Button>(R.id.delete_playlist_cancel_button)
-        val playlistData = readPlaylistDataFromFile(requireContext(),playlistIndex!!)!!
-        playlistNameText.text = playlistData.playlistName
-        if(playlistData.icon!=null){
-            playlistIcon.setImageBitmap(playlistData.icon)
+    ): View {
+        _binding = DeletePlaylistBinding.inflate(inflater, container, false).apply {
+            playlistName.text = playlistData.playlistName
+            playlistData.icon?.let {playlistIcon.setImageBitmap(it)}
+            cancelButton.setOnClickListener { dismiss() }
+            confirmButton.setOnClickListener { onDelete();dismiss() }
         }
-        cancelButton.setOnClickListener {
-            dismiss()
-        }
-        confirmButton.setOnClickListener {
-            listener!!.onPlaylistUpdate(null, playlistIndex)
-            deleteFolder(File(requireContext().filesDir,"playlists/$playlistIndex"))
-            dismiss()
-        }
-
-        return view
+        return binding.root
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onStart() {
@@ -66,13 +55,10 @@ class DeletePlaylistFragment : DialogFragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as OnPlaylistUpdatedListener
-    }
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+
+    private fun onDelete() {
+        (requireContext() as OnPlaylistUpdatedListener).onPlaylistUpdate(null, fileIndex)
+        deleteFolder(File(requireContext().filesDir, "playlists/$fileIndex"))
     }
 
 }

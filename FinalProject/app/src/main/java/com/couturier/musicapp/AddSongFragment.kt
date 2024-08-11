@@ -11,50 +11,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.importMp3FromInputStream
 import com.couturier.musicapp.SongData.Companion.parseMetaData
+import com.couturier.musicapp.databinding.AddSongBinding
 
 class AddSongFragment : DialogFragment() {
-    //Data Variables
+    // Data Variables
     private var selectedMp3Uri: Uri? = null
     private val filePicker = FilePicker(this)
     private var photoSelected = false
-
-    //View variables
-    private lateinit var saveButton: Button
-    private lateinit var cancelButton: Button
-    private lateinit var selectSongButton: Button
-    private lateinit var titleEditText: EditText
-    private lateinit var artistEditText: EditText
-    private lateinit var selectBackground: ImageView
-    private lateinit var selectButton: Button
+    private var _binding: AddSongBinding? = null
+    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.add_song, container, false).apply {
-            saveButton = findViewById(R.id.save_button)
-            cancelButton = findViewById(R.id.cancel_button)
-            selectSongButton = findViewById(R.id.select_song_button)
-            titleEditText = findViewById(R.id.song_title)
-            artistEditText = findViewById(R.id.song_artist)
-            selectBackground = findViewById(R.id.select_image_background)
-            selectButton = findViewById(R.id.select_image_button)
-
+    ): View{
+        _binding = AddSongBinding.inflate(inflater, container, false).apply {
             cancelButton.setOnClickListener { dismiss() }
             saveButton.setOnClickListener { onSaveSong(); dismiss() }
             selectSongButton.setOnClickListener { onSelectSong() }
-            selectButton.setOnClickListener { onSelectPhoto() }
-
-            setReturnToCloseKeyboard(titleEditText)
-            setReturnToCloseKeyboard(artistEditText)
+            selectImageButton.setOnClickListener { onSelectPhoto() }
+            setReturnToCloseKeyboard(songTitle)
+            setReturnToCloseKeyboard(songArtist)
         }
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onStart() {
@@ -68,6 +57,7 @@ class AddSongFragment : DialogFragment() {
 
     private fun onSelectSong() {
         filePicker.openFilePicker("audio/mpeg") { uri ->
+            // If ends with.mp3
             val fileName = getFileNameFromUri(uri)
             if (!fileName.endsWith(".mp3")) {
                 Toast.makeText(
@@ -77,6 +67,7 @@ class AddSongFragment : DialogFragment() {
                 ).show()
                 return@openFilePicker
             }
+            // If can read from file
             val metadata = requireContext().contentResolver.openFileDescriptor(uri, "r")
                 ?.use { uriFD -> parseMetaData(uriFD.fileDescriptor, fileName) }
                 ?: run {
@@ -89,32 +80,34 @@ class AddSongFragment : DialogFragment() {
                 }
             // Update visual elements with metadata from selected file
             selectedMp3Uri = uri
-            selectSongButton.text = fileName
-            titleEditText.setText(metadata.title)
-            artistEditText.setText(metadata.artist)
-            selectBackground.setImageBitmap(metadata.icon)
-            photoSelected = true
+            binding.selectSongButton.text = fileName
+            binding.songTitle.setText(metadata.title)
+            binding.songArtist.setText(metadata.artist)
+            if(metadata.icon!=null){
+                binding.selectImageBackground.setImageBitmap(metadata.icon)
+                photoSelected = true
+            }
         }
     }
 
 
     private fun onSelectPhoto() {
         filePicker.openFilePicker("image/png") { photoUri ->
-            selectBackground.setImageURI(photoUri)
+            binding.selectImageBackground.setImageURI(photoUri)
             photoSelected = true
         }
     }
 
     private fun onSaveSong() {
+        // Create and Save new Song
         selectedMp3Uri?.let { uri ->
             val newSongIndex = MasterList.addSong()
-            val songIcon = (selectBackground.drawable as BitmapDrawable).bitmap
             val newSong = SongData(
                 context = requireContext(),
-                title = titleEditText.text.toString(),
-                artist = artistEditText.text.toString(),
+                title = binding.songTitle.text.toString(),
+                artist = binding.songArtist.text.toString(),
                 songIndex = newSongIndex,
-                songIcon = songIcon.takeIf { photoSelected }
+                songIcon = (binding.selectImageBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
             )
             // Copy mp3 from external storage to local
             requireContext().contentResolver.openInputStream(uri)!!.use { inputStream ->
@@ -122,7 +115,7 @@ class AddSongFragment : DialogFragment() {
                     requireContext(),
                     inputStream,
                     newSongIndex,
-                    selectSongButton.text.toString()
+                    binding.selectSongButton.text.toString()
                 )
             }
             // Update PlaylistViewFragment via Main Activity
@@ -144,9 +137,9 @@ class AddSongFragment : DialogFragment() {
         }
     }
 
-    private fun getFileNameFromUri(uri: Uri): String {
+    private fun getFileNameFromUri(uri: Uri): String =
         // Get "DISPLAY_NAME" else "lastPathSegment" else ERROR (which is processed as invalid because no .mp3)
-        return requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             cursor.moveToFirst()
             cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).let { colIndex ->
                 cursor.getString(colIndex)
@@ -155,5 +148,4 @@ class AddSongFragment : DialogFragment() {
                     ?: "ERROR"
             }
         } ?: "ERROR"
-    }
 }
