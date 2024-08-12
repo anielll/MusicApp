@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
+import com.couturier.musicapp.SongData.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
 import com.couturier.musicapp.databinding.RemoveSongBinding
 
@@ -25,7 +25,7 @@ class RemoveSongFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libraryIndex = arguments?.getInt(ARG_LIBRARY_INDEX)
+        libraryIndex = requireArguments().getInt(ARG_LIBRARY_INDEX)
         songData = readSongDataFromFile(requireContext(), libraryIndex!!)!!
     }
 

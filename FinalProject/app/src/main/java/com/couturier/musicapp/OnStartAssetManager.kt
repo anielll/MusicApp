@@ -17,9 +17,9 @@ class OnStartAssetManager {
         fun initializeDefaults(context: Context) {
             val metaDataFolder = File(context.filesDir, "metadata")
             if (FORCE_DEBUG || (DEBUG_FILES && !metaDataFolder.exists())) {
-                PlaylistViewFragment.deleteFolder(File(context.filesDir, "songs"))
-                PlaylistViewFragment.deleteFolder(File(context.filesDir, "playlists"))
-                PlaylistViewFragment.deleteFolder(File(context.filesDir, "metadata"))
+                deleteFolder(File(context.filesDir, "songs"))
+                deleteFolder(File(context.filesDir, "playlists"))
+                deleteFolder(File(context.filesDir, "metadata"))
                 initSongData(context)
                 initPlaylistData(context)
                 return
@@ -80,6 +80,17 @@ class OnStartAssetManager {
                     it.trim().toIntOrNull()
                 }.toMutableList()
             PlaylistData(context, playlistName, songList, index, null)
+        }
+        fun deleteFolder(folder: File): Boolean {
+            if (folder.isDirectory) {
+                val children = folder.listFiles()
+                if (children != null) {
+                    for (child in children) {
+                        deleteFolder(child)
+                    }
+                }
+            }
+            return folder.delete()
         }
     }
 }

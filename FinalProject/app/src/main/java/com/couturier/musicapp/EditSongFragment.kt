@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
-import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
+import com.couturier.musicapp.SongData.OnSongUpdatedListener
 import com.couturier.musicapp.databinding.EditSongBinding
 
 class EditSongFragment : DialogFragment() {

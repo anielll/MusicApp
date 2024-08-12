@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
+import com.couturier.musicapp.SongData.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.importMp3FromInputStream
 import com.couturier.musicapp.SongData.Companion.parseMetaData
 import com.couturier.musicapp.databinding.AddSongBinding

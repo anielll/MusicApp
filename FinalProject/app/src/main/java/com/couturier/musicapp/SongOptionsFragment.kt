@@ -45,6 +45,11 @@ class SongOptionsFragment : BottomSheetDialogFragment() {
         }
         return binding.root
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun addTo(){
         AddSongToPlaylistFragment.newInstance(libraryIndex!!)
             .show(parentFragmentManager, "AddSongToPlaylistFragment")

@@ -11,7 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.couturier.musicapp.PlaylistData.OnPlaylistUpdatedListener
 import com.couturier.musicapp.databinding.AddPlaylistBinding
 
 class AddPlaylistFragment : DialogFragment() {

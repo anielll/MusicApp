@@ -8,8 +8,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
-import com.couturier.musicapp.PlaylistViewFragment.OnSongUpdatedListener
-import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.couturier.musicapp.SongData.OnSongUpdatedListener
+import com.couturier.musicapp.PlaylistData.OnPlaylistUpdatedListener
 import com.couturier.musicapp.OnStartAssetManager.Companion.initializeDefaults
 
 class MainActivity :
@@ -56,14 +56,17 @@ class MainActivity :
     }
 
     private fun onClickOpenPlaylist(recyclerIndex: Int) {
-        val fragment = PlaylistViewFragment().apply {
+        val playlistFragment = PlaylistViewFragment().apply {
             arguments = Bundle().apply {
                 putInt("selected_playlist", MasterList.fileIndexOf(recyclerIndex))
             }
         }
+        val bottomFragment = BottomPlayBar()
+
         supportFragmentManager.beginTransaction().apply {
             setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out)
-            replace(R.id.playlist_view_container, fragment)
+            replace(R.id.playlist_view_container, playlistFragment)
+            replace(R.id.bottom_bar_container, bottomFragment)
             addToBackStack(null)
             commit()
         }

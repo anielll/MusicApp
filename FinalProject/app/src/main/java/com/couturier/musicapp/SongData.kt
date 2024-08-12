@@ -49,6 +49,9 @@ class SongData
         icon = metaData.icon
         saveSongDataToFile(context,this)
     }
+    interface OnSongUpdatedListener {
+        fun onSongUpdate(newSong: SongData?, libraryIndex: Int? = null)
+    }
 companion object {
     data class SongMetadata(
         val title: String,

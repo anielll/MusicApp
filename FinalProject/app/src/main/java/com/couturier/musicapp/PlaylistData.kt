@@ -25,6 +25,9 @@ class PlaylistData(
             writePlaylistDataToFile(context,this)
         }
     }
+    interface OnPlaylistUpdatedListener {
+        fun onPlaylistUpdate(newPlaylist: PlaylistData?, fileIndex: Int? = null)
+    }
     companion object{
         data class PlaylistProperties(
             val playlistName : String,

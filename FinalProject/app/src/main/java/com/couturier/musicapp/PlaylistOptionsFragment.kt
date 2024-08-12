@@ -23,7 +23,7 @@ class PlaylistOptionsFragment : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        playlistIndex= arguments?.getInt("playlist_index") ?: -1
+        playlistIndex= requireArguments().getInt("playlist_index") ?: -1
     }
 
     override fun onCreateView(

@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.couturier.musicapp.PlaylistViewFragment.Companion.deleteFolder
-import com.couturier.musicapp.PlaylistViewFragment.OnPlaylistUpdatedListener
+import com.couturier.musicapp.OnStartAssetManager.Companion.deleteFolder
+import com.couturier.musicapp.PlaylistData.OnPlaylistUpdatedListener
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
 import com.couturier.musicapp.databinding.DeletePlaylistBinding
 import java.io.File
