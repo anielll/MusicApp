@@ -32,7 +32,7 @@ class EditSongFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         libraryIndex = requireArguments().getInt(ARG_LIBRARY_INDEX)
-        songData = readSongDataFromFile(requireContext(),libraryIndex!!)!!
+        songData = readSongDataFromFile(libraryIndex!!)!!
     }
 
     override fun onCreateView(
@@ -66,7 +66,6 @@ class EditSongFragment : DialogFragment() {
     private fun onSave(){
         val updatedSong =
             SongData(
-                context = requireContext(),
                 title = binding.editSongTitle.text.toString(),
                 artist = binding.editSongArtist.text.toString(),
                 songIndex =  libraryIndex!!,

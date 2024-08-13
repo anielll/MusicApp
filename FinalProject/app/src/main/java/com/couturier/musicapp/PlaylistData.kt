@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import com.couturier.musicapp.MainActivity.Companion.appContext
 import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -12,7 +13,6 @@ import java.io.FileWriter
 import java.io.IOException
 
 class PlaylistData(
-    context: Context,
     val playlistName: String,
     val songList: MutableList<Int>,
     playlistIndex: Int,
@@ -21,9 +21,7 @@ class PlaylistData(
     val fileIndex: Int = playlistIndex
 
     init {
-        if(playlistIndex!=-1){
-            writePlaylistDataToFile(context,this)
-        }
+            writePlaylistDataToFile(this)
     }
     interface OnPlaylistUpdatedListener {
         fun onPlaylistUpdate(newPlaylist: PlaylistData?, fileIndex: Int? = null)
@@ -34,8 +32,8 @@ class PlaylistData(
             val songList: MutableList<Int>,
             val fileIndex: Int
         )
-        fun readPlaylistDataFromFile(context: Context, playlistIndex: Int): PlaylistData? {
-            val playlistDir = File(context.filesDir, "playlists/$playlistIndex")
+        fun readPlaylistDataFromFile(playlistIndex: Int): PlaylistData? {
+            val playlistDir = File(appContext.filesDir, "playlists/$playlistIndex")
             val propertiesDir = File(playlistDir, "properties.json")
             val properties: PlaylistProperties?
             try {
@@ -54,10 +52,13 @@ class PlaylistData(
                 Log.e("SongData", "Failed to read song icon.", e)
             }
             val pngBitmap = toBitMap(pngFile)
-            return PlaylistData(context,properties.playlistName,properties.songList,properties.fileIndex,pngBitmap)
+            return PlaylistData(properties.playlistName,properties.songList,properties.fileIndex,pngBitmap)
         }
-        fun writePlaylistDataToFile(context: Context,playlist:PlaylistData){
-            val playlistDir= File(context.filesDir, "playlists/${playlist.fileIndex}")
+        fun writePlaylistDataToFile(playlist:PlaylistData){
+            if(playlist.fileIndex==-1) {
+                return
+            }
+            val playlistDir= File(appContext.filesDir, "playlists/${playlist.fileIndex}")
             val properties = PlaylistProperties(playlist.playlistName,playlist.songList,playlist.fileIndex)
             val playlistJson = Gson().toJson(properties)
             if (!playlistDir.exists()) {

@@ -1,7 +1,6 @@
 package com.couturier.musicapp
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Bitmap
 import com.couturier.musicapp.PlaylistData.Companion.writePlaylistDataToFile
 import java.io.File
@@ -10,7 +9,6 @@ import kotlin.random.Random
 class SongQueue(activity: Activity, playlist: PlaylistData){
     private var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
     private var currentPlaylist: PlaylistData = playlist
-    private var parentActivity: Context = activity
     private var songOrder: MutableList<Int>
     var queueIndex: Int
     var looped: Boolean = false
@@ -24,10 +22,10 @@ class SongQueue(activity: Activity, playlist: PlaylistData){
                 exists
             }.toMutableList()
         songObjects =  filteredIndexList
-            .map{SongData(activity,it) }
+            .map{SongData(it) }
             .toMutableList()
         if(wasFiltered){ // reflect any null references in file storage
-            currentPlaylist = PlaylistData(activity,currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex,currentPlaylist.icon)
+            currentPlaylist = PlaylistData(currentPlaylist.playlistName,filteredIndexList,currentPlaylist.fileIndex,currentPlaylist.icon)
         }
         songOrder = (0 until size()).toMutableList()
         queueIndex = -1
@@ -58,7 +56,7 @@ class SongQueue(activity: Activity, playlist: PlaylistData){
         val playlistIndex = playlistIndexOf(libraryIndex)
         songObjects.removeAt(playlistIndex) // update first
         currentPlaylist.songList.remove(libraryIndex) // update second
-        writePlaylistDataToFile(parentActivity,currentPlaylist)
+        writePlaylistDataToFile(currentPlaylist)
         songOrder.remove(playlistIndex)
         songOrder = songOrder.map{
             if(it<playlistIndex){
@@ -76,7 +74,7 @@ class SongQueue(activity: Activity, playlist: PlaylistData){
         songObjects.add(newSong) // update first
         if(currentPlaylist.fileIndex!=-1){
             currentPlaylist.songList.add(libraryIndex) // update second
-            writePlaylistDataToFile(parentActivity,currentPlaylist)
+            writePlaylistDataToFile(currentPlaylist)
         }
         if(shuffled){
             val newSongIndex = Random.nextInt(songOrder.size)

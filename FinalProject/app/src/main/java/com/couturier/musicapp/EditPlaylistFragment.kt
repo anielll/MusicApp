@@ -33,7 +33,7 @@ class EditPlaylistFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fileIndex = requireArguments().getInt(ARG_FILE_INDEX)
-        playlistData = readPlaylistDataFromFile(requireContext(), fileIndex!!)!!
+        playlistData = readPlaylistDataFromFile(fileIndex!!)!!
 
     }
 
@@ -66,7 +66,6 @@ class EditPlaylistFragment : DialogFragment() {
 
     private fun onSave() {
         val updatedPlaylist = PlaylistData(
-            context = requireContext(),
             playlistName = binding.editPlaylistName.text.toString(),
             songList =  playlistData.songList,
             playlistIndex= playlistData.fileIndex,

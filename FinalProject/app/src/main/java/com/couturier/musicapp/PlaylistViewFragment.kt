@@ -38,7 +38,7 @@ class PlaylistViewFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val playlistData = requireArguments().getInt("selected_playlist").let { selectedPlaylist ->
             if (selectedPlaylist != -1)
-                PlaylistData.readPlaylistDataFromFile(requireContext(), selectedPlaylist)!!
+                PlaylistData.readPlaylistDataFromFile(selectedPlaylist)!!
             else {
                 MasterList.library
             }

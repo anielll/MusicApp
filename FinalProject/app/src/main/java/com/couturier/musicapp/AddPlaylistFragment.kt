@@ -56,7 +56,6 @@ class AddPlaylistFragment : DialogFragment() {
         // Create and Save new Playlist
         val newPlaylistIndex = MasterList.nextAvailablePlaylistIndex() + 1
         val newPlaylist = PlaylistData(
-            context = requireContext(),
             playlistName = binding.playlistName.text.toString(),
             songList = mutableListOf(),
             playlistIndex = newPlaylistIndex,

@@ -26,7 +26,7 @@ class RemoveSongFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         libraryIndex = requireArguments().getInt(ARG_LIBRARY_INDEX)
-        songData = readSongDataFromFile(requireContext(), libraryIndex!!)!!
+        songData = readSongDataFromFile(libraryIndex!!)!!
     }
 
     override fun onCreateView(

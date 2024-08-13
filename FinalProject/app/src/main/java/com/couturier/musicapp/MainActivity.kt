@@ -1,5 +1,7 @@
 package com.couturier.musicapp
 
+import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,11 +20,18 @@ class MainActivity :
     OnPlaylistUpdatedListener {
     private lateinit var playlistObjects: MutableList<PlaylistData>
     private lateinit var recyclerView: RecyclerView
-
+    companion object{
+        private lateinit var _appContext: Context
+        val appContext get() = _appContext
+        private fun setContext(application: Application){
+            _appContext = application.applicationContext
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContext(application)
         setWindowProperties() // Makes system UI (at top) look nice
-        initializeDefaults(this) // Ensure core app data is initialized properly
+        initializeDefaults() // Ensure core app data is initialized properly
         initializeView()
     }
 
@@ -43,7 +52,7 @@ class MainActivity :
     private fun initializeView() {
         playlistObjects = MasterList.playlistList // Shared pointer, should only be initialized once
             .mapNotNull {
-                readPlaylistDataFromFile(this, it)
+                readPlaylistDataFromFile(it)
             }.toMutableList()
         recyclerView = findViewById<RecyclerView>(R.id.playlistView).apply {
             adapter = MainViewAdapter(
@@ -95,7 +104,7 @@ class MainActivity :
     private fun playlistAddUpdate(newPlaylist: PlaylistData) {
         playlistObjects.add(newPlaylist)
         MasterList.addPlaylist(newPlaylist.fileIndex)
-        MasterList.savePlaylistList(this)
+        MasterList.savePlaylistList()
         recyclerView.adapter!!.notifyItemInserted(playlistObjects.size)
     }
 
@@ -109,7 +118,7 @@ class MainActivity :
         val recyclerIndex = MasterList.recyclerIndexOf(fileIndex)
         playlistObjects.removeAt(recyclerIndex - 1)
         MasterList.removePlaylist(fileIndex)
-        MasterList.savePlaylistList(this)
+        MasterList.savePlaylistList()
         recyclerView.adapter!!.notifyItemRemoved(recyclerIndex)
     }
 

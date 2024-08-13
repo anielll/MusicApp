@@ -103,7 +103,6 @@ class AddSongFragment : DialogFragment() {
         selectedMp3Uri?.let { uri ->
             val newSongIndex = MasterList.addSong()
             val newSong = SongData(
-                context = requireContext(),
                 title = binding.songTitle.text.toString(),
                 artist = binding.songArtist.text.toString(),
                 songIndex = newSongIndex,
@@ -112,7 +111,6 @@ class AddSongFragment : DialogFragment() {
             // Copy mp3 from external storage to local
             requireContext().contentResolver.openInputStream(uri)!!.use { inputStream ->
                 importMp3FromInputStream(
-                    requireContext(),
                     inputStream,
                     newSongIndex,
                     binding.selectSongButton.text.toString()

@@ -27,7 +27,7 @@ class DeletePlaylistFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fileIndex = requireArguments().getInt(ARG_FILE_INDEX)
-        playlistData = readPlaylistDataFromFile(requireContext(), fileIndex!!)!!
+        playlistData = readPlaylistDataFromFile(fileIndex!!)!!
 
     }
 

@@ -2,6 +2,7 @@ package com.couturier.musicapp
 
 import android.content.Context
 import android.util.Log
+import com.couturier.musicapp.MainActivity.Companion.appContext
 import java.io.File
 import com.couturier.musicapp.SongData.Companion.importMp3FromInputStream
 
@@ -14,31 +15,30 @@ class OnStartAssetManager {
         private const val FORCE_DEBUG =
             true // Set to true to override all app data each time the app launches
 
-        fun initializeDefaults(context: Context) {
-            val metaDataFolder = File(context.filesDir, "metadata")
+        fun initializeDefaults() {
+            val metaDataFolder = File(appContext.filesDir, "metadata")
             if (FORCE_DEBUG || (DEBUG_FILES && !metaDataFolder.exists())) {
-                deleteFolder(File(context.filesDir, "songs"))
-                deleteFolder(File(context.filesDir, "playlists"))
-                deleteFolder(File(context.filesDir, "metadata"))
-                initSongData(context)
-                initPlaylistData(context)
+                deleteFolder(File(appContext.filesDir, "songs"))
+                deleteFolder(File(appContext.filesDir, "playlists"))
+                deleteFolder(File(appContext.filesDir, "metadata"))
+                initSongData()
+                initPlaylistData()
                 return
             } else {
-                MasterList.initialize(context) // Initialize global shared object
+                MasterList.initialize() // Initialize global shared object
             }
         }
 
-        private fun initSongData(context: Context) {
-            val songFiles = context.assets.list("default_songs") ?: return
+        private fun initSongData() {
+            val songFiles = appContext.assets.list("default_songs") ?: return
             songFiles.forEachIndexed { index, songName ->
-                val destDir = File(context.filesDir, "songs/$index")
+                val destDir = File(appContext.filesDir, "songs/$index")
                 if (!destDir.exists()) {
                     destDir.mkdirs()
                 }
                 try {
-                    context.assets.open("default_songs/$songName").use{ inputStream ->
+                    appContext.assets.open("default_songs/$songName").use{ inputStream ->
                         importMp3FromInputStream(
-                            context,
                             inputStream,
                             index,
                             songName
@@ -50,26 +50,26 @@ class OnStartAssetManager {
             }
         }
 
-        private fun initPlaylistData(context: Context) {
-            MasterList.initialize(context) // Initialize global shared object
-            val playListFiles = context.assets.list("default_playlists") ?: return
+        private fun initPlaylistData() {
+            MasterList.initialize() // Initialize global shared object
+            val playListFiles = appContext.assets.list("default_playlists") ?: return
             playListFiles.forEachIndexed { index, playlistName ->
                 try {
-                    copyPlaylistFromAssets(context, "default_playlists/$playlistName", index)
+                    copyPlaylistFromAssets("default_playlists/$playlistName", index)
                     MasterList.addPlaylist(index)
                 } catch (e: Exception) {
                     Log.e("OnStartAssetManager", "Failed to copy playlist $index: $playlistName")
                 }
             }
-            MasterList.savePlaylistList(context)
+            MasterList.savePlaylistList()
         }
 
 
 
 
 
-        private fun copyPlaylistFromAssets(context: Context, assetFilePath: String, index: Int) {
-            val fileContents = context.assets.open(assetFilePath).use { inputStream ->
+        private fun copyPlaylistFromAssets(assetFilePath: String, index: Int) {
+            val fileContents = appContext.assets.open(assetFilePath).use { inputStream ->
                 inputStream.bufferedReader().readText()
             }
             val playlistName = assetFilePath.substringAfterLast('/').substringBeforeLast(".")
@@ -79,7 +79,7 @@ class OnStartAssetManager {
                 .mapNotNull {
                     it.trim().toIntOrNull()
                 }.toMutableList()
-            PlaylistData(context, playlistName, songList, index, null)
+            PlaylistData(playlistName, songList, index, null)
         }
         fun deleteFolder(folder: File): Boolean {
             if (folder.isDirectory) {

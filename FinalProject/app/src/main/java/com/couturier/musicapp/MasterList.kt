@@ -2,6 +2,7 @@ package com.couturier.musicapp
 
 import android.content.Context
 import android.util.Log
+import com.couturier.musicapp.MainActivity.Companion.appContext
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -20,16 +21,16 @@ import java.io.IOException
 object MasterList {
     lateinit var playlistList: MutableList<Int>
     lateinit var library: PlaylistData
-    fun initialize(context: Context) {
-        this.playlistList = readFromFile(context) ?: mutableListOf()
+    fun initialize() {
+        this.playlistList = readFromFile() ?: mutableListOf()
         val songList = (
-                File(context.filesDir, "songs").list() ?: arrayOf()
+                File(appContext.filesDir, "songs").list() ?: arrayOf()
                 ).map { it.toInt() }.toMutableList()
-        library = PlaylistData(context, "My Library", songList, -1, null)
+        library = PlaylistData("My Library", songList, -1, null)
     }
 
-    private fun readFromFile(context: Context): MutableList<Int>? {
-        val file = File(context.filesDir, "metadata/master_list.json")
+    private fun readFromFile(): MutableList<Int>? {
+        val file = File(appContext.filesDir, "metadata/master_list.json")
         return try {
             FileReader(file).use { reader ->
                 val type = (object : TypeToken<MutableList<Int>>() {}).type
@@ -40,13 +41,13 @@ object MasterList {
         }
     }
 
-    fun savePlaylistList(context: Context) {
-        val metaDataDir = File(context.filesDir, "metadata")
+    fun savePlaylistList() {
+        val metaDataDir = File(appContext.filesDir, "metadata")
         if (!metaDataDir.exists()) {
             metaDataDir.mkdirs()
         }
         try {
-            val outputFile = File(context.filesDir, "metadata/master_list.json")
+            val outputFile = File(appContext.filesDir, "metadata/master_list.json")
             FileWriter(outputFile).use { writer ->
                 writer.write(Gson().toJson(this.playlistList))
             }

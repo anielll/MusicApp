@@ -28,7 +28,7 @@ class AddSongToPlaylistFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         libraryIndex = requireArguments().getInt(ARG_LIBRARY_INDEX)
         playlistObjects = MasterList.playlistList
-            .mapNotNull { readPlaylistDataFromFile(requireContext(), it) }
+            .mapNotNull { readPlaylistDataFromFile(it) }
             .filterNot { it.songList.contains(libraryIndex) }
             .toMutableList()
     }
@@ -60,9 +60,9 @@ class AddSongToPlaylistFragment : DialogFragment() {
     }
 
     private fun addToPlaylist(fileIndex: Int) {
-        readPlaylistDataFromFile(requireContext(), fileIndex)?.let { otherPlaylist ->
+        readPlaylistDataFromFile(fileIndex)?.let { otherPlaylist ->
             otherPlaylist.songList.add(libraryIndex!!)
-            writePlaylistDataToFile(requireContext(), otherPlaylist)
+            writePlaylistDataToFile(otherPlaylist)
             Toast.makeText(
                 requireContext(),
                 "Successfully Saved Song To: ${otherPlaylist.playlistName}",

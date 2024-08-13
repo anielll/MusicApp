@@ -1,10 +1,10 @@
 package com.couturier.musicapp
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.util.Log
+import com.couturier.musicapp.MainActivity.Companion.appContext
 import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -21,15 +21,15 @@ class SongData
     val artist: String
     val songIndex: Int
     val icon: Bitmap?
-    constructor(context: Context,title: String,artist: String,songIndex: Int,songIcon: Bitmap?){ // Edit Constructor
+    constructor(title: String,artist: String,songIndex: Int,songIcon: Bitmap?){ // Edit Constructor
         this.title= title
         this.artist= artist
         this.songIndex = songIndex
         this.icon = songIcon
-        saveSongDataToFile(context,this)
+        saveSongDataToFile(this)
     }
-    constructor(context: Context, libraryIndex: Int) { // Init Constructor
-        val songData = readSongDataFromFile(context, libraryIndex) // Read save file
+    constructor(libraryIndex: Int) { // Init Constructor
+        val songData = readSongDataFromFile(libraryIndex) // Read save file
         if (songData != null) { // If save exists, set this = save then return
             this.title = songData.title
             this.artist = songData.artist
@@ -38,7 +38,7 @@ class SongData
             return
         }
         // Else, parse mp3file for data
-        val mp3FilePath = getMp3FilePath(context,libraryIndex)
+        val mp3FilePath = getMp3FilePath(libraryIndex)
         val metaData = parseMetaData(
             fileDescriptor = FileOutputStream(mp3FilePath).fd,
             fileName = mp3FilePath.substringAfterLast("/")
@@ -47,7 +47,7 @@ class SongData
         artist = metaData.artist
         songIndex = libraryIndex
         icon = metaData.icon
-        saveSongDataToFile(context,this)
+        saveSongDataToFile(this)
     }
     interface OnSongUpdatedListener {
         fun onSongUpdate(newSong: SongData?, libraryIndex: Int? = null)
@@ -58,8 +58,8 @@ companion object {
         val artist: String,
         val icon: Bitmap?
     )
-    fun getMp3FilePath(context: Context, libraryIndex: Int):String{
-        val rootDir = File(context.filesDir, "songs/$libraryIndex")
+    fun getMp3FilePath(libraryIndex: Int):String{
+        val rootDir = File(appContext.filesDir, "songs/$libraryIndex")
         val songFiles = rootDir.list() ?: arrayOf()
         val mp3File = songFiles.firstOrNull { it.endsWith(".mp3") }
         return File(rootDir, mp3File!!).absolutePath
@@ -93,8 +93,8 @@ companion object {
         val artist: String,
         val songIndex: Int
     )
-    fun readSongDataFromFile(context: Context, songIndex: Int): SongData? {
-        val songDir = File(context.filesDir, "songs/$songIndex")
+    fun readSongDataFromFile(songIndex: Int): SongData? {
+        val songDir = File(appContext.filesDir, "songs/$songIndex")
         val propertiesFile = File(songDir, "properties.json")
         val properties :SongProperties?
         try {
@@ -112,13 +112,13 @@ companion object {
             Log.e("SongData", "Failed to read song icon.")
         }
         val pngBitmap = toBitMap(pngFile)
-        return SongData(context, properties.title, properties.artist, properties.songIndex, pngBitmap)
+        return SongData(properties.title, properties.artist, properties.songIndex, pngBitmap)
     }
-    private fun saveSongDataToFile(context: Context, song:SongData) {
+    private fun saveSongDataToFile(song:SongData) {
         val songProperties = SongProperties(song.title,song.artist,song.songIndex)
         val songJson = Gson().toJson(songProperties)
         val fileIndex = songProperties.songIndex
-        val songDir = File(context.filesDir, "songs/$fileIndex")
+        val songDir = File(appContext.filesDir, "songs/$fileIndex")
         if (!songDir.exists()) {
             songDir.mkdirs()
         }
@@ -193,12 +193,11 @@ companion object {
     }
 
     fun importMp3FromInputStream(
-        context: Context,
         inputStream: InputStream,
         destinationIndex: Int,
         fileName: String
     ) {
-            FileOutputStream(File(context.filesDir, "songs/$destinationIndex/$fileName")).use { outputStream ->
+            FileOutputStream(File(appContext.filesDir, "songs/$destinationIndex/$fileName")).use { outputStream ->
                 val buffer = ByteArray(1024)
                 var numBytes: Int
                 while (inputStream.read(buffer).also { numBytes = it } != -1) {
