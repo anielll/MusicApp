@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.couturier.musicapp.SongData.OnSongUpdatedListener
+import androidx.fragment.app.activityViewModels
 import com.couturier.musicapp.SongData.Companion.importMp3FromInputStream
 import com.couturier.musicapp.SongData.Companion.parseMetaData
 import com.couturier.musicapp.databinding.AddSongBinding
@@ -26,6 +26,7 @@ class AddSongFragment : DialogFragment() {
     private var photoSelected = false
     private var _binding: AddSongBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: PlaylistViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -116,8 +117,8 @@ class AddSongFragment : DialogFragment() {
                     binding.selectSongButton.text.toString()
                 )
             }
-            // Update PlaylistViewFragment via Main Activity
-            (requireContext() as OnSongUpdatedListener).onSongUpdate(newSong, newSongIndex)
+            // Update playlist via viewModel
+            viewModel.addSong(newSong)
         }
     }
 

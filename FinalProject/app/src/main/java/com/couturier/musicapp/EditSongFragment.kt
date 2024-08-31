@@ -10,8 +10,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
-import com.couturier.musicapp.SongData.OnSongUpdatedListener
 import com.couturier.musicapp.databinding.EditSongBinding
 
 class EditSongFragment : DialogFragment() {
@@ -22,6 +22,7 @@ class EditSongFragment : DialogFragment() {
     private lateinit var songData: SongData
     private var _binding: EditSongBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: PlaylistViewModel by activityViewModels()
     companion object { // Get what Song this was fragment was called regarding
         private const val ARG_LIBRARY_INDEX = "library_index"
         fun newInstance(index: Int) = EditSongFragment().apply {
@@ -71,7 +72,7 @@ class EditSongFragment : DialogFragment() {
                 songIndex =  libraryIndex!!,
                 songIcon = (binding.selectImageBackground.drawable as BitmapDrawable).bitmap.takeIf { photoSelected }
             )
-        (requireContext() as OnSongUpdatedListener).onSongUpdate(updatedSong)
+        viewModel.replaceSong(updatedSong)
     }
     private fun onSelect(){
         filePicker.openFilePicker("image/png") { photoUri ->

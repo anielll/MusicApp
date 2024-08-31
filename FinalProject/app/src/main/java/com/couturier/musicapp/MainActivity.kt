@@ -2,24 +2,26 @@ package com.couturier.musicapp
 
 import android.app.Application
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.couturier.musicapp.PlaylistData.Companion.readPlaylistDataFromFile
-import com.couturier.musicapp.SongData.OnSongUpdatedListener
 import com.couturier.musicapp.PlaylistData.OnPlaylistUpdatedListener
 import com.couturier.musicapp.OnStartAssetManager.Companion.initializeDefaults
 
 class MainActivity :
     AppCompatActivity(),
-    OnSongUpdatedListener,
-    OnPlaylistUpdatedListener {
+    OnPlaylistUpdatedListener
+{
     private lateinit var playlistObjects: MutableList<PlaylistData>
     private lateinit var recyclerView: RecyclerView
+    private val playlistViewModel: PlaylistViewModel by viewModels()
     companion object{
         private lateinit var _appContext: Context
         val appContext get() = _appContext
@@ -65,17 +67,11 @@ class MainActivity :
     }
 
     private fun onClickOpenPlaylist(recyclerIndex: Int) {
-        val playlistFragment = PlaylistViewFragment().apply {
-            arguments = Bundle().apply {
-                putInt("selected_playlist", MasterList.fileIndexOf(recyclerIndex))
-            }
-        }
-        val bottomFragment = BottomPlayBar()
-
+        playlistViewModel.set(recyclerIndex-1)
         supportFragmentManager.beginTransaction().apply {
             setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out)
-            replace(R.id.playlist_view_container, playlistFragment)
-            replace(R.id.bottom_bar_container, bottomFragment)
+            replace(R.id.playlist_view_container, PlaylistViewFragment())
+            replace(R.id.bottom_bar_container, BottomPlayBar())
             addToBackStack(null)
             commit()
         }
@@ -85,13 +81,6 @@ class MainActivity :
         PlaylistOptionsFragment.newInstance(MasterList.fileIndexOf(recyclerIndex))
             .show(supportFragmentManager, "SongOptions")
     }
-
-
-    override fun onSongUpdate(newSong: SongData?, libraryIndex: Int?) {
-        (supportFragmentManager.findFragmentById(R.id.playlist_view_container) as PlaylistViewFragment)
-            .updateSong(newSong, libraryIndex)
-    }
-
     override fun onPlaylistUpdate(newPlaylist: PlaylistData?, fileIndex: Int?) {
         when { // Switch is easier than three different update interfaces
             newPlaylist != null && fileIndex != null -> playlistAddUpdate(newPlaylist)

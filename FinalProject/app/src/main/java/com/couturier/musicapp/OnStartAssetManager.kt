@@ -1,10 +1,11 @@
 package com.couturier.musicapp
 
-import android.content.Context
 import android.util.Log
 import com.couturier.musicapp.MainActivity.Companion.appContext
 import java.io.File
 import com.couturier.musicapp.SongData.Companion.importMp3FromInputStream
+import com.couturier.musicapp.SongData.Companion.parseMetaData
+import java.io.FileInputStream
 
 // This class is responsible for copying debug files from /assets to /filesDir for debug purposes
 // For a non-debug build, or if both booleans are false,  all this class does is MasterList.initialize(context)
@@ -43,7 +44,14 @@ class OnStartAssetManager {
                             index,
                             songName
                         )
-                    }
+                        }
+                    val metadata = parseMetaData(FileInputStream(File(appContext.filesDir, "songs/$index/$songName")).fd, songName)
+                    SongData(
+                        title = metadata.title,
+                        artist = metadata.artist,
+                        songIndex = index,
+                        songIcon = metadata.icon
+                    )
                 } catch (e: Exception) {
                     Log.e("OnStartAssetManager", "Failed to copy song $index: $songName")
                 }

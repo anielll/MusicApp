@@ -49,7 +49,7 @@ class PlaylistData(
                 pngFile = pngFilePath.readBytes()
             } catch (e: IOException) {
                 e.printStackTrace()
-                Log.e("SongData", "Failed to read song icon.", e)
+                Log.e("SongData", "Failed to read song icon.")
             }
             val pngBitmap = toBitMap(pngFile)
             return PlaylistData(properties.playlistName,properties.songList,properties.fileIndex,pngBitmap)

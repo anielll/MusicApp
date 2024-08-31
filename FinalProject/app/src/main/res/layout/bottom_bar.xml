@@ -111,7 +111,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
             android:layout_height="8dp"
-            android:max="4096"
+            android:max="86400"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:progress="0"

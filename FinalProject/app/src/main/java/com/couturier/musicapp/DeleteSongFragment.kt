@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.couturier.musicapp.OnStartAssetManager.Companion.deleteFolder
-import com.couturier.musicapp.SongData.OnSongUpdatedListener
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
 import com.couturier.musicapp.databinding.DeleteSongBinding
 import java.io.File
@@ -16,7 +16,8 @@ class DeleteSongFragment : DialogFragment() {
     private lateinit var songData: SongData
     private var _binding: DeleteSongBinding? = null
     private val binding get() = _binding!!
-        companion object { // Get what Song this was fragment was called regarding
+    private val viewModel: PlaylistViewModel by activityViewModels()
+    companion object { // Get what Song this was fragment was called regarding
             private const val ARG_LIBRARY_INDEX = "library_index"
             fun newInstance(index: Int) = DeleteSongFragment().apply {
                 arguments = Bundle().apply { putInt(ARG_LIBRARY_INDEX, index) }
@@ -56,7 +57,7 @@ class DeleteSongFragment : DialogFragment() {
         )
     }
     private fun onDelete(){
-        (requireContext() as OnSongUpdatedListener).onSongUpdate(null, libraryIndex)
+        viewModel.deleteSong(libraryIndex!!)
         deleteFolder(File(requireContext().filesDir,"songs/$libraryIndex"))
     }
 

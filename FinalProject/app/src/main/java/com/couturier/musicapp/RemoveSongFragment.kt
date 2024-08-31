@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.couturier.musicapp.SongData.OnSongUpdatedListener
+import androidx.fragment.app.activityViewModels
 import com.couturier.musicapp.SongData.Companion.readSongDataFromFile
 import com.couturier.musicapp.databinding.RemoveSongBinding
 
@@ -15,7 +15,7 @@ class RemoveSongFragment : DialogFragment() {
     private lateinit var songData: SongData
     private var _binding: RemoveSongBinding? = null
     private val binding get() = _binding!!
-
+    private val viewModel: PlaylistViewModel by activityViewModels()
     companion object { // Get what Song this was fragment was called regarding
         private const val ARG_LIBRARY_INDEX = "library_index"
         fun newInstance(index: Int) = RemoveSongFragment().apply {
@@ -55,6 +55,6 @@ class RemoveSongFragment : DialogFragment() {
         )
     }
     private fun onRemove(){
-        (requireContext() as OnSongUpdatedListener).onSongUpdate(null, libraryIndex)
+        viewModel.deleteSong(libraryIndex!!)
     }
 }

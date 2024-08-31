@@ -49,9 +49,6 @@ class SongData
         icon = metaData.icon
         saveSongDataToFile(this)
     }
-    interface OnSongUpdatedListener {
-        fun onSongUpdate(newSong: SongData?, libraryIndex: Int? = null)
-    }
 companion object {
     data class SongMetadata(
         val title: String,
@@ -96,14 +93,10 @@ companion object {
     fun readSongDataFromFile(songIndex: Int): SongData? {
         val songDir = File(appContext.filesDir, "songs/$songIndex")
         val propertiesFile = File(songDir, "properties.json")
-        val properties :SongProperties?
-        try {
-            properties= FileReader(propertiesFile).use { reader ->
+        val properties= FileReader(propertiesFile).use { reader ->
                 Gson().fromJson(reader, SongProperties::class.java)
             }
-        } catch (e: IOException) {
-            return null
-        }
+
         val pngFilePath = File(songDir, "icon.png")
         var pngFile: ByteArray? = null
         try {

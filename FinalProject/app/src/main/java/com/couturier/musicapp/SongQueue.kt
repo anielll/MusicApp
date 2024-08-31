@@ -1,23 +1,28 @@
 package com.couturier.musicapp
 
-import android.app.Activity
 import android.graphics.Bitmap
+import com.couturier.musicapp.MainActivity.Companion.appContext
 import com.couturier.musicapp.PlaylistData.Companion.writePlaylistDataToFile
 import java.io.File
 import kotlin.random.Random
 
-class SongQueue(activity: Activity, playlist: PlaylistData){
+class SongQueue(playlistNumber: Int){
     private var songObjects : MutableList<SongData> // MUST ONLY BE DECLARED ON INIT, NEVER OVERWRITTEN (SHARED POINTER)
-    private var currentPlaylist: PlaylistData = playlist
+    private var currentPlaylist: PlaylistData =
+        if (playlistNumber != -1)
+            PlaylistData.readPlaylistDataFromFile(playlistNumber)!!
+        else {
+            MasterList.library
+        }
     private var songOrder: MutableList<Int>
-    var queueIndex: Int
+    private var queueIndex: Int
     var looped: Boolean = false
     var shuffled: Boolean = false
     init{
         var wasFiltered = false
         val filteredIndexList = currentPlaylist.songList
             .filter { // filter out songs that have been deleted
-                val exists = File(activity.filesDir, "songs/$it").exists()
+                val exists = File(appContext.filesDir, "songs/$it").exists()
                 if(!exists) wasFiltered = true
                 exists
             }.toMutableList()
@@ -66,7 +71,7 @@ class SongQueue(activity: Activity, playlist: PlaylistData){
             }
         }.toMutableList()
     }
-    fun update(newSong: SongData){
+    fun replace(newSong: SongData){
         songObjects[playlistIndexOf(newSong.songIndex)] = newSong
         // no write or listener necessary because playlist object is unchanged since it stores only indices
     }
@@ -138,6 +143,10 @@ class SongQueue(activity: Activity, playlist: PlaylistData){
         }
     }
     fun setQueueCursor(playlistIndex: Int){
-        queueIndex = songOrder.indexOf(playlistIndex)
+        queueIndex = if(playlistIndex==-1){
+            -1
+        }else{
+         songOrder.indexOf(playlistIndex)
+        }
     }
 }
